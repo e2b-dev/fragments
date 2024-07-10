@@ -22,8 +22,8 @@ npm i
 Create a `.env.local` file and set the following:
 ```sh
 # Get your API key here - https://e2b.dev/
-E2B_API_KEY=<your-e2b-api-key>
-ANTHROPIC_API_KEY=<your-anthropic-api-key>
+E2B_API_KEY="your-e2b-api-key"
+ANTHROPIC_API_KEY="your-anthropic-api-key"
 ```
 
 ### 3. Run
