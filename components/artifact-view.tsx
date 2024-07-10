@@ -49,8 +49,17 @@ export function ArtifactView({
   // The AI-generated code experienced runtime error
   if (runtimeError) {
     const { name, value, tracebackRaw } = runtimeError
-    // TODO: Render error message
-    return null
+    return (
+      <div className="p-4">
+        <Alert variant="destructive">
+          <Terminal className="h-4 w-4"/>
+          <AlertTitle>{name}: {value}</AlertTitle>
+          <AlertDescription className="font-mono whitespace-pre-wrap">
+            {tracebackRaw}
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
   }
 
   // Cell results can contain text, pdfs, images, and code (html, latex, json)
@@ -58,14 +67,26 @@ export function ArtifactView({
   // TODO: Check other formats than `png`
   if (cellResults.length > 0) {
     const imgInBase64 = cellResults[0].png
-    // TODO: Render image
-    return null
+    return (
+      <>
+        <div className="w-full flex-1 p-4 flex items-start justify-center">
+          <Image
+            src={`data:image/png;base64,${imgInBase64}`}
+            alt="result"
+            width={600}
+            height={400}
+          />
+        </div>
+        <LogsOutput stdout={stdout} stderr={stderr} />
+      </>
+    )
   }
 
   // No cell results, but there is stdout or stderr
   if (stdout.length > 0 || stderr.length > 0) {
-    // TODO: Render logs
-    return null
+    return (
+      <LogsOutput stdout={stdout} stderr={stderr} />
+    )
   }
 
   return (

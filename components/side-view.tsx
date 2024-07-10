@@ -51,7 +51,7 @@ export function SideView({
               <CodeView code={args.code}/>
             </TabsContent>
             <TabsContent value="artifact" className="flex-1 w-full flex flex flex-col items-start justify-start">
-              {/* <ArtifactView result={result} /> */}
+              <ArtifactView result={result} />
             </TabsContent>
           </div>
         )}

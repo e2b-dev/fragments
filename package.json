@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^0.0.23",
-    "@e2b/code-interpreter": "^0.0.9-multikernel-code-interpreterer.0",
+    "@e2b/code-interpreter": "^0.0.9-beta.3",
     "@radix-ui/react-tabs": "^1.1.0",
     "ai": "^3.2.5",
     "class-variance-authority": "^0.7.0",
