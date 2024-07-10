@@ -2,6 +2,7 @@
 
 import { CodeInterpreter } from '@e2b/code-interpreter'
 
+// Time after which the sandbox gets automatically killed
 export const sandboxTimeout = 10 * 60 * 1000 // 10 minutes in ms
 
 export async function createOrConnect(userID: string) {
@@ -13,11 +14,12 @@ export async function createOrConnect(userID: string) {
   if (!sandboxInfo) {
     return await CodeInterpreter.create({
       metadata: {
-        userId: userID
-      }
+        userId: userID,
+      },
+      timeoutMs: sandboxTimeout,
     })
   }
-  return CodeInterpreter.reconnect(sandboxInfo.sandboxID)
+  return CodeInterpreter.connect(sandboxInfo.sandboxID)
 }
 
 export async function runPython(userID: string, code: string) {
