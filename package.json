@@ -1,0 +1,38 @@
+{
+  "name": "anthropic-power-artifacts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^0.0.23",
+    "@e2b/code-interpreter": "^0.0.9-multikernel-code-interpreterer.0",
+    "@radix-ui/react-tabs": "^1.1.0",
+    "ai": "^3.2.5",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "e2b": "^0.16.1",
+    "lucide-react": "^0.396.0",
+    "next": "14.2.4",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-drag-drop-files": "^2.3.10",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.4",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
