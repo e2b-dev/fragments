@@ -13,7 +13,7 @@ export async function createOrConnectCodeInterpreter(userID: string) {
   const allSandboxes = await CodeInterpreter.list()
   console.log('all code interpreter sandboxes', allSandboxes)
 
-  const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userId === userID)
+  const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userID === userID)
   console.log('code interpreter sandbox info', sandboxInfo)
 
   if (!sandboxInfo) {
@@ -46,7 +46,7 @@ export async function createOrConnectNextjs(userID: string) {
   const allSandboxes = await Sandbox.list()
   console.log('all nextjs sandboxes', allSandboxes)
 
-  const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userId === userID)
+  const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userID === userID)
   console.log('nextjs sandbox info', sandboxInfo)
 
   if (!sandboxInfo) {
@@ -86,8 +86,14 @@ export async function runPython(userID: string, code: string) {
 
 export async function writeToPage(userID: string, code: string) {
   const sbx = await createOrConnectNextjs(userID)
+  console.log('Writing to /home/user/app/page.tsx', code)
 
-  await sbx.files.write('/home/user/app/page.tsx', code)
+  try {
+    await sbx.files.write('/home/user/app/page.tsx', code)
+  } catch (e) {
+    console.error('Error writing to /home/user/app/page.tsx', e)
+    throw e
+  }
 
   // URL where the nextjs app is running
   const url = `https://${sbx.getHost(3000)}`

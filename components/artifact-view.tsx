@@ -53,7 +53,12 @@ export function ArtifactView({
   if (template === SandboxTemplate.NextJS) {
     return (
       <div className="w-full h-full">
-        <iframe className="h-full w-full" src={result.url} />
+        <iframe
+          className="h-full w-full"
+          sandbox="allow-scripts"
+          loading="lazy"
+          src={result.url}
+        />
       </div>
     )
   }
