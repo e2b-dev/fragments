@@ -14,5 +14,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - && \
 WORKDIR /home/user/nextjs-app
 
 RUN npx create-next-app@latest . --ts --tailwind --no-eslint --import-alias "@/*" --use-npm --app --no-src-dir
+RUN npm i -g vercel
+RUN npm install recharts
 
 RUN mv /home/user/nextjs-app/* /home/user/ && rm -rf /home/user/nextjs-app

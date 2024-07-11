@@ -1,3 +1,5 @@
+'use client'
+import { useState, useEffect } from 'react'
 import { type ExecutionError, Result } from '@e2b/code-interpreter'
 import Image from 'next/image'
 import { Terminal } from 'lucide-react'
@@ -46,6 +48,17 @@ export function ArtifactView({
   result?: CodeExecResult
   template: SandboxTemplate
 }) {
+  const [iframeKey, setIframeKey] = useState(0);
+
+  useEffect(() => {
+    if (template === SandboxTemplate.NextJS && result) {
+      const timer = setTimeout(() => {
+        setIframeKey(prevKey => prevKey + 1);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [template, result]);
 
   if (!result) return null
   console.log('result', result)
@@ -54,6 +67,7 @@ export function ArtifactView({
     return (
       <div className="w-full h-full">
         <iframe
+          key={iframeKey}
           className="h-full w-full"
           sandbox="allow-scripts"
           loading="lazy"

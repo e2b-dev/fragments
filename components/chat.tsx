@@ -62,12 +62,6 @@ export function Chat({
             Python data analyst
           </Card>
           <Card
-            isSelected={selectedTemplate === SandboxTemplate.WebDev}
-            onClick={() => onSelectedTemplateChange(SandboxTemplate.WebDev)}
-          >
-            CSS/JS/HTML developer
-          </Card>
-          <Card
             isSelected={selectedTemplate === SandboxTemplate.NextJS}
             onClick={() => onSelectedTemplateChange(SandboxTemplate.NextJS)}
           >
