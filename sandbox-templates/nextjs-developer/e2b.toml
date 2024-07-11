@@ -1,0 +1,17 @@
+# This is a config for E2B sandbox template.
+# You can use 'template_id' (scwxnhs1apt5uj7na7db) or 'template_name (nextjs-developer) from this config to spawn a sandbox:
+
+# Python SDK
+# from e2b import Sandbox
+# sandbox = Sandbox(template='nextjs-developer')
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create({ template: 'nextjs-developer' })
+
+template_id = "scwxnhs1apt5uj7na7db"
+dockerfile = "e2b.Dockerfile"
+template_name = "nextjs-developer"
+start_cmd = "cd /home/user && npx next"
+cpu_count = 4
+memory_mb = 4_096

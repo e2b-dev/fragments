@@ -1,6 +1,7 @@
 import { type ExecutionError, Result } from '@e2b/code-interpreter'
 import Image from 'next/image'
 import { Terminal } from 'lucide-react'
+import { SandboxTemplate } from '@/lib/types'
 
 import {
   Alert,
@@ -31,6 +32,7 @@ function LogsOutput({ stdout, stderr }: {
 }
 
 export interface CodeExecResult {
+  url: string
   stdout: string[]
   stderr: string[]
   runtimeError?: ExecutionError
@@ -39,11 +41,23 @@ export interface CodeExecResult {
 
 export function ArtifactView({
   result,
+  template,
 }: {
   result?: CodeExecResult
+  template: SandboxTemplate
 }) {
+
   if (!result) return null
   console.log('result', result)
+
+  if (template === SandboxTemplate.NextJS) {
+    return (
+      <div className="w-full h-full">
+        <iframe className="h-full w-full" src={result.url} />
+      </div>
+    )
+  }
+
   const { cellResults, stdout, stderr, runtimeError } = result
 
   // The AI-generated code experienced runtime error

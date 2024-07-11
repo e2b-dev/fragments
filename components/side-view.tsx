@@ -3,6 +3,7 @@ import { LoaderCircle } from 'lucide-react'
 
 import { ArtifactView, CodeExecResult } from '@/components/artifact-view'
 import { CodeView } from '@/components/code-view'
+import { SandboxTemplate } from '@/lib/types'
 
 import {
   Tabs,
@@ -15,9 +16,11 @@ import {
 export function SideView({
   toolInvocation,
   data,
+  selectedTemplate,
 }: {
   toolInvocation?: ToolInvocation
   data?: JSONValue[]
+  selectedTemplate: SandboxTemplate
 }) {
   if (!toolInvocation || !data) {
     return null
@@ -51,7 +54,10 @@ export function SideView({
               <CodeView code={args.code}/>
             </TabsContent>
             <TabsContent value="artifact" className="flex-1 w-full flex flex flex-col items-start justify-start">
-              <ArtifactView result={result} />
+              <ArtifactView
+                template={selectedTemplate}
+                result={result}
+              />
             </TabsContent>
           </div>
         )}

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
 import { Terminal } from 'lucide-react'
 import { Message } from 'ai/react'
 
 import { Input } from '@/components/ui/input'
+import { Card } from '@/components/ui/card'
+import { SandboxTemplate } from '@/lib/types'
 
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
@@ -11,11 +12,15 @@ export function Chat({
   input,
   handleInputChange,
   handleSubmit,
+  selectedTemplate,
+  onSelectedTemplateChange,
 }: {
   messages: Message[],
   input: string,
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
+  selectedTemplate: SandboxTemplate,
+  onSelectedTemplateChange: (template: SandboxTemplate) => void,
 }) {
   return (
     <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto justify-between">
@@ -35,6 +40,12 @@ export function Chat({
                       <span className="font-sans text-sm">{message.toolInvocations[0].args.description}</span>
                     </>
                   }
+                  {message.toolInvocations[0].toolName === "writeCodeToPageTsx" &&
+                    <>
+                      <span className="font-bold font-sans text-sm">{message.toolInvocations[0].args.title}</span>
+                      <span className="font-sans text-sm">{message.toolInvocations[0].args.description}</span>
+                    </>
+                  }
                 </div>
               </div>
             }
@@ -42,9 +53,31 @@ export function Chat({
         ))}
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <Input className="ring-0" placeholder="Ask Claude..." value={input} onChange={handleInputChange}/>
-      </form>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-center gap-4">
+          <Card
+            isSelected={selectedTemplate === SandboxTemplate.CodeInterpreterMultilang}
+            onClick={() => onSelectedTemplateChange(SandboxTemplate.CodeInterpreterMultilang)}
+          >
+            Python data analyst
+          </Card>
+          <Card
+            isSelected={selectedTemplate === SandboxTemplate.WebDev}
+            onClick={() => onSelectedTemplateChange(SandboxTemplate.WebDev)}
+          >
+            CSS/JS/HTML developer
+          </Card>
+          <Card
+            isSelected={selectedTemplate === SandboxTemplate.NextJS}
+            onClick={() => onSelectedTemplateChange(SandboxTemplate.NextJS)}
+          >
+            Next.js developer
+          </Card>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <Input className="ring-0" placeholder="Ask Claude..." value={input} onChange={handleInputChange}/>
+        </form>
+      </div>
     </div>
   )
 }
