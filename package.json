@@ -18,9 +18,11 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.396.0",
     "next": "14.2.4",
+    "prismjs": "^1.29.0",
     "react": "^18",
     "react-dom": "^18",
     "react-drag-drop-files": "^2.3.10",
+    "react-simple-code-editor": "^0.14.1",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
