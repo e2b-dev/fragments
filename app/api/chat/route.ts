@@ -47,7 +47,7 @@ export async function POST(req: Request) {
               state: 'running',
             })
 
-            const execOutput = await runPython(userID, code)
+            const execOutput = await runPython(userID, code, template)
             const stdout = execOutput.logs.stdout
             const stderr = execOutput.logs.stderr
             const runtimeError = execOutput.error
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
               state: 'running',
             })
             console.log('WILL WRITE')
-            const { url } = await writeToPage(userID, code)
+            const { url } = await writeToPage(userID, code, template)
             console.log('WROTE', { url })
 
             data.append({

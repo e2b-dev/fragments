@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import Terminal from '@/components/Terminal'
 import { getSandboxIDForUser } from '@/lib/sandbox'
 
 export function DeployDialog({ userID }: { userID: string }) {
@@ -41,10 +42,12 @@ export function DeployDialog({ userID }: { userID: string }) {
         </DialogHeader>
 
         {/* Stdout and stderr of Vercel's CLI that's running on server */}
-        <div className="">
-          <Input value={vercelToken} onChange={(e) => setVercelToken(e.target.value)} placeholder="Vercel token" />
+        <div className="min-h-[400px] flex">
+          {!sandboxID &&
+            <Input value={vercelToken} onChange={(e) => setVercelToken(e.target.value)} placeholder="Vercel token" />
+          }
+          {sandboxID && <Terminal sandboxID={sandboxID} />}
         </div>
-
 
         <DialogFooter>
           <button
@@ -53,7 +56,7 @@ export function DeployDialog({ userID }: { userID: string }) {
               deploySandbox()
             }}
           >
-            Deploy
+            Next
           </button>
         </DialogFooter>
       </DialogContent>

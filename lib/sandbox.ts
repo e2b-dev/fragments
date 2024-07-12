@@ -3,6 +3,7 @@
 import { Sandbox, CodeInterpreter } from '@e2b/code-interpreter'
 import { SandboxTemplate } from '@/lib/types'
 
+
 // Time after which the sandbox gets automatically killed
 const sandboxTimeout = 10 * 60 * 1000 // 10 minutes in ms
 
@@ -15,13 +16,13 @@ export async function getSandboxIDForUser(userID: string) {
 }
 
 // Code Interpreter sandbox
-export async function createOrConnectCodeInterpreter(userID: string) {
+export async function createOrConnectCodeInterpreter(userID: string, template: SandboxTemplate) {
   console.log('create or connect code interpreter sandbox', userID)
 
   const allSandboxes = await CodeInterpreter.list()
   console.log('all code interpreter sandboxes', allSandboxes)
 
-  const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userID === userID)
+  const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userID === userID && sbx.metadata?.template === template)
   console.log('code interpreter sandbox info', sandboxInfo)
 
   if (!sandboxInfo) {
@@ -29,6 +30,7 @@ export async function createOrConnectCodeInterpreter(userID: string) {
     try {
       const sbx = await CodeInterpreter.create({
         metadata: {
+          template,
           userID,
         },
         timeoutMs: sandboxTimeout,
@@ -48,13 +50,13 @@ export async function createOrConnectCodeInterpreter(userID: string) {
 }
 
 // Nextjs sandbox
-export async function createOrConnectNextjs(userID: string) {
+export async function createOrConnectNextjs(userID: string, template: SandboxTemplate) {
   console.log('create or connect nextjs sandbox', userID)
 
   const allSandboxes = await Sandbox.list()
   console.log('all nextjs sandboxes', allSandboxes)
 
-  const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userID === userID)
+  const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userID === userID && sbx.metadata?.template === template)
   console.log('nextjs sandbox info', sandboxInfo)
 
   if (!sandboxInfo) {
@@ -63,6 +65,7 @@ export async function createOrConnectNextjs(userID: string) {
       const sbx = await Sandbox.create(SandboxTemplate.NextJS, {
         metadata: {
           userID,
+          template,
         },
         timeoutMs: sandboxTimeout,
       })
@@ -79,8 +82,8 @@ export async function createOrConnectNextjs(userID: string) {
   return sandbox
 }
 
-export async function runPython(userID: string, code: string) {
-  const sbx = await createOrConnectCodeInterpreter(userID)
+export async function runPython(userID: string, code: string, template: SandboxTemplate) {
+  const sbx = await createOrConnectCodeInterpreter(userID, template)
   console.log('Running code', code)
 
   const result = await sbx.notebook.execCell(code)
@@ -92,8 +95,8 @@ export async function runPython(userID: string, code: string) {
   return result
 }
 
-export async function writeToPage(userID: string, code: string) {
-  const sbx = await createOrConnectNextjs(userID)
+export async function writeToPage(userID: string, code: string, template: SandboxTemplate) {
+  const sbx = await createOrConnectNextjs(userID, template)
   console.log('Writing to /home/user/app/page.tsx', code)
 
   try {
