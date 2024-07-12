@@ -51,9 +51,9 @@ export function SideView({
         {toolInvocation && (
           <div className="w-full flex-1 flex flex-col items-start justify-start overflow-y-auto">
             <TabsContent value="code" className="flex-1 w-full">
-              <CodeView code={args.code}/>
+              <CodeView code={args.code} />
             </TabsContent>
-            <TabsContent value="artifact" className="flex-1 w-full flex flex flex-col items-start justify-start">
+            <TabsContent value="artifact" className="flex-1 w-full flex flex-col items-start justify-start">
               <ArtifactView
                 template={selectedTemplate}
                 result={result}
