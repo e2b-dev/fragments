@@ -46,6 +46,7 @@ export default function Home() {
           onSelectedTemplateChange={setSelectedTemplate}
         />
         <SideView
+          userID={userID}
           toolInvocation={latestToolInvocation}
           data={data}
           selectedTemplate={selectedTemplate}

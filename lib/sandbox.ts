@@ -6,6 +6,14 @@ import { SandboxTemplate } from '@/lib/types'
 // Time after which the sandbox gets automatically killed
 const sandboxTimeout = 10 * 60 * 1000 // 10 minutes in ms
 
+export async function getSandboxIDForUser(userID: string) {
+  console.log('getting sandbox for user', userID)
+  const allSandboxes = await CodeInterpreter.list()
+  console.log('all sandboxes', allSandboxes)
+  const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userID === userID)
+  return sandboxInfo?.sandboxID
+}
+
 // Code Interpreter sandbox
 export async function createOrConnectCodeInterpreter(userID: string) {
   console.log('create or connect code interpreter sandbox', userID)
