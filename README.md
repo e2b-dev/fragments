@@ -8,10 +8,12 @@ This app is using [E2B](https://e2b.dev/docs)'s [Code Interpreter SDK](https://g
 
 ## Features
 - [Anthropic Claude Sonnet 3.5](https://www.anthropic.com/) model for AI code generation
-- [Code Interpreter SDK](https://github.com/e2b-dev/code-interpreter) from [E2B](https://e2b.dev) for AI secure code execution using
+- [Code Interpreter SDK](https://github.com/e2b-dev/code-interpreter) from [E2B](https://e2b.dev) for secure AI code execution using sandboxes
 - [Vercel AI SDK](https://sdk.vercel.ai/docs/introduction) for tool calling and streaming responses from the model
-- ✅ Currently supports running AI-generated Python
-  - TODO: JavaScript, R, Nextjs apps
+- Supported AI-generated code
+  - ✅ Running AI-generated Python in Jupyter notebook
+  - ✅ AI-generated Next.js apps
+  - TODO: vanilla JS/TS, R
 
 ### 1. Install dependencies
 ```sh
