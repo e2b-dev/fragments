@@ -14,6 +14,7 @@ This app is using [E2B](https://e2b.dev/docs)'s [Code Interpreter SDK](https://g
   - ✅ Running AI-generated Python in Jupyter notebook
   - ✅ AI-generated Next.js apps
   - TODO: vanilla JS/TS, R
+- TODO: Stream AI-generated code
 
 ### 1. Install dependencies
 ```sh
