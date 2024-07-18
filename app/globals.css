@@ -74,6 +74,6 @@
       @apply border-border;
     }
     body {
-      @apply bg-[#fff3e6] text-foreground;
+      @apply text-foreground;
     }
   }

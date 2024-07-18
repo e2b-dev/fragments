@@ -8,6 +8,7 @@ import { useChat } from 'ai/react'
 import { Chat } from '@/components/chat'
 import { SideView } from '@/components/side-view'
 import { SandboxTemplate } from '@/lib/types'
+import { ModeToggle } from '@/components/mode-toggle'
 
 // Simulate user ID
 const userID = 'dummy-user-id'
@@ -31,10 +32,13 @@ export default function Home() {
     <main className="flex min-h-screen max-h-screen">
       <div className="fixed top-0 left-0 right-0 py-4 pl-8 flex items-center">
         <Link href="/" className="flex items-center gap-2" target="_blank">
-          <Image src="/logo.svg" alt="logo" width={30} height={30} />
-          <h1 className="whitespace-pre text-[#3d3929]">AI Artifacts by </h1>
+          <Image src="/logo.svg" alt="logo" width={30} height={30} className="dark:invert"/>
+          <h1 className="whitespace-pre text-[#3d3929] dark:text-[#fff]">AI Artifacts by </h1>
         </Link>
         <Link href="https://e2b.dev" className="underline decoration-[#ff8800] decoration-2 text-[#ff8800]" target="_blank">E2B</Link>
+        <div className="fixed right-0 pr-8">
+          <ModeToggle />
+        </div>
       </div>
       <div className="flex-1 flex space-x-8 w-full pt-16 pb-8 px-4">
         <Chat

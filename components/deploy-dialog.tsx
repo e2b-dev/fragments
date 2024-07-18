@@ -32,7 +32,7 @@ export function DeployDialog({ userID }: { userID: string }) {
 
   return (
     <Dialog>
-      <DialogTrigger className="text-xs bg-[#FFE7CC]/50 hover:bg-[#FFE7CC] transition-all p-2 rounded-sm text-[#3d3929]">Deploy on Vercel ▲</DialogTrigger>
+      <DialogTrigger className="text-xs bg-[#FFE7CC]/50 dark:bg-[#3d3929]/50 hover:bg-[#FFE7CC] dark:hover:bg-[#3d3929] transition-all p-2 rounded-sm text-[#3d3929] dark:text-[#fff]">Deploy on Vercel ▲</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Deploy on Vercel ▲</DialogTitle>

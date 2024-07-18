@@ -26,11 +26,11 @@ export function Chat({
     <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto justify-between">
       <div className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
         {messages.map(message => (
-          <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white' : 'bg-white/40'} rounded-lg border-b border-[#FFE7CC] font-serif`} key={message.id}>
+          <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white dark:bg-[#3d3929]' : 'bg-white/40 dark:bg-[#3d3929]/40'} rounded-lg border-b border-[#FFE7CC] dark:border-[#3d3929] font-serif`} key={message.id}>
             {message.content}
             {message.toolInvocations && message.toolInvocations.length > 0 &&
               <div className="mt-4 flex justify-start items-start border border-[#FFE7CC] rounded-md">
-                <div className="p-2 self-stretch border-r border-[#FFE7CC] bg-[#FFE7CC] w-14 flex items-center justify-center">
+                <div className="p-2 self-stretch border-r border-[#FFE7CC] bg-[#FFE7CC] dark:bg-[#3d3929] w-14 flex items-center justify-center">
                   <Terminal strokeWidth={2} className="text-[#FF8800]"/>
                 </div>
                 <div className="p-2 flex flex-col space-y-1 justify-start items-start min-w-[100px]">

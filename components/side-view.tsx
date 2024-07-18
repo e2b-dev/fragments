@@ -39,9 +39,9 @@ export function SideView({
   }
 
   return (
-    <div className="flex-1 flex flex-col shadow-2xl rounded-lg border border-[#FFE7CC] bg-white max-w-[800px]">
+    <div className="flex-1 flex flex-col shadow-2xl rounded-lg border border-[#FFE7CC] bg-white dark:border-[#3d3929] dark:bg-gray-900 max-w-[800px]">
       <Tabs defaultValue="code" className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
-        <div className="w-full p-2 flex items-center justify-end space-x-2 bg-[#FAFAFA] rounded-t-lg border-b border-[#FFE7CC]">
+        <div className="w-full p-2 flex items-center justify-end space-x-2 bg-[#FAFAFA] dark:bg-black rounded-t-lg border-b border-[#FFE7CC] dark:border-[#3d3929]">
           {latestData.state === 'running' && <LoaderCircle className="h-4 w-4 text-black/15 animate-spin" />}
           {selectedTemplate === SandboxTemplate.NextJS && (
             <DeployDialog userID={userID} />
