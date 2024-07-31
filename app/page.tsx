@@ -9,6 +9,9 @@ import { SideView } from '@/components/side-view'
 import { SandboxTemplate } from '@/lib/types'
 import { Models } from '@/lib/models'
 
+
+import { useMarkdownParser } from '@/lib/markdown'
+
 // Simulate user ID
 const userID = 'dummy-user-id'
 
@@ -22,6 +25,14 @@ export default function Home() {
       modelId: selectedModel,
       template: selectedTemplate,
     },
+  })
+  const lastAssistantMessage = [...messages].reverse().find(message => message.role === 'assistant')
+
+  const { codeBlocks } = useMarkdownParser({
+    code: lastAssistantMessage?.content || '',
+    onCodeBlock: (code) => {
+      console.log('+ Code block detected!', code)
+    }
   })
   console.log({ messages, data })
   // For simplicity, we care only about the latest message that has a tool invocation
@@ -41,12 +52,12 @@ export default function Home() {
           selectedTemplate={selectedTemplate}
           onSelectedTemplateChange={setSelectedTemplate}
         />
-        <SideView
+        {/* <SideView
           userID={userID}
           toolInvocation={latestToolInvocation}
           data={data}
           selectedTemplate={selectedTemplate}
-        />
+        /> */}
       </div>
     </main>
   )

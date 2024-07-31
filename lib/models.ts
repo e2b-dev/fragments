@@ -1,3 +1,4 @@
+// Supported models
 export const Models = {
   'claude-3-5-sonnet-20240620': {
     value: 'claude-3-5-sonnet-20240620',
