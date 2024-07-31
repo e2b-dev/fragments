@@ -12,10 +12,12 @@ import { anthropic } from '@ai-sdk/anthropic'
 import {
   runPython,
   writeToPage,
+  writeToApp,
 } from '@/lib/sandbox'
 import { SandboxTemplate } from '@/lib/types'
 import { prompt as dataAnalystPrompt } from '@/lib/python-analyst-prompt'
 import { prompt as nextjsPrompt } from '@/lib/nextjs-prompt'
+import { prompt as streamlitPrompt } from '@/lib/streamlit-prompt'
 
 export interface ServerMessage {
   role: 'user' | 'assistant' | 'function';
@@ -25,6 +27,7 @@ export interface ServerMessage {
 export async function POST(req: Request) {
   const { messages, userID, template }: { messages: CoreMessage[], userID: string, template: SandboxTemplate } = await req.json()
   console.log('userID', userID)
+  console.log('template', template)
 
   let data: StreamData = new StreamData()
   let result: StreamTextResult<any>
@@ -105,6 +108,38 @@ export async function POST(req: Request) {
       },
       toolChoice: 'auto',
       system: nextjsPrompt,
+      messages,
+    })
+  } else if (template === SandboxTemplate.Streamlit) {
+    console.log('WRITING A STREAMLIT APP')
+    result = await streamText({
+      model: anthropic('claude-3-5-sonnet-20240620'),
+      tools: {
+        writeCodeToAppPy: tool({
+          description: 'Writes Streamlit code to the app.py file.',
+          parameters: z.object({
+            code: z.string().describe('The Streamlit code to write.'),
+          }),
+          async execute({ code }) {
+            data.append({
+              tool: 'writeCodeToAppPy',
+              state: 'running',
+            })
+            console.log('WILL WRITE')
+            const { url } = await writeToApp(userID, code, template)
+            console.log('WROTE', { url })
+            data.append({
+              tool: 'writeCodeToAppPy',
+              state: 'complete',
+            })
+
+            return {
+              url,
+            }
+          },
+        }),
+      },
+      system: streamlitPrompt,
       messages,
     })
   } else {

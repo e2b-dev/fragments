@@ -13,6 +13,7 @@ This app is using [E2B](https://e2b.dev/docs)'s [Code Interpreter SDK](https://g
 - Supported AI-generated code
   - ✅ Running AI-generated Python in Jupyter notebook
   - ✅ AI-generated Next.js apps
+  - ✅ AI-generated Streamlit apps
   - TODO: vanilla JS/TS, R
 - TODO: Stream AI-generated code
 
