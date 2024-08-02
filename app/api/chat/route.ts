@@ -111,7 +111,6 @@ export async function POST(req: Request) {
       messages,
     })
   } else if (template === SandboxTemplate.Streamlit) {
-    console.log('WRITING A STREAMLIT APP')
     result = await streamText({
       model: anthropic('claude-3-5-sonnet-20240620'),
       tools: {
@@ -125,7 +124,6 @@ export async function POST(req: Request) {
               tool: 'writeCodeToAppPy',
               state: 'running',
             })
-            console.log('WILL WRITE')
             const { url } = await writeToApp(userID, code, template)
             console.log('WROTE', { url })
             data.append({
