@@ -63,13 +63,13 @@ export function ArtifactView({
   if (!result) return null
   console.log('result', result)
 
-  if (template === SandboxTemplate.NextJS) {
+  if (template === SandboxTemplate.NextJS || template === SandboxTemplate.Streamlit) {
     return (
       <div className="w-full h-full">
         <iframe
           key={iframeKey}
           className="h-full w-full"
-          sandbox="allow-scripts"
+          sandbox="allow-scripts allow-same-origin"
           loading="lazy"
           src={result.url}
         />

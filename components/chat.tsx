@@ -46,6 +46,12 @@ export function Chat({
                       <span className="font-sans text-sm">{message.toolInvocations[0].args.description}</span>
                     </>
                   }
+                  {message.toolInvocations[0].toolName === "writeCodeToAppPy" &&
+                    <>
+                      <span className="font-bold font-sans text-sm">{message.toolInvocations[0].args.title}</span>
+                      <span className="font-sans text-sm">{message.toolInvocations[0].args.description}</span>
+                    </>
+                  }
                 </div>
               </div>
             }
@@ -66,6 +72,12 @@ export function Chat({
             onClick={() => onSelectedTemplateChange(SandboxTemplate.NextJS)}
           >
             Next.js developer
+          </Card>
+          <Card
+            isSelected={selectedTemplate === SandboxTemplate.Streamlit}
+            onClick={() => onSelectedTemplateChange(SandboxTemplate.Streamlit)}
+          >
+            Streamlit developer
           </Card>
         </div>
         <form onSubmit={handleSubmit}>

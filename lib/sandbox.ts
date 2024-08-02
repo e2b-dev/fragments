@@ -49,8 +49,7 @@ export async function createOrConnectCodeInterpreter(userID: string, template: S
   return sandbox
 }
 
-// Nextjs sandbox
-export async function createOrConnectNextjs(userID: string, template: SandboxTemplate) {
+export async function createOrConnectSandbox(userID: string, template: SandboxTemplate) {
   console.log('create or connect nextjs sandbox', userID)
 
   const allSandboxes = await Sandbox.list()
@@ -62,7 +61,7 @@ export async function createOrConnectNextjs(userID: string, template: SandboxTem
   if (!sandboxInfo) {
     // Vercel's AI SDK has a bug that it doesn't throw an error in the tool `execute` call so we want to be explicit
     try {
-      const sbx = await Sandbox.create(SandboxTemplate.NextJS, {
+      const sbx = await Sandbox.create(template, {
         metadata: {
           userID,
           template,
@@ -96,7 +95,7 @@ export async function runPython(userID: string, code: string, template: SandboxT
 }
 
 export async function writeToPage(userID: string, code: string, template: SandboxTemplate) {
-  const sbx = await createOrConnectNextjs(userID, template)
+  const sbx = await createOrConnectSandbox(userID, template)
   console.log('Writing to /home/user/app/page.tsx', code)
 
   try {
@@ -110,3 +109,21 @@ export async function writeToPage(userID: string, code: string, template: Sandbo
   const url = `https://${sbx.getHost(3000)}`
   return { url }
 }
+
+export async function writeToApp(userID: string, code: string, template: SandboxTemplate) {
+  const sbx = await createOrConnectSandbox(userID, template)
+  console.log('Writing to /home/user/app.py', code)
+
+  try {
+    await sbx.files.write('/home/user/app.py', code)
+  } catch (e) {
+    console.error('Error writing to /home/user/app.py', e)
+    throw e
+  }
+
+  // URL where the streamlit app is running
+  const url = `https://${sbx.getHost(8501)}`
+  return { url }
+}
+
+

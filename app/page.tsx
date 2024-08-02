@@ -52,12 +52,12 @@ export default function Home() {
           selectedTemplate={selectedTemplate}
           onSelectedTemplateChange={setSelectedTemplate}
         />
-        {/* <SideView
+        <SideView
           userID={userID}
           toolInvocation={latestToolInvocation}
           data={data}
           selectedTemplate={selectedTemplate}
-        /> */}
+        />
       </div>
     </main>
   )
