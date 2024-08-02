@@ -13,6 +13,7 @@
     "@e2b/code-interpreter": "^0.0.9-beta.3",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.0",
+    "@types/prismjs": "^1.26.4",
     "@xterm/addon-canvas": "^0.7.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
