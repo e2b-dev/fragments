@@ -2,14 +2,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Session } from '@supabase/supabase-js'
 import { Button } from './ui/button'
-import { supabase } from '@/lib/supabase'
 import { LogOut } from 'lucide-react'
 
-export default function NavBar({ session, showLogin }: { session: Session | null, showLogin: () => void }) {
-  function logout () {
-    supabase.auth.signOut()
-  }
-
+export default function NavBar({ session, showLogin, signOut }: { session: Session | null, showLogin: () => void, signOut: () => void }) {
   return (
     <div className="fixed top-0 left-0 right-0 grid grid-cols-3 px-4 py-2">
       <div className="flex items-center">
@@ -32,7 +27,7 @@ export default function NavBar({ session, showLogin }: { session: Session | null
         {session ? (
           <div className="flex items-center">
             <span className="text-sm text-[#3d3929] font-medium">{session.user.email}</span>
-            <Button variant="link" size="icon" onClick={logout}>
+            <Button variant="link" size="icon" onClick={signOut}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>

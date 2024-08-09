@@ -6,7 +6,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 
 function AuthForm({ supabase }: { supabase: SupabaseClient }) {
   return (
-    <div className="mx-auto flex flex-1 w-full justify-center items-center flex-col pt-4">
+    <div className="mx-auto flex flex-1 w-full justify-center items-center flex-col">
       <h1 className="text-4xl font-bold mt-8 mb-4">
         Sign in to E2B
       </h1>
@@ -15,11 +15,13 @@ function AuthForm({ supabase }: { supabase: SupabaseClient }) {
           supabaseClient={supabase}
           appearance={{
             theme: ThemeSupa,
-            extend: true,
-            className: {
-              button: 'auth-button',
-              divider: 'auth-divider',
-              message: 'auth-message',
+            variables: {
+              default: {
+                colors: {
+                  brand: 'rgb(255, 136, 0)',
+                  brandAccent: 'rgb(255, 136, 0)',
+                },
+              },
             },
           }}
           localization={{
