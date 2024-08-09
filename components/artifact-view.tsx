@@ -39,6 +39,7 @@ export interface CodeExecResult {
   stderr: string[]
   runtimeError?: ExecutionError
   cellResults: Result[]
+  template: SandboxTemplate
 }
 
 export function ArtifactView({
@@ -46,7 +47,7 @@ export function ArtifactView({
   template,
 }: {
   result?: CodeExecResult
-  template: SandboxTemplate
+  template?: SandboxTemplate
 }) {
   const [iframeKey, setIframeKey] = useState(0);
 
