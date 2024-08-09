@@ -9,7 +9,7 @@ import 'prismjs/themes/prism.css'
 import { SandboxTemplate } from '@/lib/types'
 
 
-export function CodeView({ code, template }: { code: string, template: SandboxTemplate }) {
+export function CodeView({ code, template }: { code: string, template?: SandboxTemplate }) {
   return (
     <Editor
       value={code}

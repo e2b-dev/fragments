@@ -25,9 +25,10 @@ export interface ServerMessage {
 }
 
 export async function POST(req: Request) {
-  const { messages, userID, template }: { messages: CoreMessage[], userID: string, template: SandboxTemplate } = await req.json()
+  const { messages, userID, template, apiKey }: { messages: CoreMessage[], userID: string, template: SandboxTemplate, apiKey: string } = await req.json()
   console.log('userID', userID)
   console.log('template', template)
+  console.log('apiKey', apiKey)
 
   let data: StreamData = new StreamData()
   let result: StreamTextResult<any>
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
               state: 'running',
             })
 
-            const execOutput = await runPython(userID, code, template)
+            const execOutput = await runPython(userID, code, template, apiKey)
             const stdout = execOutput.logs.stdout
             const stderr = execOutput.logs.stderr
             const runtimeError = execOutput.error
@@ -66,6 +67,7 @@ export async function POST(req: Request) {
               stderr,
               runtimeError,
               cellResults: results,
+              template,
             }
           },
         }),
@@ -91,7 +93,7 @@ export async function POST(req: Request) {
               state: 'running',
             })
             console.log('WILL WRITE')
-            const { url } = await writeToPage(userID, code, template)
+            const { url } = await writeToPage(userID, code, template, apiKey)
             console.log('WROTE', { url })
 
             data.append({
@@ -102,6 +104,7 @@ export async function POST(req: Request) {
 
             return {
               url,
+              template,
             }
           },
         }),
@@ -124,7 +127,7 @@ export async function POST(req: Request) {
               tool: 'writeCodeToAppPy',
               state: 'running',
             })
-            const { url } = await writeToApp(userID, code, template)
+            const { url } = await writeToApp(userID, code, template, apiKey)
             console.log('WROTE', { url })
             data.append({
               tool: 'writeCodeToAppPy',
@@ -133,6 +136,7 @@ export async function POST(req: Request) {
 
             return {
               url,
+              template,
             }
           },
         }),

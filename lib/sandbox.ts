@@ -16,10 +16,10 @@ export async function getSandboxIDForUser(userID: string) {
 }
 
 // Code Interpreter sandbox
-export async function createOrConnectCodeInterpreter(userID: string, template: SandboxTemplate) {
+export async function createOrConnectCodeInterpreter(userID: string, template: SandboxTemplate, apiKey: string) {
   console.log('create or connect code interpreter sandbox', userID)
 
-  const allSandboxes = await CodeInterpreter.list()
+  const allSandboxes = await CodeInterpreter.list({ apiKey })
   console.log('all code interpreter sandboxes', allSandboxes)
 
   const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userID === userID && sbx.metadata?.template === template)
@@ -34,6 +34,7 @@ export async function createOrConnectCodeInterpreter(userID: string, template: S
           userID,
         },
         timeoutMs: sandboxTimeout,
+        apiKey,
       })
 
       return sbx
@@ -43,16 +44,16 @@ export async function createOrConnectCodeInterpreter(userID: string, template: S
     }
   }
 
-  const sandbox = await CodeInterpreter.connect(sandboxInfo.sandboxID)
+  const sandbox = await CodeInterpreter.connect(sandboxInfo.sandboxID, { apiKey })
   await sandbox.setTimeout(sandboxTimeout)
 
   return sandbox
 }
 
-export async function createOrConnectSandbox(userID: string, template: SandboxTemplate) {
+export async function createOrConnectSandbox(userID: string, template: SandboxTemplate, apiKey: string) {
   console.log('create or connect nextjs sandbox', userID)
 
-  const allSandboxes = await Sandbox.list()
+  const allSandboxes = await Sandbox.list({ apiKey })
   console.log('all nextjs sandboxes', allSandboxes)
 
   const sandboxInfo = allSandboxes.find(sbx => sbx.metadata?.userID === userID && sbx.metadata?.template === template)
@@ -67,6 +68,7 @@ export async function createOrConnectSandbox(userID: string, template: SandboxTe
           template,
         },
         timeoutMs: sandboxTimeout,
+        apiKey,
       })
       return sbx
     } catch (e) {
@@ -75,14 +77,14 @@ export async function createOrConnectSandbox(userID: string, template: SandboxTe
     }
   }
 
-  const sandbox = await Sandbox.connect(sandboxInfo.sandboxID)
+  const sandbox = await Sandbox.connect(sandboxInfo.sandboxID, { apiKey })
   await sandbox.setTimeout(sandboxTimeout)
 
   return sandbox
 }
 
-export async function runPython(userID: string, code: string, template: SandboxTemplate) {
-  const sbx = await createOrConnectCodeInterpreter(userID, template)
+export async function runPython(userID: string, code: string, template: SandboxTemplate, apiKey: string) {
+  const sbx = await createOrConnectCodeInterpreter(userID, template, apiKey)
   console.log('Running code', code)
 
   const result = await sbx.notebook.execCell(code)
@@ -94,8 +96,8 @@ export async function runPython(userID: string, code: string, template: SandboxT
   return result
 }
 
-export async function writeToPage(userID: string, code: string, template: SandboxTemplate) {
-  const sbx = await createOrConnectSandbox(userID, template)
+export async function writeToPage(userID: string, code: string, template: SandboxTemplate, apiKey: string) {
+  const sbx = await createOrConnectSandbox(userID, template, apiKey)
   console.log('Writing to /home/user/app/page.tsx', code)
 
   try {
@@ -110,8 +112,8 @@ export async function writeToPage(userID: string, code: string, template: Sandbo
   return { url }
 }
 
-export async function writeToApp(userID: string, code: string, template: SandboxTemplate) {
-  const sbx = await createOrConnectSandbox(userID, template)
+export async function writeToApp(userID: string, code: string, template: SandboxTemplate, apiKey: string) {
+  const sbx = await createOrConnectSandbox(userID, template, apiKey)
   console.log('Writing to /home/user/app.py', code)
 
   try {
@@ -125,5 +127,3 @@ export async function writeToApp(userID: string, code: string, template: Sandbox
   const url = `https://${sbx.getHost(8501)}`
   return { url }
 }
-
-
