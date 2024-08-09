@@ -47,22 +47,27 @@ export default function Home() {
   return (
     <main className="flex min-h-screen max-h-screen">
       <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} supabase={supabase} />
-      <NavBar session={session} showLogin={() => setAuthDialog(true)} signOut={logout} />
-        <div className="flex-1 flex space-x-8 w-full pt-16 pb-8 px-4">
-          <Chat
-            messages={messages}
-            input={input}
-            handleInputChange={handleInputChange}
-            handleSubmit={handleSubmitAuth}
-            selectedTemplate={selectedTemplate}
-            onSelectedTemplateChange={setSelectedTemplate}
-          />
-          <SideView
-            toolInvocation={latestToolInvocation}
-            data={data}
-            selectedTemplate={selectedTemplate}
-          />
-        </div>
+      <NavBar
+        session={session}
+        showLogin={() => setAuthDialog(true)}
+        signOut={logout}
+        selectedTemplate={selectedTemplate}
+        onSelectedTemplateChange={setSelectedTemplate}
+      />
+
+      <div className="flex-1 flex space-x-8 w-full pt-32 pb-8 px-4">
+        <Chat
+          messages={messages}
+          input={input}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmitAuth}
+        />
+        <SideView
+          toolInvocation={latestToolInvocation}
+          data={data}
+          selectedTemplate={selectedTemplate}
+        />
+      </div>
     </main>
   )
 }
