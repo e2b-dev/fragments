@@ -28,6 +28,9 @@ Create a `.env.local` file and set the following:
 # Get your API key here - https://e2b.dev/
 E2B_API_KEY="your-e2b-api-key"
 ANTHROPIC_API_KEY="your-anthropic-api-key"
+
+# Disable Supabase (for local dev)
+NEXT_PUBLIC_DISABLE_SUPABASE="true"
 ```
 
 ### 3. Run
