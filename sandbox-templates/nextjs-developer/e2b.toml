@@ -12,6 +12,6 @@
 template_id = "scwxnhs1apt5uj7na7db"
 dockerfile = "e2b.Dockerfile"
 template_name = "nextjs-developer"
-start_cmd = "cd /home/user && npx next"
+start_cmd = "/home/user/compile_page.sh"
 cpu_count = 4
 memory_mb = 4_096
