@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { Session } from '@supabase/supabase-js'
 import { Button } from './ui/button'
 import { LogOut } from 'lucide-react'
+import 'core-js/features/object/group-by.js'
 
 import {
   Select,
@@ -14,6 +15,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { SandboxTemplate } from '@/lib/types'
+import { LLMModel } from '@/lib/models'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
 
 export default function NavBar({
   session,
@@ -21,12 +25,22 @@ export default function NavBar({
   signOut,
   selectedTemplate,
   onSelectedTemplateChange,
+  models,
+  selectedLanguageModel,
+  onSelectedLanguageModelChange,
+  onLanguageModelAPIKeyChange,
+  languageModelAPIKey,
 }: {
-  session: Session | null
-  showLogin: () => void
-  signOut: () => void
+  session: Session | null,
+  showLogin: () => void,
+  signOut: () => void,
   selectedTemplate: SandboxTemplate,
-  onSelectedTemplateChange: (template: SandboxTemplate) => void
+  onSelectedTemplateChange: (template: SandboxTemplate) => void,
+  models: LLMModel[],
+  selectedLanguageModel: string,
+  onSelectedLanguageModelChange: (model: string) => void,
+  onLanguageModelAPIKeyChange: (key: string) => void,
+  languageModelAPIKey?: string,
 }) {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white">
@@ -62,20 +76,55 @@ export default function NavBar({
           )}
         </div>
       </div>
-      <div className="flex items-center border-t border-b border-gray-300 px-4 py-2">
-        <Select defaultValue={selectedTemplate} onValueChange={onSelectedTemplateChange}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select a template" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Template</SelectLabel>
-              <SelectItem value="code-interpreter-multilang">Python data analyst</SelectItem>
-              <SelectItem value="nextjs-developer">Next.js developer</SelectItem>
-              <SelectItem value="streamlit-developer">Streamlit developer</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="flex items-center border-t border-b border-gray-300 px-4 py-2 space-x-2">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="template">Template</Label>
+          <Select name="template" defaultValue={selectedTemplate} onValueChange={onSelectedTemplateChange}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Select a template" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Template</SelectLabel>
+                <SelectItem value="code-interpreter-multilang">Python data analyst</SelectItem>
+                <SelectItem value="nextjs-developer">Next.js developer</SelectItem>
+                <SelectItem value="streamlit-developer">Streamlit developer</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="languageModel">Model</Label>
+          <Select name="languageModel" defaultValue={selectedLanguageModel} onValueChange={onSelectedLanguageModelChange}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Language model" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(Object.groupBy(models, ({ provider }) => provider))
+                .map(([provider, models]) => (
+                  <SelectGroup key={provider}>
+                    <SelectLabel className="flex-">{provider}</SelectLabel>
+                    {models?.map((model) => (
+                      <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
+                    ))}
+                  </SelectGroup>
+                )
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="apiKey">API Key</Label>
+          <Input
+            name="apiKey"
+            type="text"
+            placeholder="Enter API Key"
+            required={true}
+            defaultValue={languageModelAPIKey}
+            onChange={(e) => onLanguageModelAPIKeyChange(e.target.value)}
+            className='text-sm'
+          />
+        </div>
       </div>
     </nav>
   )

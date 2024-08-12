@@ -2,26 +2,36 @@
 
 import { useState } from 'react'
 import { useChat } from 'ai/react'
+import { useLocalStorage } from 'usehooks-ts'
 
 import { Chat } from '@/components/chat'
 import { SideView } from '@/components/side-view'
 import { SandboxTemplate } from '@/lib/types'
 import NavBar from '@/components/navbar'
 
-import { supabase } from './../lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { AuthDialog } from '@/components/AuthDialog'
 import { useAuth } from '@/lib/auth'
 
+import { LLMModel } from '@/lib/models'
+import modelsList from '@/lib/models.json'
+
 export default function Home() {
   const [selectedTemplate, setSelectedTemplate] = useState(SandboxTemplate.CodeInterpreterMultilang)
+  const [selectedLanguageModel, setSelectedLanguageModel] = useLocalStorage('selectedLanguageModel', 'claude-3-5-sonnet-20240620')
+  const [languageModelAPIKey, setLanguageModelAPIKey] = useLocalStorage<string | undefined>('languageModelAPIKey', undefined)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const { session, apiKey } = useAuth(setAuthDialog)
+
+  const currentModel = modelsList.models.find((model: LLMModel) => model.id === selectedLanguageModel)
 
   const { messages, input, handleInputChange, handleSubmit, data } = useChat({
     api: '/api/chat',
     body: {
       userID: session?.user?.id,
       template: selectedTemplate,
+      model: currentModel,
+      modelAPIKey: languageModelAPIKey,
       apiKey,
     },
   })
@@ -53,6 +63,11 @@ export default function Home() {
         signOut={logout}
         selectedTemplate={selectedTemplate}
         onSelectedTemplateChange={setSelectedTemplate}
+        models={modelsList.models}
+        selectedLanguageModel={selectedLanguageModel}
+        onSelectedLanguageModelChange={setSelectedLanguageModel}
+        onLanguageModelAPIKeyChange={setLanguageModelAPIKey}
+        languageModelAPIKey={languageModelAPIKey}
       />
 
       <div className="flex-1 flex space-x-8 w-full pt-32 pb-8 px-4">

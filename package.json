@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^0.0.23",
+    "@ai-sdk/google": "^0.0.35",
+    "@ai-sdk/mistral": "^0.0.30",
+    "@ai-sdk/openai": "^0.0.44",
     "@e2b/code-interpreter": "^0.0.9-beta.3",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
@@ -20,13 +23,13 @@
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.45.1",
-    "@types/prismjs": "^1.26.4",
     "@xterm/addon-canvas": "^0.7.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "ai": "^3.2.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "core-js": "^3.38.0",
     "lucide-react": "^0.396.0",
     "next": "14.2.4",
     "prismjs": "^1.29.0",
@@ -37,16 +40,18 @@
     "react-simple-code-editor": "^0.14.1",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "usehooks-ts": "^3.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^22.2.0",
+    "@types/prismjs": "^1.26.4",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5.5.4"
   }
 }
