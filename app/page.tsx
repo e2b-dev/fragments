@@ -27,7 +27,7 @@ export default function Home() {
   const { session, apiKey } = useAuth(setAuthDialog)
 
   const filteredModels = modelsList.models.filter((model: LLMModel) => {
-    if (process.env.NEXT_PUBLIC_HOSTED_MODELS === 'true') {
+    if (process.env.NEXT_PUBLIC_USE_HOSTED_MODELS === 'true') {
       return model.hosted
     }
 
@@ -81,6 +81,7 @@ export default function Home() {
         models={filteredModels}
         languageModel={languageModel}
         onLanguageModelChange={handleLanguageModelChange}
+        apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
       />
 
       <div className="flex-1 flex space-x-8 w-full pt-36 pb-8 px-4">

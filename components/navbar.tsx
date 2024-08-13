@@ -36,6 +36,7 @@ export default function NavBar({
   models,
   languageModel,
   onLanguageModelChange,
+  apiKeyConfigurable,
 }: {
   session: Session | null,
   showLogin: () => void,
@@ -44,6 +45,7 @@ export default function NavBar({
   onSelectedTemplateChange: (template: SandboxTemplate) => void,
   models: LLMModel[],
   languageModel: LLMModelConfig,
+  apiKeyConfigurable: boolean,
   onLanguageModelChange: (config: LLMModelConfig) => void,
 }) {
   return (
@@ -119,7 +121,7 @@ export default function NavBar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {!process.env.NEXT_PUBLIC_HOSTED_MODELS && (
+            {apiKeyConfigurable && (
               <>
                 <div className="flex flex-col gap-1.5 px-2 py-2">
                   <Label htmlFor="apiKey">API Key</Label>
