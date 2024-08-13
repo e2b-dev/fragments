@@ -20,7 +20,7 @@ import { prompt as dataAnalystPrompt } from '@/lib/python-analyst-prompt'
 import { prompt as nextjsPrompt } from '@/lib/nextjs-prompt'
 import { prompt as streamlitPrompt } from '@/lib/streamlit-prompt'
 import { getModelClient } from '@/lib/models'
-import { LLMModel } from '@/lib/models'
+import { LLMModel, LLMModelConfig } from '@/lib/models'
 
 export interface ServerMessage {
   role: 'user' | 'assistant' | 'function';
@@ -28,19 +28,22 @@ export interface ServerMessage {
 }
 
 export async function POST(req: Request) {
-  const { messages, userID, template, model, modelAPIKey, apiKey }: { messages: CoreMessage[], userID: string, template: SandboxTemplate, model: LLMModel, modelAPIKey?: string, apiKey: string } = await req.json()
+  const { messages, userID, template, model, config, apiKey }: { messages: CoreMessage[], userID: string, template: SandboxTemplate, model: LLMModel, config: LLMModelConfig, apiKey: string } = await req.json()
   console.log('userID', userID)
   console.log('template', template)
   console.log('apiKey', apiKey)
   console.log('model', model)
-  console.log('modelAPIKey', modelAPIKey)
+  console.log('config', config)
+
+  const { model: modelNameString, apiKey: modelApiKey, ...modelConfig } = config
+  const modelClient = getModelClient(model, config)
 
   let data: StreamData = new StreamData()
   let result: StreamTextResult<any>
 
   if (template === SandboxTemplate.CodeInterpreterMultilang) {
     result = await streamText({
-      model: getModelClient(model, modelAPIKey) as LanguageModelV1,
+      model: modelClient as LanguageModelV1,
       tools: {
         runPython: tool({
           description: 'Runs Python code.',
@@ -79,10 +82,11 @@ export async function POST(req: Request) {
       toolChoice: 'auto',
       system: dataAnalystPrompt,
       messages,
+      ...modelConfig,
     })
   } else if (template === SandboxTemplate.NextJS) {
     result = await streamText({
-      model: getModelClient(model, modelAPIKey) as LanguageModelV1,
+      model: modelClient as LanguageModelV1,
       tools: {
         writeCodeToPageTsx: tool({
           description: 'Writes TSX code to the page.tsx file. You can use tailwind classes.',
@@ -116,10 +120,11 @@ export async function POST(req: Request) {
       toolChoice: 'auto',
       system: nextjsPrompt,
       messages,
+      ...modelConfig,
     })
   } else if (template === SandboxTemplate.Streamlit) {
     result = await streamText({
-      model: getModelClient(model, modelAPIKey) as LanguageModelV1,
+      model: modelClient as LanguageModelV1,
       tools: {
         writeCodeToAppPy: tool({
           description: 'Writes Streamlit code to the app.py file.',
@@ -147,6 +152,7 @@ export async function POST(req: Request) {
       },
       system: streamlitPrompt,
       messages,
+      ...modelConfig,
     })
   } else {
     throw new Error('Invalid sandbox template')

@@ -56,7 +56,7 @@ export function Chat({
 
       <div className="flex flex-col gap-4">
         <form onSubmit={handleSubmit}>
-          <Input className="ring-0" placeholder="Ask Claude..." value={input} onChange={handleInputChange}/>
+          <Input className="ring-0" placeholder="Describe your app..." value={input} onChange={handleInputChange}/>
         </form>
       </div>
     </div>

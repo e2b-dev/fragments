@@ -13,17 +13,28 @@ import { supabase } from '@/lib/supabase'
 import { AuthDialog } from '@/components/AuthDialog'
 import { useAuth } from '@/lib/auth'
 
-import { LLMModel } from '@/lib/models'
+import { LLMModel, LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 
 export default function Home() {
   const [selectedTemplate, setSelectedTemplate] = useState(SandboxTemplate.CodeInterpreterMultilang)
-  const [selectedLanguageModel, setSelectedLanguageModel] = useLocalStorage('selectedLanguageModel', 'claude-3-5-sonnet-20240620')
-  const [languageModelAPIKey, setLanguageModelAPIKey] = useLocalStorage<string | undefined>('languageModelAPIKey', undefined)
+  // reduce this to only fields needed
+  const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
+    model: 'claude-3-5-sonnet-20240620'
+  })
+
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const { session, apiKey } = useAuth(setAuthDialog)
 
-  const currentModel = modelsList.models.find((model: LLMModel) => model.id === selectedLanguageModel)
+  const filteredModels = modelsList.models.filter((model: LLMModel) => {
+    if (process.env.NEXT_PUBLIC_HOSTED_MODELS === 'true') {
+      return model.hosted
+    }
+
+    return true
+  })
+
+  const currentModel = filteredModels.find((model: LLMModel) => model.id === languageModel.model)
 
   const { messages, input, handleInputChange, handleSubmit, data } = useChat({
     api: '/api/chat',
@@ -31,7 +42,7 @@ export default function Home() {
       userID: session?.user?.id,
       template: selectedTemplate,
       model: currentModel,
-      modelAPIKey: languageModelAPIKey,
+      config: languageModel,
       apiKey,
     },
   })
@@ -54,6 +65,10 @@ export default function Home() {
     supabase.auth.signOut()
   }
 
+  function handleLanguageModelChange (e: LLMModelConfig) {
+    setLanguageModel({ ...languageModel, ...e })
+  }
+
   return (
     <main className="flex min-h-screen max-h-screen">
       <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} supabase={supabase} />
@@ -63,14 +78,12 @@ export default function Home() {
         signOut={logout}
         selectedTemplate={selectedTemplate}
         onSelectedTemplateChange={setSelectedTemplate}
-        models={modelsList.models}
-        selectedLanguageModel={selectedLanguageModel}
-        onSelectedLanguageModelChange={setSelectedLanguageModel}
-        onLanguageModelAPIKeyChange={setLanguageModelAPIKey}
-        languageModelAPIKey={languageModelAPIKey}
+        models={filteredModels}
+        languageModel={languageModel}
+        onLanguageModelChange={handleLanguageModelChange}
       />
 
-      <div className="flex-1 flex space-x-8 w-full pt-32 pb-8 px-4">
+      <div className="flex-1 flex space-x-8 w-full pt-36 pb-8 px-4">
         <Chat
           messages={messages}
           input={input}

@@ -9,19 +9,31 @@ export type LLMModel = {
   name: string
   provider: string
   providerId: string
+  hosted: boolean
 }
 
-export function getModelClient(model: LLMModel, modelAPIKey?: string) {
-  const { providerId, id: modelNameString } = model
-  const config = { apiKey: modelAPIKey }
+export type LLMModelConfig = {
+  model?: string
+  apiKey?: string
+  temperature?: number
+  topP?: number
+  topK?: number
+  frequencyPenalty?: number
+  presencePenalty?: number
+  maxTokens?: number
+}
+
+export function getModelClient(model: LLMModel, config: LLMModelConfig) {
+  const { id: modelNameString, providerId } = model
+  const { apiKey } = config
 
   const providerConfigs = {
-    anthropic: () => createAnthropic(config)(modelNameString),
-    openai: () => createOpenAI(config)(modelNameString),
-    google: () => createGoogleGenerativeAI(config)(modelNameString),
-    mistral: () => createMistral(config)(modelNameString),
-    groq: () => createOpenAI({ ...config, baseURL: 'https://api.groq.com/openai/v1' })(modelNameString),
-    togetherai: () => createOpenAI({ ...config, baseURL: 'https://api.together.xyz/v1' })(modelNameString),
+    anthropic: () => createAnthropic({ apiKey })(modelNameString),
+    openai: () => createOpenAI({ apiKey })(modelNameString),
+    google: () => createGoogleGenerativeAI({ apiKey })(modelNameString),
+    mistral: () => createMistral({ apiKey })(modelNameString),
+    groq: () => createOpenAI({ apiKey, baseURL: 'https://api.groq.com/openai/v1' })(modelNameString),
+    togetherai: () => createOpenAI({ apiKey, baseURL: 'https://api.together.xyz/v1' })(modelNameString),
     ollama: () => createOllama()(modelNameString),
   }
 

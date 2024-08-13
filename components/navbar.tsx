@@ -1,9 +1,17 @@
+import 'core-js/features/object/group-by.js'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Session } from '@supabase/supabase-js'
-import { Button } from './ui/button'
-import { LogOut } from 'lucide-react'
-import 'core-js/features/object/group-by.js'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Separator } from '@/components/ui/separator'
+import { GithubIcon, LogOut, Settings } from 'lucide-react'
 
 import {
   Select,
@@ -15,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { SandboxTemplate } from '@/lib/types'
-import { LLMModel } from '@/lib/models'
+import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 
@@ -26,10 +34,8 @@ export default function NavBar({
   selectedTemplate,
   onSelectedTemplateChange,
   models,
-  selectedLanguageModel,
-  onSelectedLanguageModelChange,
-  onLanguageModelAPIKeyChange,
-  languageModelAPIKey,
+  languageModel,
+  onLanguageModelChange,
 }: {
   session: Session | null,
   showLogin: () => void,
@@ -37,31 +43,24 @@ export default function NavBar({
   selectedTemplate: SandboxTemplate,
   onSelectedTemplateChange: (template: SandboxTemplate) => void,
   models: LLMModel[],
-  selectedLanguageModel: string,
-  onSelectedLanguageModelChange: (model: string) => void,
-  onLanguageModelAPIKeyChange: (key: string) => void,
-  languageModelAPIKey?: string,
+  languageModel: LLMModelConfig,
+  onLanguageModelChange: (config: LLMModelConfig) => void,
 }) {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white">
-      <div className="grid grid-cols-3 px-4 py-2">
-        <div className="flex items-center">
+      <div className="flex px-4 py-2">
+        <div className="flex flex-1 items-center">
           <Link href="/" className="flex items-center gap-2" target="_blank">
             <Image src="/logo.svg" alt="logo" width={30} height={30} />
             <h1 className="whitespace-pre text-[#3d3929]">AI Artifacts by </h1>
           </Link>
           <Link href="https://e2b.dev" className="underline decoration-[#ff8800] decoration-2 text-[#ff8800]" target="_blank">E2B</Link>
         </div>
-
-        <div className="flex justify-center">
-          <Link href="https://github.com/e2b-dev/ai-artifacts" className="rounded-lg px-4 py-2 text-[#3d3929] text-sm hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2" target="_blank">
-            <span>⭐ Give AI Artifacts a star on GitHub</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-github">
-              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-            </svg>
-          </Link>
-        </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end space-x-4">
+          <Button variant="outline" onClick={() => window.open('https://github.com/e2b-dev/ai-artifacts', '_blank')}>
+            <GithubIcon className="mr-2 h-4 w-4" /> Star us on GitHub
+          </Button>
+          <Separator orientation="vertical" />
           {session ? (
             <div className="flex items-center">
               <span className="text-sm text-[#3d3929] font-medium">{session.user.email}</span>
@@ -76,7 +75,7 @@ export default function NavBar({
           )}
         </div>
       </div>
-      <div className="flex items-center border-t border-b border-gray-300 px-4 py-2 space-x-2">
+      <div className="flex items-end border-t border-b border-gray-300 px-4 py-2 space-x-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="template">Template</Label>
           <Select name="template" defaultValue={selectedTemplate} onValueChange={onSelectedTemplateChange}>
@@ -95,7 +94,7 @@ export default function NavBar({
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="languageModel">Model</Label>
-          <Select name="languageModel" defaultValue={selectedLanguageModel} onValueChange={onSelectedLanguageModelChange}>
+          <Select name="languageModel" defaultValue={languageModel.model} onValueChange={(e) => onLanguageModelChange({ model: e })}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Language model" />
             </SelectTrigger>
@@ -113,18 +112,109 @@ export default function NavBar({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="apiKey">API Key</Label>
-          <Input
-            name="apiKey"
-            type="text"
-            placeholder="Enter API Key"
-            required={true}
-            defaultValue={languageModelAPIKey}
-            onChange={(e) => onLanguageModelAPIKeyChange(e.target.value)}
-            className='text-sm'
-          />
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {!process.env.NEXT_PUBLIC_HOSTED_MODELS && (
+              <>
+                <div className="flex flex-col gap-1.5 px-2 py-2">
+                  <Label htmlFor="apiKey">API Key</Label>
+                  <Input
+                    name="apiKey"
+                    type="text"
+                    placeholder="Auto"
+                    required={true}
+                    defaultValue={languageModel.apiKey}
+                    onChange={(e) => onLanguageModelChange({ apiKey: e.target.value })}
+                    className='text-sm'
+                  />
+                </div>
+                <DropdownMenuSeparator />
+              </>
+            )}
+            <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
+              <span className="text-sm flex-1">Output tokens</span>
+              <Input
+                type="number"
+                defaultValue={languageModel.maxTokens}
+                min={50}
+                max={10000}
+                step={1}
+                className='h-6 rounded-sm w-[84px] text-xs text-center tabular-nums'
+                placeholder='Auto'
+                onChange={(e) => onLanguageModelChange({ maxTokens: parseFloat(e.target.value) || undefined })}
+              />
+            </div>
+            <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
+              <span className="text-sm flex-1">Temperature</span>
+              <Input
+                type="number"
+                defaultValue={languageModel.temperature}
+                min={0}
+                max={5}
+                step={0.01}
+                className='h-6 rounded-sm w-[84px] text-xs text-center tabular-nums'
+                placeholder='Auto'
+                onChange={(e) => onLanguageModelChange({ temperature: parseFloat(e.target.value) || undefined })}
+              />
+            </div>
+            <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
+              <span className="text-sm flex-1">Top P</span>
+              <Input type="number"
+                defaultValue={languageModel.topP}
+                min={0}
+                max={1}
+                step={0.01}
+                className='h-6 rounded-sm w-[84px] text-xs text-center tabular-nums'
+                placeholder='Auto'
+                onChange={(e) => onLanguageModelChange({ topP: parseFloat(e.target.value) || undefined })}
+              />
+            </div>
+            <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
+              <span className="text-sm flex-1">Top K</span>
+              <Input
+                type="number"
+                defaultValue={languageModel.topK}
+                min={0}
+                max={500}
+                step={1}
+                className='h-6 rounded-sm w-[84px] text-xs text-center tabular-nums'
+                placeholder='Auto'
+                onChange={(e) => onLanguageModelChange({ topK: parseFloat(e.target.value) || undefined })}
+              />
+            </div>
+            <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
+              <span className="text-sm flex-1">Frequence penalty</span>
+              <Input
+                type="number"
+                defaultValue={languageModel.frequencyPenalty}
+                min={0}
+                max={2}
+                step={0.01}
+                className='h-6 rounded-sm w-[84px] text-xs text-center tabular-nums'
+                placeholder='Auto'
+                onChange={(e) => onLanguageModelChange({ frequencyPenalty: parseFloat(e.target.value) || undefined })}
+              />
+            </div>
+            <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
+              <span className="text-sm flex-1">Presence penalty</span>
+              <Input
+                type="number"
+                defaultValue={languageModel.presencePenalty}
+                min={0}
+                max={2}
+                step={0.01}
+                className='h-6 rounded-sm w-[84px] text-xs text-center tabular-nums'
+                placeholder='Auto'
+                onChange={(e) => onLanguageModelChange({ presencePenalty: parseFloat(e.target.value) || undefined })}
+              />
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </nav>
   )
