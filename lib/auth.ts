@@ -12,6 +12,9 @@ interface UserTeam {
 }
 
 export async function getUserAPIKey (session: Session) {
+  // If Supabase is not initialized will use E2B_API_KEY env var
+  if (!supabase) return undefined
+
   const { data: userTeams } = await supabase
     .from('users_teams')
     .select('teams (id, name, is_default, tier, email, team_api_keys (api_key))')
@@ -33,6 +36,11 @@ export function useAuth (setAuthDialog: (value: boolean) => void) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined)
 
   useEffect(() => {
+    if (!supabase) {
+      console.warn('Supabase is not initialized')
+      return setSession({ user: { email: 'demo@e2b.dev' } } as Session)
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
     })

@@ -69,7 +69,7 @@ export default function Home() {
   }
 
   function logout () {
-    supabase.auth.signOut()
+    supabase ? supabase.auth.signOut() : console.warn('Supabase is not initialized')
   }
 
   function handleLanguageModelChange (e: LLMModelConfig) {
@@ -78,7 +78,9 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen max-h-screen">
-      <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} supabase={supabase} />
+      {
+        supabase && <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} supabase={supabase} />
+      }
       <NavBar
         session={session}
         showLogin={() => setAuthDialog(true)}
