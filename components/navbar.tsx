@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Separator } from '@/components/ui/separator'
-import { GithubIcon, LogOut, Settings } from 'lucide-react'
+import { GithubIcon, LogOut, Settings2 } from 'lucide-react'
 
 import {
   Select,
@@ -77,16 +77,16 @@ export default function NavBar({
           )}
         </div>
       </div>
-      <div className="flex items-end border-t border-b border-gray-300 px-4 py-2 space-x-2">
+      <div className="flex items-end border-b border-gray-300 px-4 py-2 space-x-2">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="template">Template</Label>
+          <Label htmlFor="template">Persona</Label>
           <Select name="template" defaultValue={selectedTemplate} onValueChange={onSelectedTemplateChange}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Select a template" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Template</SelectLabel>
+                <SelectLabel>Persona</SelectLabel>
                 <SelectItem value="code-interpreter-multilang">Python data analyst</SelectItem>
                 <SelectItem value="nextjs-developer">Next.js developer</SelectItem>
                 <SelectItem value="streamlit-developer">Streamlit developer</SelectItem>
@@ -104,9 +104,14 @@ export default function NavBar({
               {Object.entries(Object.groupBy(models, ({ provider }) => provider))
                 .map(([provider, models]) => (
                   <SelectGroup key={provider}>
-                    <SelectLabel className="flex-">{provider}</SelectLabel>
+                    <SelectLabel>{provider}</SelectLabel>
                     {models?.map((model) => (
-                      <SelectItem key={model.id} value={model.id}>{model.name}</SelectItem>
+                      <SelectItem key={model.id} value={model.id}>
+                        <div className="flex items-center space-x-2">
+                          <Image className="flex" src={`/thirdparty/logos/${model.providerId}.svg`} alt={model.provider} width={16} height={16} />
+                          <span>{model.name}</span>
+                        </div>
+                      </SelectItem>
                     ))}
                   </SelectGroup>
                 )
@@ -117,7 +122,7 @@ export default function NavBar({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon">
-              <Settings className="h-4 w-4" />
+              <Settings2 className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
