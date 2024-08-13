@@ -43,6 +43,12 @@
       "name": "Mistral Large"
     },
     {
+      "id": "open-mistral-nemo",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Mistral Nemo"
+    },
+    {
       "id": "llama-3.1-405b-reasoning",
       "provider": "Groq",
       "providerId": "groq",
@@ -65,6 +71,24 @@
       "provider": "Together AI",
       "providerId": "togetherai",
       "name": "Llama 3.1 70B"
+    },
+    {
+      "id": "llama3.1",
+      "provider": "Ollama",
+      "providerId": "ollama",
+      "name": "Llama 3.1"
+    },
+    {
+      "id": "mistral-nemo",
+      "provider": "Ollama",
+      "providerId": "ollama",
+      "name": "Mistral Nemo"
+    },
+    {
+      "id": "mistral-large",
+      "provider": "Ollama",
+      "providerId": "ollama",
+      "name": "Mistral Large"
     }
   ]
 }
