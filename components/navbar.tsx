@@ -97,7 +97,7 @@ export default function NavBar({
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="languageModel">Model</Label>
           <Select name="languageModel" defaultValue={languageModel.model} onValueChange={(e) => onLanguageModelChange({ model: e })}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[200px] whitespace-nowrap">
               <SelectValue placeholder="Language model" />
             </SelectTrigger>
             <SelectContent>
