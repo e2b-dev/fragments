@@ -1,0 +1,109 @@
+{
+  "models": [
+    {
+      "id": "gpt-4o",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-4o",
+      "hosted": true
+    },
+    {
+      "id": "gpt-4o-mini",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-4o Mini",
+      "hosted": true
+    },
+    {
+      "id": "gpt-4-turbo",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-4 Turbo",
+      "hosted": true
+    },
+    {
+      "id": "claude-3-5-sonnet-20240620",
+      "provider": "Anthropic",
+      "providerId": "anthropic",
+      "name": "Claude 3.5 Sonnet",
+      "hosted": true
+    },
+    {
+      "id": "models/gemini-1.5-pro-latest",
+      "provider": "Google AI",
+      "providerId": "google",
+      "name": "Gemini Pro",
+      "hosted": true
+    },
+    {
+      "id": "models/gemini-1.5-flash-latest",
+      "provider": "Google AI",
+      "providerId": "google",
+      "name": "Gemini Flash",
+      "hosted": true
+    },
+    {
+      "id": "mistral-large-latest",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Mistral Large",
+      "hosted": true
+    },
+    {
+      "id": "open-mistral-nemo",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Mistral Nemo",
+      "hosted": true
+    },
+    {
+      "id": "llama-3.1-405b-reasoning",
+      "provider": "Groq",
+      "providerId": "groq",
+      "name": "Llama 3.1 405B (Preview)",
+      "hosted": true
+    },
+    {
+      "id": "llama-3.1-70b-versatile",
+      "provider": "Groq",
+      "providerId": "groq",
+      "name": "Llama 3.1 70B (Preview)",
+      "hosted": true
+    },
+    {
+      "id": "llama3-groq-70b-8192-tool-use-preview",
+      "provider": "Groq",
+      "providerId": "groq",
+      "name": "Llama 3 Groq 70B Tool Use (Preview)",
+      "hosted": true
+    },
+    {
+      "id": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+      "provider": "Together AI",
+      "providerId": "togetherai",
+      "name": "Llama 3.1 70B",
+      "hosted": true
+    },
+    {
+      "id": "llama3.1",
+      "provider": "Ollama",
+      "providerId": "ollama",
+      "name": "Llama 3.1",
+      "hosted": false
+    },
+    {
+      "id": "mistral-nemo",
+      "provider": "Ollama",
+      "providerId": "ollama",
+      "name": "Mistral Nemo",
+      "hosted": false
+    },
+    {
+      "id": "mistral-large",
+      "provider": "Ollama",
+      "providerId": "ollama",
+      "name": "Mistral Large",
+      "hosted": false
+    }
+  ]
+}
