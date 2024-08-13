@@ -17,6 +17,7 @@ import { LLMModel, LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 
 export default function Home() {
+  const [chatInput, setChatInput] = useLocalStorage('chat', '')
   const [selectedTemplate, setSelectedTemplate] = useState(SandboxTemplate.CodeInterpreterMultilang)
   // reduce this to only fields needed
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
@@ -36,7 +37,7 @@ export default function Home() {
 
   const currentModel = filteredModels.find((model: LLMModel) => model.id === languageModel.model)
 
-  const { messages, input, handleInputChange, handleSubmit, data } = useChat({
+  const { messages, handleInputChange, handleSubmit, data } = useChat({
     api: '/api/chat',
     body: {
       userID: session?.user?.id,
@@ -59,6 +60,12 @@ export default function Home() {
     }
 
     handleSubmit(e)
+    setChatInput('')
+  }
+
+  function handleSaveInputChange (e: React.ChangeEvent<HTMLInputElement>) {
+    handleInputChange(e)
+    setChatInput(e.target.value)
   }
 
   function logout () {
@@ -87,8 +94,8 @@ export default function Home() {
       <div className="flex-1 flex space-x-8 w-full pt-36 pb-8 px-4">
         <Chat
           messages={messages}
-          input={input}
-          handleInputChange={handleInputChange}
+          input={chatInput}
+          handleInputChange={handleSaveInputChange}
           handleSubmit={handleSubmitAuth}
         />
         <SideView
