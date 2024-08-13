@@ -32,8 +32,8 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
     openai: () => createOpenAI({ apiKey })(modelNameString),
     google: () => createGoogleGenerativeAI({ apiKey })(modelNameString),
     mistral: () => createMistral({ apiKey })(modelNameString),
-    groq: () => createOpenAI({ apiKey, baseURL: 'https://api.groq.com/openai/v1' })(modelNameString),
-    togetherai: () => createOpenAI({ apiKey, baseURL: 'https://api.together.xyz/v1' })(modelNameString),
+    groq: () => createOpenAI({ apiKey: apiKey || process.env.GROQ_API_KEY, baseURL: 'https://api.groq.com/openai/v1' })(modelNameString),
+    togetherai: () => createOpenAI({ apiKey: apiKey || process.env.TOGETHER_AI_API_KEY, baseURL: 'https://api.together.xyz/v1' })(modelNameString),
     ollama: () => createOllama()(modelNameString),
   }
 
