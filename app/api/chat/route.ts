@@ -27,6 +27,8 @@ export interface ServerMessage {
   content: string;
 }
 
+export const maxDuration = 60
+
 export async function POST(req: Request) {
   const { messages, userID, template, model, config, apiKey }: { messages: CoreMessage[], userID: string, template: SandboxTemplate, model: LLMModel, config: LLMModelConfig, apiKey: string } = await req.json()
   console.log('userID', userID)
@@ -79,7 +81,7 @@ export async function POST(req: Request) {
           },
         }),
       },
-      toolChoice: 'auto',
+      toolChoice: 'required',
       system: dataAnalystPrompt,
       messages,
       ...modelConfig,
@@ -117,7 +119,7 @@ export async function POST(req: Request) {
           },
         }),
       },
-      toolChoice: 'auto',
+      toolChoice: 'required',
       system: nextjsPrompt,
       messages,
       ...modelConfig,
@@ -150,6 +152,7 @@ export async function POST(req: Request) {
           },
         }),
       },
+      toolChoice: 'required',
       system: streamlitPrompt,
       messages,
       ...modelConfig,
