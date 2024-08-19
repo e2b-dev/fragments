@@ -7,19 +7,19 @@ import { SandboxTemplate } from '@/lib/types'
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
 export function Chat({
-  messages,
+  // messages,
   input,
   handleInputChange,
   handleSubmit,
 }: {
-  messages: Message[],
+  // messages: Message[],
   input: string,
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
 }) {
   return (
     <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto justify-between">
-      <div className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
+      {/* <div className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
         {messages.map(message => (
           <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white' : 'bg-white/40'} rounded-lg border-b border-[#FFE7CC] font-serif`} key={message.id}>
             {message.content}
@@ -52,7 +52,7 @@ export function Chat({
             }
           </div>
         ))}
-      </div>
+      </div> */}
 
       <div className="flex flex-col gap-4">
         <form onSubmit={handleSubmit}>

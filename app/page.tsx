@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useChat } from 'ai/react'
+import { experimental_useObject as useObject } from 'ai/react';
 import { useLocalStorage } from 'usehooks-ts'
+import { outputSchema as schema } from '@/lib/schema'
 
 import { Chat } from '@/components/chat'
 import { SideView } from '@/components/side-view'
@@ -37,34 +38,45 @@ export default function Home() {
 
   const currentModel = filteredModels.find((model: LLMModel) => model.id === languageModel.model)
 
-  const { messages, handleInputChange, handleSubmit, data } = useChat({
+  const { object, submit, isLoading, stop, error } = useObject({
     api: '/api/chat',
-    body: {
-      userID: session?.user?.id,
-      template: selectedTemplate,
-      model: currentModel,
-      config: languageModel,
-      apiKey,
-    },
+    schema,
+    onFinish: async ({ object: config, error }) => {
+      if (!error) {
+        // send it to /api/sandbox
+        const response = await fetch('/api/sandbox', {
+          method: 'POST',
+          body: JSON.stringify({
+            config,
+            userID: session?.user?.id,
+            apiKey
+          })
+        })
+
+        console.log('response', await response.json())
+      }
+    }
   })
-  console.log({ messages, data })
-  // For simplicity, we care only about the latest message that has a tool invocation
-  const latestMessageWithToolInvocation = [...messages].reverse().find(message => message.toolInvocations && message.toolInvocations.length > 0)
-  // Get the latest tool invocation
-  const latestToolInvocation = latestMessageWithToolInvocation?.toolInvocations?.[0]
 
   function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
     if (!session) {
-      e.preventDefault()
       return setAuthDialog(true)
     }
 
-    handleSubmit(e)
+    submit({
+      userID: session?.user?.id,
+      prompt: chatInput,
+      template: selectedTemplate,
+      model: currentModel,
+      config: languageModel,
+    })
+
     setChatInput('')
   }
 
   function handleSaveInputChange (e: React.ChangeEvent<HTMLInputElement>) {
-    handleInputChange(e)
     setChatInput(e.target.value)
   }
 
@@ -94,17 +106,18 @@ export default function Home() {
       />
 
       <div className="flex-1 flex space-x-8 w-full pt-36 pb-8 px-4">
+        {object && <pre>{JSON.stringify(object, null, 2)}</pre>}
         <Chat
-          messages={messages}
+          // messages={messages}
           input={chatInput}
           handleInputChange={handleSaveInputChange}
           handleSubmit={handleSubmitAuth}
         />
-        <SideView
+        {/* <SideView
           toolInvocation={latestToolInvocation}
           data={data}
           selectedTemplate={selectedTemplate}
-        />
+        /> */}
       </div>
     </main>
   )
