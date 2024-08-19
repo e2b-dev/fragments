@@ -18,7 +18,7 @@ import modelsList from '@/lib/models.json'
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
-  const [selectedTemplate, setSelectedTemplate] = useState(SandboxTemplate.CodeInterpreterMultilang)
+  const [selectedTemplate, setSelectedTemplate] = useLocalStorage('template', SandboxTemplate.CodeInterpreterMultilang)
   // reduce this to only fields needed
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
     model: 'claude-3-5-sonnet-20240620'
