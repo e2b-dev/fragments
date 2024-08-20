@@ -16,10 +16,11 @@ import { useAuth } from '@/lib/auth'
 
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
+import { templates, TemplateId } from '@/lib/templates';
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
-  const [selectedTemplate, setSelectedTemplate] = useState(SandboxTemplate.CodeInterpreterMultilang)
+  const [selectedTemplate, setSelectedTemplate] = useState<'auto' | TemplateId>('auto')
   // reduce this to only fields needed
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
     model: 'claude-3-5-sonnet-20240620'
@@ -37,6 +38,7 @@ export default function Home() {
   })
 
   const currentModel = filteredModels.find((model: LLMModel) => model.id === languageModel.model)
+  const currentTemplate = selectedTemplate === 'auto' ? templates : { [selectedTemplate]: templates[selectedTemplate] }
 
   const { object, submit, isLoading, stop, error } = useObject({
     api: '/api/chat',
@@ -68,7 +70,7 @@ export default function Home() {
     submit({
       userID: session?.user?.id,
       prompt: chatInput,
-      template: selectedTemplate,
+      template: currentTemplate,
       model: currentModel,
       config: languageModel,
     })
@@ -97,6 +99,7 @@ export default function Home() {
         session={session}
         showLogin={() => setAuthDialog(true)}
         signOut={logout}
+        templates={templates}
         selectedTemplate={selectedTemplate}
         onSelectedTemplateChange={setSelectedTemplate}
         models={filteredModels}

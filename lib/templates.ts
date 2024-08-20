@@ -1,17 +1,20 @@
 export const templates = {
   "code-interpreter-multilang": {
+    name: "Code interpreter",
     lib: ["python", "jupyter", "numpy", "pandas", "matplotlib", "seaborn", "plotly"],
     file: "script.py",
     instructions: `Runs code as a Jupyter notebook cell. Single-file only.`,
     port: null
   },
   "nextjs-developer": {
+    name: "Next.js developer",
     lib: ["nextjs@14.2.5", "tailwindcss", "autoprefixer", "postcss", "recharts"],
     file: "page.tsx",
     instructions: `A Next.js 13+ app, that reloads automatically. Use the app router. Mark client-only components by adding 'use client' expression at the top.`,
     port: 3000
   },
   "streamlit-developer": {
+    name: "Streamlit developer",
     lib: [
       "streamlit",
       "pandas",
@@ -27,9 +30,10 @@ export const templates = {
   }
 }
 
+export type Templates = typeof templates
 export type TemplateId = keyof typeof templates
 export type TemplateConfig = typeof templates[TemplateId]
 
-export function templatesToPrompt(templates: Record<TemplateId, TemplateConfig>) {
+export function templatesToPrompt(templates: Templates) {
   return `${Object.entries(templates).map(([id, t]) => `${id}: "${t.instructions}". File: ${t.file || 'none'}. Dependencies installed: ${t.lib.join(', ')}. Port: ${t.port || 'none'}.`).join('\n')}`
 }

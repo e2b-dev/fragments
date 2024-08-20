@@ -8,7 +8,6 @@ export const maxDuration = 60
 
 export async function POST(req: Request) {
   const { config, userID, apiKey }: { config: z.infer<typeof schema>, userID: string, apiKey: string } = await req.json()
-
   console.log('config', config)
   console.log('userID', userID)
   console.log('apiKey', apiKey)
