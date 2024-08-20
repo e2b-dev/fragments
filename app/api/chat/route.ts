@@ -6,7 +6,7 @@ import {
 import { Templates, templatesToPrompt } from '@/lib/templates'
 import { getModelClient } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
-import { outputSchema as schema } from '@/lib/schema'
+import { artifactSchema as schema } from '@/lib/schema'
 
 export const maxDuration = 60
 

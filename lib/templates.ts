@@ -1,16 +1,16 @@
 export const templates = {
   "code-interpreter-multilang": {
-    name: "Code interpreter",
+    name: "Python data analyst",
     lib: ["python", "jupyter", "numpy", "pandas", "matplotlib", "seaborn", "plotly"],
     file: "script.py",
-    instructions: `Runs code as a Jupyter notebook cell. Single-file only.`,
+    instructions: `Runs code as a Jupyter notebook cell. Single-file only. Strong data analysis angle. Can use complex visualisation to explain results.`,
     port: null
   },
   "nextjs-developer": {
     name: "Next.js developer",
     lib: ["nextjs@14.2.5", "tailwindcss", "autoprefixer", "postcss", "recharts"],
     file: "page.tsx",
-    instructions: `A Next.js 13+ app, that reloads automatically. Use the app router. Mark client-only components by adding 'use client' expression at the top.`,
+    instructions: `A Next.js 13+ app, that reloads automatically. Use the app router. Mark client components by adding 'use client' expression at the top of the file.`,
     port: 3000
   },
   "streamlit-developer": {

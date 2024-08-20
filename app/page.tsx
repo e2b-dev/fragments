@@ -3,11 +3,10 @@
 import { useState } from 'react'
 import { experimental_useObject as useObject } from 'ai/react';
 import { useLocalStorage } from 'usehooks-ts'
-import { outputSchema as schema } from '@/lib/schema'
+import { ArtifactSchema, artifactSchema as schema } from '@/lib/schema'
 
 import { Chat } from '@/components/chat'
 import { SideView } from '@/components/side-view'
-import { SandboxTemplate } from '@/lib/types'
 import NavBar from '@/components/navbar'
 
 import { supabase } from '@/lib/supabase'
@@ -18,6 +17,15 @@ import { LLMModel, LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 import { templates, TemplateId } from '@/lib/templates';
 
+import { ExecutionResult } from './api/sandbox/route';
+
+export type Message = {
+  // id: string
+  role: 'user' | 'assistant'
+  content: string
+  artifact?: ArtifactSchema
+}
+
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
   const [selectedTemplate, setSelectedTemplate] = useState<'auto' | TemplateId>('auto')
@@ -25,6 +33,9 @@ export default function Home() {
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
     model: 'claude-3-5-sonnet-20240620'
   })
+
+  const [result, setResult] = useState<ExecutionResult>()
+  const [messages, setMessages] = useState<Message[]>([])
 
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const { session, apiKey } = useAuth(setAuthDialog)
@@ -40,22 +51,30 @@ export default function Home() {
   const currentModel = filteredModels.find((model: LLMModel) => model.id === languageModel.model)
   const currentTemplate = selectedTemplate === 'auto' ? templates : { [selectedTemplate]: templates[selectedTemplate] }
 
-  const { object, submit, isLoading, stop, error } = useObject({
+  const { object: artifact, submit, isLoading, stop, error } = useObject({
     api: '/api/chat',
     schema,
-    onFinish: async ({ object: config, error }) => {
+    onFinish: async ({ object: artifact, error }) => {
       if (!error) {
         // send it to /api/sandbox
         const response = await fetch('/api/sandbox', {
           method: 'POST',
           body: JSON.stringify({
-            config,
+            artifact,
             userID: session?.user?.id,
             apiKey
           })
         })
 
-        console.log('response', await response.json())
+        addMessage({
+          role: 'assistant',
+          content: artifact?.commentary || 'Generating...',
+          artifact
+        })
+
+        const result = await response.json()
+        console.log('result', result)
+        setResult(result)
       }
     }
   })
@@ -75,7 +94,16 @@ export default function Home() {
       config: languageModel,
     })
 
+    addMessage({
+      role: 'user',
+      content: chatInput
+    })
+
     setChatInput('')
+  }
+
+  function addMessage (message: Message) {
+    setMessages(previousMessages => [...previousMessages, message])
   }
 
   function handleSaveInputChange (e: React.ChangeEvent<HTMLInputElement>) {
@@ -109,18 +137,18 @@ export default function Home() {
       />
 
       <div className="flex-1 flex space-x-8 w-full pt-36 pb-8 px-4">
-        {object && <pre>{JSON.stringify(object, null, 2)}</pre>}
         <Chat
-          // messages={messages}
+          messages={messages}
           input={chatInput}
           handleInputChange={handleSaveInputChange}
           handleSubmit={handleSubmitAuth}
         />
-        {/* <SideView
-          toolInvocation={latestToolInvocation}
-          data={data}
-          selectedTemplate={selectedTemplate}
-        /> */}
+        <SideView
+          isLoading={isLoading}
+          artifact={artifact as ArtifactSchema}
+          result={result}
+          selectedTemplate={artifact?.template as TemplateId}
+        />
       </div>
     </main>
   )
