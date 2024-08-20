@@ -8,7 +8,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs'
-import { DeployDialog } from '@/components/deploy-dialog'
 import { Button } from "@/components/ui/button"
 import { Link, Copy } from 'lucide-react'
 import { TemplateId } from '@/lib/templates'
