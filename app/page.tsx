@@ -98,6 +98,10 @@ export default function Home() {
       return setAuthDialog(true)
     }
 
+    if (isLoading) {
+      stop()
+    }
+
     submit({
       userID: session?.user?.id,
       prompt: chatInput,
