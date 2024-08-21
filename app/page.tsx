@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { experimental_useObject as useObject } from 'ai/react';
 import { useLocalStorage } from 'usehooks-ts'
 import { ArtifactSchema, artifactSchema as schema } from '@/lib/schema'
@@ -23,7 +23,10 @@ export type Message = {
   // id: string
   role: 'user' | 'assistant'
   content: string
-  artifact?: ArtifactSchema
+  meta?: {
+    title?: string
+    description?: string
+  }
 }
 
 export default function Home() {
@@ -57,6 +60,8 @@ export default function Home() {
     onFinish: async ({ object: artifact, error }) => {
       if (!error) {
         // send it to /api/sandbox
+        console.log('artifact', artifact)
+
         const response = await fetch('/api/sandbox', {
           method: 'POST',
           body: JSON.stringify({
@@ -66,18 +71,25 @@ export default function Home() {
           })
         })
 
-        addMessage({
-          role: 'assistant',
-          content: artifact?.commentary || 'Generating...',
-          artifact
-        })
-
         const result = await response.json()
         console.log('result', result)
         setResult(result)
       }
     }
   })
+
+  useEffect(() => {
+    if (artifact) {
+      const lastAssistantMessage = messages.findLast(message => message.role === 'assistant')
+      if (lastAssistantMessage) {
+        lastAssistantMessage.content = artifact.commentary || ''
+        lastAssistantMessage.meta = {
+          title: artifact.title,
+          description: artifact.description
+        }
+      }
+    }
+  }, [artifact])
 
   function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -97,6 +109,11 @@ export default function Home() {
     addMessage({
       role: 'user',
       content: chatInput
+    })
+
+    addMessage({
+      role: 'assistant',
+      content: '',
     })
 
     setChatInput('')

@@ -22,14 +22,14 @@ export function Chat({
         {messages.map((message: Message, index: number) => (
           <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white' : 'bg-white/40'} rounded-lg border-b border-[#FFE7CC] font-serif`} key={index}>
             {message.content}
-            {message.artifact &&
+            {message.meta &&
               <div className="mt-4 flex justify-start items-start border border-[#FFE7CC] rounded-md">
                 <div className="p-2 self-stretch border-r border-[#FFE7CC] bg-[#FFE7CC] w-14 flex items-center justify-center">
                   <Terminal strokeWidth={2} className="text-[#FF8800]"/>
                 </div>
                 <div className="p-2 flex flex-col space-y-1 justify-start items-start min-w-[100px]">
-                  <span className="font-bold font-sans text-sm">{message.artifact.title}</span>
-                  <span className="font-sans text-sm">{message.artifact.description}</span>
+                  <span className="font-bold font-sans text-sm">{message.meta.title}</span>
+                  <span className="font-sans text-sm">{message.meta.description}</span>
                 </div>
               </div>
             }
