@@ -10,7 +10,22 @@ import { artifactSchema as schema } from '@/lib/schema'
 
 export const maxDuration = 60
 
+const rateLimitMaxRequests = 5
+const ratelimitWindow = '1m'
+
 export async function POST(req: Request) {
+  const limit = await ratelimit(req, rateLimitMaxRequests, ratelimitWindow)
+  if (limit) {
+    return new Response('You have reached your request limit for the day.', {
+      status: 429,
+      headers: {
+        'X-RateLimit-Limit': limit.amount.toString(),
+        'X-RateLimit-Remaining': limit.remaining.toString(),
+        'X-RateLimit-Reset': limit.reset.toString()
+      }
+    })
+  }
+
   const { prompt, userID, template, model, config }: { prompt: string, userID: string, template: Templates, model: LLMModel, config: LLMModelConfig } = await req.json()
   console.log('userID', userID)
   // console.log('template', template)
