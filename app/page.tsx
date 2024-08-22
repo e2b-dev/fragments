@@ -116,7 +116,7 @@ export default function Home() {
 
     addMessage({
       role: 'assistant',
-      content: '',
+      content: 'Generating artifact...',
     })
 
     setChatInput('')

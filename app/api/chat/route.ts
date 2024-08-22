@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   const stream = await streamObject({
     model: modelClient as LanguageModel,
     schema,
-    system: `You are a skilled developer. You do not make mistakes. Generate an artifact. You can install additional dependencies. You can use one of the following templates:\n${templatesToPrompt(template)}`,
+    system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. You can install additional dependencies. You can use one of the following templates:\n${templatesToPrompt(template)}`,
     prompt,
     ...modelParams,
   })
