@@ -3,6 +3,7 @@ import {
   LanguageModel,
 } from 'ai'
 
+import ratelimit from '@/lib/ratelimit'
 import { Templates, templatesToPrompt } from '@/lib/templates'
 import { getModelClient } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
