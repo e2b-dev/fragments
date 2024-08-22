@@ -27,5 +27,20 @@
     "file": "app.py",
     "instructions": "A streamlit app that reloads automatically.",
     "port": 8501
+  },
+  "gradio-developer": {
+    "name": "Gradio developer",
+    "lib": [
+      "gradio",
+      "pandas",
+      "numpy",
+      "matplotlib",
+      "request",
+      "seaborn",
+      "plotly"
+    ],
+    "file": "app.py",
+    "instructions": "A gradio app. Gradio Blocks/Interface should be called demo.",
+    "port": 7860
   }
 }
