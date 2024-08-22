@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -22,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { SandboxTemplate } from '@/lib/types'
+import { Templates, TemplateId } from '@/lib/templates'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
@@ -31,6 +30,7 @@ export default function NavBar({
   session,
   showLogin,
   signOut,
+  templates,
   selectedTemplate,
   onSelectedTemplateChange,
   models,
@@ -41,8 +41,9 @@ export default function NavBar({
   session: Session | null,
   showLogin: () => void,
   signOut: () => void,
-  selectedTemplate: SandboxTemplate,
-  onSelectedTemplateChange: (template: SandboxTemplate) => void,
+  templates: Templates,
+  selectedTemplate: 'auto' | TemplateId,
+  onSelectedTemplateChange: (template: 'auto' | TemplateId) => void,
   models: LLMModel[],
   languageModel: LLMModelConfig,
   apiKeyConfigurable: boolean,
@@ -82,14 +83,15 @@ export default function NavBar({
           <Label htmlFor="template">Persona</Label>
           <Select name="template" defaultValue={selectedTemplate} onValueChange={onSelectedTemplateChange}>
             <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select a template" />
+              <SelectValue placeholder="Select a persona" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Persona</SelectLabel>
-                <SelectItem value="code-interpreter-multilang">Python data analyst</SelectItem>
-                <SelectItem value="nextjs-developer">Next.js developer</SelectItem>
-                <SelectItem value="streamlit-developer">Streamlit developer</SelectItem>
+                <SelectItem value="auto">Auto</SelectItem>
+                {Object.entries(templates).map(([templateId, template]) => (
+                  <SelectItem key={templateId} value={templateId}>{template.name}</SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>

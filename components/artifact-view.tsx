@@ -1,15 +1,15 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { type ExecutionError, Result } from '@e2b/code-interpreter'
 import Image from 'next/image'
 import { Terminal } from 'lucide-react'
-import { SandboxTemplate } from '@/lib/types'
 
 import {
   Alert,
   AlertTitle,
   AlertDescription,
 } from '@/components/ui/alert'
+import { ExecutionResult } from '@/app/api/sandbox/route'
+import { TemplateId } from '@/lib/templates'
 
 function LogsOutput({ stdout, stderr }: {
   stdout: string[]
@@ -33,42 +33,32 @@ function LogsOutput({ stdout, stderr }: {
   )
 }
 
-export interface CodeExecResult {
-  url: string
-  stdout: string[]
-  stderr: string[]
-  runtimeError?: ExecutionError
-  cellResults: Result[]
-  template: SandboxTemplate
-}
-
 export function ArtifactView({
   result,
   template,
 }: {
-  result?: CodeExecResult
-  template?: SandboxTemplate
+  result: ExecutionResult
+  template?: TemplateId
 }) {
-  const [iframeKey, setIframeKey] = useState(0);
+  // const [iframeKey, setIframeKey] = useState(0);
 
-  useEffect(() => {
-    if (template === SandboxTemplate.NextJS && result) {
-      const timer = setTimeout(() => {
-        setIframeKey(prevKey => prevKey + 1);
-      }, 3000);
+  // useEffect(() => {
+  //   if (template === 'nextjs-developer' && result) {
+  //     const timer = setTimeout(() => {
+  //       setIframeKey(prevKey => prevKey + 1);
+  //     }, 3000);
 
-      return () => clearTimeout(timer);
-    }
-  }, [template, result]);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [template, result]);
 
   if (!result) return null
-  console.log('result', result)
 
-  if (template === SandboxTemplate.NextJS || template === SandboxTemplate.Streamlit) {
+  if (template !== 'code-interpreter-multilang') {
     return (
       <div className="w-full h-full">
         <iframe
-          key={iframeKey}
+          // key={iframeKey}
           className="h-full w-full"
           sandbox="allow-scripts allow-same-origin"
           loading="lazy"

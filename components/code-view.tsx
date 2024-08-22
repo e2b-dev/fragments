@@ -6,16 +6,15 @@ import 'prismjs/components/prism-javascript'
 import 'prismjs/components/prism-python'
 import 'prismjs/themes/prism.css'
 
-import { SandboxTemplate } from '@/lib/types'
+import { TemplateId } from '@/lib/templates'
 
-
-export function CodeView({ code, template }: { code: string, template?: SandboxTemplate }) {
+export function CodeView({ code, template }: { code: string, template?: TemplateId }) {
   return (
     <Editor
       value={code}
       disabled={true}
       onValueChange={() => {}}
-      highlight={code => highlight(code, template === SandboxTemplate.CodeInterpreterMultilang ? languages.python : languages.javascript)}
+      highlight={code => highlight(code, template === 'code-interpreter-multilang' ? languages.python : languages.javascript)}
       padding={10}
       style={{
         fontFamily: '"Fira code", "Fira Mono", monospace',
