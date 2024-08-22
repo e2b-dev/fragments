@@ -15,7 +15,7 @@ import { useAuth } from '@/lib/auth'
 
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
-import { templates, TemplateId } from '@/lib/templates';
+import templates, { TemplateId } from '@/lib/templates';
 
 import { ExecutionResult } from './api/sandbox/route';
 
