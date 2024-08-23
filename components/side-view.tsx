@@ -1,4 +1,5 @@
-import { LoaderCircle } from 'lucide-react'
+import { useState } from 'react'
+import { LoaderCircle, RotateCw } from 'lucide-react'
 
 import { ArtifactView } from '@/components/artifact-view'
 import { CodeView } from '@/components/code-view'
@@ -27,6 +28,11 @@ export function SideView({
   result?: ExecutionResult
   selectedTemplate: TemplateId
 }) {
+  const [iframeKey, setIframeKey] = useState(0)
+  function refreshIframe() {
+    setIframeKey(prevKey => prevKey + 1)
+  }
+
   if (!artifact) {
     return null
   }
@@ -59,13 +65,18 @@ export function SideView({
           </div>
           <div className='flex items-center justify-end space-x-2'>
           {result && (
-            <Button variant="outline" className='h-8 rounded-md px-3' onClick={() => copy(artifact.code)}>
-              <Copy className="h-4 w-4" />
+            <Button disabled={!isLinkAvailable} variant="outline" className='h-8 rounded-md px-3' onClick={() => refreshIframe()}>
+              <RotateCw className="h-4 w-4" />
             </Button>
           )}
           {result && (
             <Button disabled={!isLinkAvailable} variant="outline" className='h-8 rounded-md px-3' onClick={() => copy(result.url!)}>
               <Link className="h-4 w-4" />
+            </Button>
+          )}
+          {result && (
+            <Button variant="outline" className='h-8 rounded-md px-3' onClick={() => copy(artifact.code)}>
+              <Copy className="h-4 w-4" />
             </Button>
           )}
           {/* {selectedTemplate === SandboxTemplate.NextJS && (
@@ -84,6 +95,7 @@ export function SideView({
             <TabsContent value="artifact" className="flex-1 w-full flex flex-col items-start justify-start">
               {result &&
                 <ArtifactView
+                  iframeKey={iframeKey}
                   template={artifact.template as TemplateId}
                   result={result}
                 />

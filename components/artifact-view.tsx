@@ -34,31 +34,21 @@ function LogsOutput({ stdout, stderr }: {
 }
 
 export function ArtifactView({
+  iframeKey,
   result,
   template,
 }: {
+  iframeKey: number
   result: ExecutionResult
   template?: TemplateId
 }) {
-  // const [iframeKey, setIframeKey] = useState(0);
-
-  // useEffect(() => {
-  //   if (template === 'nextjs-developer' && result) {
-  //     const timer = setTimeout(() => {
-  //       setIframeKey(prevKey => prevKey + 1);
-  //     }, 3000);
-
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [template, result]);
-
   if (!result) return null
 
   if (template !== 'code-interpreter-multilang') {
     return (
       <div className="w-full h-full">
         <iframe
-          // key={iframeKey}
+          key={iframeKey}
           className="h-full w-full"
           sandbox="allow-scripts allow-same-origin"
           loading="lazy"

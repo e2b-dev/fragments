@@ -1,7 +1,8 @@
-import { Terminal } from 'lucide-react'
+import { ArrowUp, Terminal } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
 import { Message } from '@/app/page'
+import { Button } from './ui/button'
 
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
@@ -38,8 +39,11 @@ export function Chat({
       </div>
 
       <div className="flex flex-col gap-4">
-        <form onSubmit={handleSubmit}>
-          <Input className="ring-0" placeholder="Describe your app..." value={input} onChange={handleInputChange}/>
+        <form onSubmit={handleSubmit} className="flex flex-row gap-2">
+          <Input className="ring-0 rounded-xl" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange}/>
+          <Button variant="outline" size="icon" className='rounded-full h-10 w-11'>
+            <ArrowUp className="h-5 w-5" />
+          </Button>
         </form>
       </div>
     </div>

@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Separator } from '@/components/ui/separator'
-import { GithubIcon, LogOut, Settings2 } from 'lucide-react'
+import { GithubIcon, LogOut, Settings2, Sparkles } from 'lucide-react'
 
 import {
   Select,
@@ -88,9 +88,19 @@ export default function NavBar({
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Persona</SelectLabel>
-                <SelectItem value="auto">Auto</SelectItem>
+                <SelectItem value="auto">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="flex" width={16} height={16} />
+                    <span>Auto</span>
+                  </div>
+                </SelectItem>
                 {Object.entries(templates).map(([templateId, template]) => (
-                  <SelectItem key={templateId} value={templateId}>{template.name}</SelectItem>
+                  <SelectItem key={templateId} value={templateId}>
+                    <div className="flex items-center space-x-2">
+                      <Image className="flex" src={`/thirdparty/templates/${templateId}.svg`} alt={templateId} width={16} height={16} />
+                      <span>{template.name}</span>
+                    </div>
+                  </SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
@@ -138,7 +148,7 @@ export default function NavBar({
                     placeholder="Auto"
                     required={true}
                     defaultValue={languageModel.apiKey}
-                    onChange={(e) => onLanguageModelChange({ apiKey: e.target.value })}
+                    onChange={(e) => onLanguageModelChange({ apiKey: e.target.value.length > 0 ? e.target.value : undefined })}
                     className='text-sm'
                   />
                 </div>
