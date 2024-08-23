@@ -146,6 +146,7 @@ export default function Home() {
         languageModel={languageModel}
         onLanguageModelChange={handleLanguageModelChange}
         apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
+        baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
       />
 
       <div className="flex-1 flex space-x-8 w-full pt-36 pb-8 px-4">

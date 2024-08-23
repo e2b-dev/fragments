@@ -37,6 +37,7 @@ export default function NavBar({
   languageModel,
   onLanguageModelChange,
   apiKeyConfigurable,
+  baseURLConfigurable,
 }: {
   session: Session | null,
   showLogin: () => void,
@@ -46,8 +47,9 @@ export default function NavBar({
   onSelectedTemplateChange: (template: 'auto' | TemplateId) => void,
   models: LLMModel[],
   languageModel: LLMModelConfig,
-  apiKeyConfigurable: boolean,
   onLanguageModelChange: (config: LLMModelConfig) => void,
+  apiKeyConfigurable: boolean,
+  baseURLConfigurable: boolean,
 }) {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white">
@@ -155,19 +157,23 @@ export default function NavBar({
                 <DropdownMenuSeparator />
               </>
             )}
-            <div className="flex flex-col gap-1.5 px-2 py-2">
-              <Label htmlFor="baseURL">Base URL</Label>
-              <Input
-                name="baseURL"
-                type="text"
-                placeholder="Auto"
-                required={true}
-                defaultValue={languageModel.baseURL}
-                onChange={(e) => onLanguageModelChange({ baseURL: e.target.value.length > 0 ? e.target.value : undefined })}
-                className='text-sm'
-              />
-            </div>
-            <DropdownMenuSeparator />
+            {baseURLConfigurable && (
+              <>
+                <div className="flex flex-col gap-1.5 px-2 py-2">
+                  <Label htmlFor="baseURL">Base URL</Label>
+                  <Input
+                    name="baseURL"
+                    type="text"
+                    placeholder="Auto"
+                    required={true}
+                    defaultValue={languageModel.baseURL}
+                    onChange={(e) => onLanguageModelChange({ baseURL: e.target.value.length > 0 ? e.target.value : undefined })}
+                    className='text-sm'
+                  />
+                </div>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
               <span className="text-sm flex-1">Output tokens</span>
               <Input
