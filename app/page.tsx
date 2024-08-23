@@ -42,15 +42,7 @@ export default function Home() {
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const { session, apiKey } = useAuth(setAuthDialog)
 
-  const filteredModels = modelsList.models.filter((model: LLMModel) => {
-    if (process.env.NEXT_PUBLIC_USE_HOSTED_MODELS === 'true') {
-      return model.hosted
-    }
-
-    return true
-  })
-
-  const currentModel = filteredModels.find((model: LLMModel) => model.id === languageModel.model)
+  const currentModel = modelsList.models.find(model => model.id === languageModel.model)
   const currentTemplate = selectedTemplate === 'auto' ? templates : { [selectedTemplate]: templates[selectedTemplate] }
 
   const { object: artifact, submit, isLoading, stop, error } = useObject({
@@ -150,7 +142,7 @@ export default function Home() {
         templates={templates}
         selectedTemplate={selectedTemplate}
         onSelectedTemplateChange={setSelectedTemplate}
-        models={filteredModels}
+        models={modelsList.models}
         languageModel={languageModel}
         onLanguageModelChange={handleLanguageModelChange}
         apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
