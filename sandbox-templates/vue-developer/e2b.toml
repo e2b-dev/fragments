@@ -10,7 +10,7 @@
 # const sandbox = await Sandbox.create({ template: 'vue-developer' })
 
 team_id = "460355b3-4f64-48f9-9a16-4442817f79f5"
-dockerfile = "e2b.Dockerfile"
 start_cmd = "cd /home/user && npx nuxi dev"
+dockerfile = "e2b.Dockerfile"
 template_name = "vue-developer"
 template_id = "4sgwufi7skp03emzvbwm"
