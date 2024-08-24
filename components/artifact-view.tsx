@@ -50,7 +50,7 @@ export function ArtifactView({
         <iframe
           key={iframeKey}
           className="h-full w-full"
-          sandbox="allow-scripts allow-same-origin"
+          sandbox="allow-forms allow-scripts allow-same-origin"
           loading="lazy"
           src={result.url}
         />
