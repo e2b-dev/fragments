@@ -13,6 +13,13 @@
     "instructions": "A Next.js 13+ app that reloads automatically. Using the app router. Always add 'use client' expression on the first line of the file.",
     "port": 3000
   },
+  "vue-developer": {
+    "name": "Vue.js developer",
+    "lib": ["vue@latest", "nuxt@3.13.0"],
+    "file": "app.vue",
+    "instructions": "A Vue.js 3+ app that reloads automatically. Only when asked specifically for a Vue app.",
+    "port": 3000
+  },
   "streamlit-developer": {
     "name": "Streamlit developer",
     "lib": [
