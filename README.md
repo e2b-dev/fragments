@@ -7,16 +7,25 @@ This app is using [E2B](https://e2b.dev/docs)'s [Code Interpreter SDK](https://g
 ![Preview](preview.png)
 
 ## Features
-- [Anthropic Claude Sonnet 3.5](https://www.anthropic.com/) model for AI code generation
 - [Code Interpreter SDK](https://github.com/e2b-dev/code-interpreter) from [E2B](https://e2b.dev) for secure AI code execution using sandboxes
 - [Vercel AI SDK](https://sdk.vercel.ai/docs/introduction) for tool calling and streaming responses from the model
 - Supported AI-generated code
   - ✅ Running AI-generated Python in Jupyter notebook
-  - ✅ AI-generated Next.js apps
-  - ✅ AI-generated Streamlit apps
-  - TODO: vanilla JS/TS, R
-- TODO: Stream AI-generated code
+  - ✅ Next.js apps
+  - ✅ Vue.js apps
+  - ✅ Streamlit apps
+  - ✅ Gradio apps
 
+## Supported LLMs and providers
+- OpenAI
+- Anthropic
+- Google AI
+- Mistral
+- Groq
+- Together AI
+- Ollama
+
+## How to run locally
 ### 1. Install dependencies
 ```sh
 npm i
@@ -28,6 +37,10 @@ Create a `.env.local` file and set the following:
 # Get your API key here - https://e2b.dev/
 E2B_API_KEY="your-e2b-api-key"
 ANTHROPIC_API_KEY="your-anthropic-api-key"
+# Optional
+GROQ_API_KEY=
+FIREWORKS_API_KEY=
+TOGETHER_AI_API_KEY=
 ```
 
 ### 3. Run
