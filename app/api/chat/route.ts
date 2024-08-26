@@ -5,7 +5,7 @@ import {
 
 import ratelimit from '@/lib/ratelimit'
 import { Templates, templatesToPrompt } from '@/lib/templates'
-import { getModelClient } from '@/lib/models'
+import { getModelClient, getDefaultMode } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { artifactSchema as schema } from '@/lib/schema'
 
@@ -41,6 +41,7 @@ export async function POST(req: Request) {
     schema,
     system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. You can install additional dependencies. You can use one of the following templates:\n${templatesToPrompt(template)}`,
     prompt,
+    mode: getDefaultMode(model),
     ...modelParams,
   })
 

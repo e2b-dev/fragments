@@ -35,6 +35,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
     groq: () => createOpenAI({ apiKey: apiKey || process.env.GROQ_API_KEY, baseURL: baseURL || 'https://api.groq.com/openai/v1' })(modelNameString),
     togetherai: () => createOpenAI({ apiKey: apiKey || process.env.TOGETHER_AI_API_KEY, baseURL: baseURL || 'https://api.together.xyz/v1' })(modelNameString),
     ollama: () => createOllama({ baseURL })(modelNameString),
+    fireworks: () => createOpenAI({ apiKey: apiKey || process.env.FIREWORKS_API_KEY, baseURL: baseURL || 'https://api.fireworks.ai/inference/v1' })(modelNameString),
   }
 
   const createClient = providerConfigs[providerId as keyof typeof providerConfigs]
@@ -44,4 +45,15 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
   }
 
   return createClient()
+}
+
+export function getDefaultMode (model: LLMModel) {
+  const { id: modelNameString, providerId } = model
+
+  // monkey patch fireworks
+  if (providerId === 'fireworks') {
+    return 'json'
+  }
+
+  return 'auto'
 }

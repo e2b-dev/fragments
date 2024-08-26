@@ -61,6 +61,18 @@
       "name": "Llama 3 Groq 70B Tool Use (Preview)"
     },
     {
+      "id": "accounts/fireworks/models/llama-v3p1-405b-instruct",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Llama 3.1 405B"
+    },
+    {
+      "id": "accounts/fireworks/models/llama-v3p1-70b-instruct",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Llama 3.1 70B"
+    },
+    {
       "id": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
       "provider": "Together AI",
       "providerId": "togetherai",
