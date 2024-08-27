@@ -83,13 +83,13 @@ GOOGLE_AI_API_KEY=
 MISTRAL_API_KEY=
 ```
 
-### 3. Start the development server
+### 4. Start the development server
 
 ```
 npm run dev
 ```
 
-### 4. Build the web app
+### 5. Build the web app
 
 ```
 npm run build
@@ -105,68 +105,68 @@ npm run build
 
 3. Initialize a new template using E2B CLI:
 
-```
-e2b template init
-```
+    ```
+    e2b template init
+    ```
 
-This will create a new file called `e2b.Dockerfile`.
+    This will create a new file called `e2b.Dockerfile`.
 
 4. Adjust the `e2b.Dockerfile`
 
-Here's an example streamlit template:
+    Here's an example streamlit template:
 
-```Dockerfile
-# You can use most Debian-based base images
-FROM python:3.19-slim
+    ```Dockerfile
+    # You can use most Debian-based base images
+    FROM python:3.19-slim
 
-RUN pip3 install --no-cache-dir streamlit pandas numpy matplotlib requests seaborn plotly
+    RUN pip3 install --no-cache-dir streamlit pandas numpy matplotlib requests seaborn plotly
 
-# Copy the code to the container
-WORKDIR /home/user
-COPY . /home/user
-```
+    # Copy the code to the container
+    WORKDIR /home/user
+    COPY . /home/user
+    ```
 
 5. Specify a custom start command in `e2b.toml`:
 
-```toml
-start_cmd = "cd /home/user && streamlit run app.py"
-```
+    ```toml
+    start_cmd = "cd /home/user && streamlit run app.py"
+    ```
 
 6. Deploy the template with the E2B CLI
 
-```
-e2b template build --name <template-name>
-```
+    ```
+    e2b template build --name <template-name>
+    ```
 
-After the build has finished, you should get the following message:
+    After the build has finished, you should get the following message:
 
-```
-✅ Building sandbox template <template-id> <template-name> finished.
-```
+    ```
+    ✅ Building sandbox template <template-id> <template-name> finished.
+    ```
 
 7. Open [lib/templates.json](lib/templates.json) in your code editor.
 
-Add your new template to the list. Here's an example for Streamlit:
+    Add your new template to the list. Here's an example for Streamlit:
 
-```json
-"streamlit-developer": {
-  "name": "Streamlit developer",
-  "lib": [
-    "streamlit",
-    "pandas",
-    "numpy",
-    "matplotlib",
-    "request",
-    "seaborn",
-    "plotly"
-  ],
-  "file": "app.py",
-  "instructions": "A streamlit app that reloads automatically.",
-  "port": 8501
-},
-```
+    ```json
+    "streamlit-developer": {
+      "name": "Streamlit developer",
+      "lib": [
+        "streamlit",
+        "pandas",
+        "numpy",
+        "matplotlib",
+        "request",
+        "seaborn",
+        "plotly"
+      ],
+      "file": "app.py",
+      "instructions": "A streamlit app that reloads automatically.",
+      "port": 8501
+    },
+    ```
 
-You can also set additional instructions that will be provided to the LLM.
+    You can also set additional instructions that will be provided to the LLM.
 
 4. Optionally, add a new template logo under [public/thirdparty/templates](public/thirdparty/templates)
 
@@ -176,16 +176,16 @@ You can also set additional instructions that will be provided to the LLM.
 
 2. Add a new entry to the models list:
 
-```json
-{
-  "id": "mistral-large",
-  "name": "Mistral Large",
-  "provider": "Ollama",
-  "providerId": "ollama"
-}
-```
+    ```json
+    {
+      "id": "mistral-large",
+      "name": "Mistral Large",
+      "provider": "Ollama",
+      "providerId": "ollama"
+    }
+    ```
 
-Where id is the model id, name is the model name (visible in the UI), provider is the provider name and providerId is the provider tag (see [adding providers](#adding-custom-llm-providers) below).
+    Where id is the model id, name is the model name (visible in the UI), provider is the provider name and providerId is the provider tag (see [adding providers](#adding-custom-llm-providers) below).
 
 ### Adding custom LLM providers
 
@@ -193,19 +193,19 @@ Where id is the model id, name is the model name (visible in the UI), provider i
 
 2. Add a new entry to the `providerConfigs` list:
 
-Example for fireworks:
+    Example for fireworks:
 
-```ts
-fireworks: () => createOpenAI({ apiKey: apiKey || process.env.FIREWORKS_API_KEY, baseURL: baseURL || 'https://api.fireworks.ai/inference/v1' })(modelNameString),
-```
+    ```ts
+    fireworks: () => createOpenAI({ apiKey: apiKey || process.env.FIREWORKS_API_KEY, baseURL: baseURL || 'https://api.fireworks.ai/inference/v1' })(modelNameString),
+    ```
 
 3. Optionally, adjust the default structured output mode in the `getDefaultMode` function:
 
-```ts
-if (providerId === 'fireworks') {
-   return 'json'
-}
-```
+    ```ts
+    if (providerId === 'fireworks') {
+      return 'json'
+    }
+    ```
 
 4. Optionally, add a new provider logo under [public/thirdparty/logos](public/thirdparty/logos)
 
