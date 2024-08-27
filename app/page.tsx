@@ -82,9 +82,7 @@ export default function Home() {
     }
   }, [artifact])
 
-  function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-
+  async function handleSubmitAuth (e: FormData) {
     if (!session) {
       return setAuthDialog(true)
     }
@@ -93,9 +91,15 @@ export default function Home() {
       stop()
     }
 
+    let multimodal = e.get('multimodal')
+    if (multimodal instanceof File) {
+      multimodal = multimodal.size === 0 ? null : Buffer.from(await multimodal.arrayBuffer()).toString('base64')
+    }
+
     submit({
       userID: session?.user?.id,
       prompt: chatInput,
+      multimodal,
       template: currentTemplate,
       model: currentModel,
       config: languageModel,

@@ -1,4 +1,4 @@
-import { ArrowUp, Terminal } from 'lucide-react'
+import { ArrowUp, ImagePlus, Terminal } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
 import { Message } from '@/app/page'
@@ -15,7 +15,7 @@ export function Chat({
   messages: any,
   input: string,
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
+  handleSubmit: (e: FormData) => void,
 }) {
   return (
     <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto justify-between">
@@ -39,7 +39,11 @@ export function Chat({
       </div>
 
       <div className="flex flex-col gap-4">
-        <form onSubmit={handleSubmit} className="flex flex-row gap-2">
+        <form action={handleSubmit} className="flex flex-row gap-2">
+          <input type="file" id="multimodal" name="multimodal" accept="image/*" className="hidden" />
+          <Button type="button" variant="outline" size="icon" className="rounded-full h-10 w-11" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
+            <ImagePlus className="h-5 w-5" />
+          </Button>
           <Input className="ring-0 rounded-xl" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange}/>
           <Button variant="outline" size="icon" className='rounded-full h-10 w-11'>
             <ArrowUp className="h-5 w-5" />
