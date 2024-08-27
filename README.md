@@ -162,11 +162,11 @@ npm run build
       ],
       "file": "app.py",
       "instructions": "A streamlit app that reloads automatically.",
-      "port": 8501
+      "port": 8501 // can be null
     },
     ```
 
-    You can also set additional instructions that will be provided to the LLM.
+    Provide a template id (as key), name, list of dependencies, entrypoint and a port (optional). You can also add additional instructions that will be given to the LLM.
 
 4. Optionally, add a new template logo under [public/thirdparty/templates](public/thirdparty/templates)
 
