@@ -43,57 +43,57 @@ This is an open source version of [Anthropic's Claude Artifacts](https://www.ant
 
 ### 1. Clone the repository
 
-    In your terminal:
+In your terminal:
 
-    ```
-    git clone https://github.com/e2b-dev/ai-artifacts.git
-    ```
+```
+git clone https://github.com/e2b-dev/ai-artifacts.git
+```
 
 ### 2. Install the dependencies
 
-    Enter the repository:
+Enter the repository:
 
-    ```
-    cd ai-artifacts
-    ```
+```
+cd ai-artifacts
+```
 
-    Run the following to install the required dependencies:
+Run the following to install the required dependencies:
 
-    ```
-    npm i
-    ```
+```
+npm i
+```
 
 ### 3. Set the environment variables
 
-    Create a `.env.local` file and set the following:
+Create a `.env.local` file and set the following:
 
-    ```sh
-    # Get your API key here - https://e2b.dev/
-    E2B_API_KEY="your-e2b-api-key"
+```sh
+# Get your API key here - https://e2b.dev/
+E2B_API_KEY="your-e2b-api-key"
 
-    # OpenAI API Key
-    OPENAI_API_KEY=
+# OpenAI API Key
+OPENAI_API_KEY=
 
-    # Other providers
-    ANTHROPIC_API_KEY=
-    GROQ_API_KEY=
-    FIREWORKS_API_KEY=
-    TOGETHER_AI_API_KEY=
-    GOOGLE_AI_API_KEY=
-    MISTRAL_API_KEY=
-    ```
+# Other providers
+ANTHROPIC_API_KEY=
+GROQ_API_KEY=
+FIREWORKS_API_KEY=
+TOGETHER_AI_API_KEY=
+GOOGLE_AI_API_KEY=
+MISTRAL_API_KEY=
+```
 
 ### 4. Start the development server
 
-    ```
-    npm run dev
-    ```
+```
+npm run dev
+```
 
 ### 5. Build the web app
 
-    ```
-    npm run build
-    ```
+```
+npm run build
+```
 
 ## Customize
 
