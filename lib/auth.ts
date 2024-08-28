@@ -56,10 +56,12 @@ export function useAuth (setAuthDialog: (value: boolean) => void) {
         setAuthDialog(false)
         getUserAPIKey(session as Session).then(setApiKey)
         posthog.identify(session?.user.id, { email: session?.user.email })
+        posthog.capture('sign_in')
       }
 
       if (_event === 'SIGNED_OUT') {
         setApiKey(undefined)
+        posthog.capture('sign_out')
         posthog.reset()
       }
     })
