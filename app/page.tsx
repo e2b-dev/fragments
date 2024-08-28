@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { experimental_useObject as useObject } from 'ai/react';
+import { experimental_useObject as useObject } from 'ai/react'
 import { useLocalStorage } from 'usehooks-ts'
+import { usePostHog } from 'posthog-js/react'
 import { ArtifactSchema, artifactSchema as schema } from '@/lib/schema'
 
 import { Chat } from '@/components/chat'
@@ -35,6 +36,8 @@ export default function Home() {
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
     model: 'claude-3-5-sonnet-20240620'
   })
+
+  const posthog = usePostHog()
 
   const [result, setResult] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
@@ -112,6 +115,11 @@ export default function Home() {
     })
 
     setChatInput('')
+
+    posthog.capture('chat_submit', {
+      template: selectedTemplate,
+      model: languageModel.model,
+    })
   }
 
   function addMessage (message: Message) {
@@ -130,6 +138,11 @@ export default function Home() {
     setLanguageModel({ ...languageModel, ...e })
   }
 
+  function handleGitHubClick () {
+    window.open('https://github.com/e2b-dev/ai-artifacts', '_blank')
+    posthog.capture('github_click')
+  }
+
   return (
     <main className="flex min-h-screen max-h-screen">
       {
@@ -145,6 +158,7 @@ export default function Home() {
         models={modelsList.models}
         languageModel={languageModel}
         onLanguageModelChange={handleLanguageModelChange}
+        onGitHubClick={handleGitHubClick}
         apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
         baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
       />
