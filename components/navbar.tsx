@@ -38,6 +38,7 @@ export default function NavBar({
   onLanguageModelChange,
   apiKeyConfigurable,
   baseURLConfigurable,
+  onGitHubClick,
 }: {
   session: Session | null,
   showLogin: () => void,
@@ -50,6 +51,7 @@ export default function NavBar({
   onLanguageModelChange: (config: LLMModelConfig) => void,
   apiKeyConfigurable: boolean,
   baseURLConfigurable: boolean,
+  onGitHubClick: () => void,
 }) {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white">
@@ -62,7 +64,7 @@ export default function NavBar({
           <Link href="https://e2b.dev" className="underline decoration-[#ff8800] decoration-2 text-[#ff8800]" target="_blank">E2B</Link>
         </div>
         <div className="flex justify-end space-x-4">
-          <Button variant="outline" onClick={() => window.open('https://github.com/e2b-dev/ai-artifacts', '_blank')}>
+          <Button variant="outline" onClick={onGitHubClick}>
             <GithubIcon className="mr-2 h-4 w-4" /> Star us on GitHub
           </Button>
           <Separator orientation="vertical" />
