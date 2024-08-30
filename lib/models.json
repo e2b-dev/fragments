@@ -79,6 +79,18 @@
       "name": "Llama 3.1 70B"
     },
     {
+      "id": "llama3.1-70b",
+      "provider": "Cerebras",
+      "providerId": "cerebras",
+      "name": "Llama 3.1 70B"
+    },
+    {
+      "id": "llama3.1-8b",
+      "provider": "Cerebras",
+      "providerId": "cerebras",
+      "name": "Llama 3.1 8B"
+    },
+    {
       "id": "llama3.1",
       "provider": "Ollama",
       "providerId": "ollama",
