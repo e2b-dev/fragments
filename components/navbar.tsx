@@ -6,12 +6,11 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Separator } from '@/components/ui/separator'
-import { GithubIcon, LogOut, Settings2 } from 'lucide-react'
+import { GithubIcon, LogOut, Settings2, Sparkles } from 'lucide-react'
 
 import {
   Select,
@@ -22,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { SandboxTemplate } from '@/lib/types'
+import { Templates, TemplateId } from '@/lib/templates'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
@@ -31,22 +30,28 @@ export default function NavBar({
   session,
   showLogin,
   signOut,
+  templates,
   selectedTemplate,
   onSelectedTemplateChange,
   models,
   languageModel,
   onLanguageModelChange,
   apiKeyConfigurable,
+  baseURLConfigurable,
+  onGitHubClick,
 }: {
   session: Session | null,
   showLogin: () => void,
   signOut: () => void,
-  selectedTemplate: SandboxTemplate,
-  onSelectedTemplateChange: (template: SandboxTemplate) => void,
+  templates: Templates,
+  selectedTemplate: 'auto' | TemplateId,
+  onSelectedTemplateChange: (template: 'auto' | TemplateId) => void,
   models: LLMModel[],
   languageModel: LLMModelConfig,
-  apiKeyConfigurable: boolean,
   onLanguageModelChange: (config: LLMModelConfig) => void,
+  apiKeyConfigurable: boolean,
+  baseURLConfigurable: boolean,
+  onGitHubClick: () => void,
 }) {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white">
@@ -59,7 +64,7 @@ export default function NavBar({
           <Link href="https://e2b.dev" className="underline decoration-[#ff8800] decoration-2 text-[#ff8800]" target="_blank">E2B</Link>
         </div>
         <div className="flex justify-end space-x-4">
-          <Button variant="outline" onClick={() => window.open('https://github.com/e2b-dev/ai-artifacts', '_blank')}>
+          <Button variant="outline" onClick={onGitHubClick}>
             <GithubIcon className="mr-2 h-4 w-4" /> Star us on GitHub
           </Button>
           <Separator orientation="vertical" />
@@ -82,14 +87,25 @@ export default function NavBar({
           <Label htmlFor="template">Persona</Label>
           <Select name="template" defaultValue={selectedTemplate} onValueChange={onSelectedTemplateChange}>
             <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select a template" />
+              <SelectValue placeholder="Select a persona" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Persona</SelectLabel>
-                <SelectItem value="code-interpreter-multilang">Python data analyst</SelectItem>
-                <SelectItem value="nextjs-developer">Next.js developer</SelectItem>
-                <SelectItem value="streamlit-developer">Streamlit developer</SelectItem>
+                <SelectItem value="auto">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="flex" width={16} height={16} />
+                    <span>Auto</span>
+                  </div>
+                </SelectItem>
+                {Object.entries(templates).map(([templateId, template]) => (
+                  <SelectItem key={templateId} value={templateId}>
+                    <div className="flex items-center space-x-2">
+                      <Image className="flex" src={`/thirdparty/templates/${templateId}.svg`} alt={templateId} width={16} height={16} />
+                      <span>{template.name}</span>
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -136,7 +152,24 @@ export default function NavBar({
                     placeholder="Auto"
                     required={true}
                     defaultValue={languageModel.apiKey}
-                    onChange={(e) => onLanguageModelChange({ apiKey: e.target.value })}
+                    onChange={(e) => onLanguageModelChange({ apiKey: e.target.value.length > 0 ? e.target.value : undefined })}
+                    className='text-sm'
+                  />
+                </div>
+                <DropdownMenuSeparator />
+              </>
+            )}
+            {baseURLConfigurable && (
+              <>
+                <div className="flex flex-col gap-1.5 px-2 py-2">
+                  <Label htmlFor="baseURL">Base URL</Label>
+                  <Input
+                    name="baseURL"
+                    type="text"
+                    placeholder="Auto"
+                    required={true}
+                    defaultValue={languageModel.baseURL}
+                    onChange={(e) => onLanguageModelChange({ baseURL: e.target.value.length > 0 ? e.target.value : undefined })}
                     className='text-sm'
                   />
                 </div>

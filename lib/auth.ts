@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Session } from '@supabase/supabase-js'
 import { supabase } from './supabase'
+import { usePostHog } from 'posthog-js/react'
 
 interface UserTeam {
   id: string;
@@ -34,6 +35,7 @@ export async function getUserAPIKey (session: Session) {
 export function useAuth (setAuthDialog: (value: boolean) => void) {
   const [session, setSession] = useState<Session | null>(null)
   const [apiKey, setApiKey] = useState<string | undefined>(undefined)
+  const posthog = usePostHog()
 
   useEffect(() => {
     if (!supabase) {
@@ -53,10 +55,14 @@ export function useAuth (setAuthDialog: (value: boolean) => void) {
       if (_event === 'SIGNED_IN') {
         setAuthDialog(false)
         getUserAPIKey(session as Session).then(setApiKey)
+        posthog.identify(session?.user.id, { email: session?.user.email })
+        posthog.capture('sign_in')
       }
 
       if (_event === 'SIGNED_OUT') {
         setApiKey(undefined)
+        posthog.capture('sign_out')
+        posthog.reset()
       }
     })
 
