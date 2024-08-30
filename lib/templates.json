@@ -8,7 +8,7 @@
   },
   "nextjs-developer": {
     "name": "Next.js developer",
-    "lib": ["nextjs@14.2.5", "typescript", "@types/node", "@types/react", "@types/react-dom", "postcss", "tailwindcss"],
+    "lib": ["nextjs@14.2.5", "typescript", "@types/node", "@types/react", "@types/react-dom", "postcss", "tailwindcss", "shadcn/ui"],
     "file": "app/page.tsx",
     "instructions": "A Next.js 13+ app that reloads automatically. Using the app router. Always add 'use client' expression on the first line of the file.",
     "port": 3000

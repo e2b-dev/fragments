@@ -6,5 +6,8 @@ WORKDIR /home/user/nextjs-app
 
 RUN npx create-next-app@latest . --ts --tailwind --no-eslint --import-alias "@/*" --use-npm --app --no-src-dir
 
+RUN npx shadcn-ui@latest init -d
+RUN npx shadcn-ui@latest add --all
+
 # Move the Nextjs app to the home directory and remove the nextjs-app directory
 RUN mv /home/user/nextjs-app/* /home/user/ && rm -rf /home/user/nextjs-app
