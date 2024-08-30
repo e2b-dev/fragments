@@ -8,8 +8,5 @@ RUN npx nuxi@latest init . --packageManager=npm --gitInit=no -f
 RUN npx nuxi@latest module add tailwindcss
 COPY nuxt.config.ts /home/user/vue-app/nuxt.config.ts
 
-# Pre-build it to improve initial cold start
-RUN npx nuxi@latest build
-
 # Move the Vue app to the home directory and remove the Vue directory
 RUN mv /home/user/vue-app/* /home/user/ && rm -rf /home/user/vue-app
