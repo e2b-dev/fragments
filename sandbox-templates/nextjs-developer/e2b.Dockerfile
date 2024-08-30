@@ -1,6 +1,12 @@
 # You can use most Debian-based base images
 FROM node:21-slim
 
+# Install curl
+RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY compile_page.sh /compile_page.sh
+RUN chmod +x /compile_page.sh
+
 # Install dependencies and customize sandbox
 WORKDIR /home/user/nextjs-app
 
