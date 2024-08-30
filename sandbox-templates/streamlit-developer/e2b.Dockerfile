@@ -1,5 +1,5 @@
 # You can use most Debian-based base images
-FROM python:3.19-slim
+FROM python:3.9-slim
 
 RUN pip3 install --no-cache-dir streamlit pandas numpy matplotlib requests seaborn plotly
 
