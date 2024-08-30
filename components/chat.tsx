@@ -1,4 +1,4 @@
-import { ArrowUp, Terminal } from 'lucide-react'
+import { ArrowUp, Square, Terminal } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
 import { Message } from '@/app/page'
@@ -7,11 +7,15 @@ import { Button } from './ui/button'
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
 export function Chat({
+  isLoading,
+  stop,
   messages,
   input,
   handleInputChange,
   handleSubmit,
 }: {
+  isLoading: boolean,
+  stop: () => void,
   messages: any,
   input: string,
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
@@ -41,9 +45,16 @@ export function Chat({
       <div className="flex flex-col gap-4">
         <form onSubmit={handleSubmit} className="flex flex-row gap-2">
           <Input className="ring-0 rounded-xl" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange}/>
-          <Button variant="outline" size="icon" className='rounded-full h-10 w-11'>
-            <ArrowUp className="h-5 w-5" />
-          </Button>
+          { !isLoading ? (
+              <Button variant="outline" size="icon" className='rounded-full h-10 w-11'>
+                <ArrowUp className="h-5 w-5" />
+              </Button>
+          ) : (
+              <Button variant="outline" size="icon" className='rounded-full h-10 w-11' onClick={(e) => { e.preventDefault(); stop() }}>
+                <Square className="h-5 w-5" />
+              </Button>
+            )
+          }
         </form>
       </div>
     </div>
