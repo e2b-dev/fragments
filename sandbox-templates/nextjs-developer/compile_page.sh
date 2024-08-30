@@ -18,4 +18,4 @@ function ping_server() {
 }
 
 ping_server &
-cd /home/user && npx next
+cd /home/user && npx next --turbo
