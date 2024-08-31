@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { experimental_useObject as useObject } from 'ai/react'
+import { useChat, experimental_useObject as useObject } from 'ai/react'
 import { useLocalStorage } from 'usehooks-ts'
 import { usePostHog } from 'posthog-js/react'
 import { ArtifactSchema, artifactSchema as schema } from '@/lib/schema'
@@ -18,103 +18,47 @@ import { LLMModel, LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 import templates, { TemplateId } from '@/lib/templates';
 
-import { ExecutionResult } from './api/sandbox/route';
-
-export type Message = {
-  // id: string
-  role: 'user' | 'assistant'
-  content: string
-  meta?: {
-    title?: string
-    description?: string
-  }
-}
+import { ExecutionResult } from '../lib/sandbox';
 
 export default function Home() {
-  const [chatInput, setChatInput] = useLocalStorage('chat', '')
+  // const [chatInput, setChatInput] = useLocalStorage('chat', '')
   const [selectedTemplate, setSelectedTemplate] = useState<'auto' | TemplateId>('auto')
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
     model: 'claude-3-5-sonnet-20240620'
   })
 
   const posthog = usePostHog()
-
-  const [result, setResult] = useState<ExecutionResult>()
-  const [messages, setMessages] = useState<Message[]>([])
-
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const { session, apiKey } = useAuth(setAuthDialog)
 
   const currentModel = modelsList.models.find(model => model.id === languageModel.model)
   const currentTemplate = selectedTemplate === 'auto' ? templates : { [selectedTemplate]: templates[selectedTemplate] }
 
-  const { object: artifact, submit, isLoading, stop, error } = useObject({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, stop, data } = useChat({
     api: '/api/chat',
-    schema,
-    onFinish: async ({ object: artifact, error }) => {
-      if (!error) {
-        // send it to /api/sandbox
-        console.log('artifact', artifact)
-
-        const response = await fetch('/api/sandbox', {
-          method: 'POST',
-          body: JSON.stringify({
-            artifact,
-            userID: session?.user?.id,
-            apiKey
-          })
-        })
-
-        const result = await response.json()
-        console.log('result', result)
-        setResult(result)
-      }
-    }
-  })
-
-  useEffect(() => {
-    if (artifact) {
-      const lastAssistantMessage = messages.findLast(message => message.role === 'assistant')
-      if (lastAssistantMessage) {
-        lastAssistantMessage.content = artifact.commentary || ''
-        lastAssistantMessage.meta = {
-          title: artifact.title,
-          description: artifact.description
-        }
-      }
-    }
-  }, [artifact])
-
-  function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-
-    if (!session) {
-      return setAuthDialog(true)
-    }
-
-    if (isLoading) {
-      stop()
-    }
-
-    submit({
+    body: {
       userID: session?.user?.id,
-      prompt: chatInput,
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-    })
+    }
+  })
 
-    addMessage({
-      role: 'user',
-      content: chatInput
-    })
+  // For simplicity, we care only about the latest message that has a tool invocation
+  const latestMessageWithToolInvocation = [...messages].reverse().find(message => message.toolInvocations && message.toolInvocations.length > 0)
 
-    addMessage({
-      role: 'assistant',
-      content: 'Generating artifact...',
-    })
+  // Get the latest tool invocation
+  const latestToolInvocation = latestMessageWithToolInvocation?.toolInvocations?.[0]
 
-    setChatInput('')
+  // console.log({ messages, data })
+
+  function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
+    if (!session) {
+      e.preventDefault()
+      return setAuthDialog(true)
+    }
+
+    handleSubmit(e)
 
     posthog.capture('chat_submit', {
       template: selectedTemplate,
@@ -122,13 +66,9 @@ export default function Home() {
     })
   }
 
-  function addMessage (message: Message) {
-    setMessages(previousMessages => [...previousMessages, message])
-  }
-
-  function handleSaveInputChange (e: React.ChangeEvent<HTMLInputElement>) {
-    setChatInput(e.target.value)
-  }
+  // function handleSaveInputChange (e: React.ChangeEvent<HTMLInputElement>) {
+  //   setChatInput(e.target.value)
+  // }
 
   function logout () {
     supabase ? supabase.auth.signOut() : console.warn('Supabase is not initialized')
@@ -168,15 +108,15 @@ export default function Home() {
           isLoading={isLoading}
           stop={stop}
           messages={messages}
-          input={chatInput}
-          handleInputChange={handleSaveInputChange}
+          input={input}
+          handleInputChange={handleInputChange}
           handleSubmit={handleSubmitAuth}
         />
         <SideView
           isLoading={isLoading}
-          artifact={artifact as ArtifactSchema}
-          result={result}
-          selectedTemplate={artifact?.template as TemplateId}
+          artifact={latestToolInvocation?.args as ArtifactSchema}
+          result={latestToolInvocation?.result as ExecutionResult}
+          selectedTemplate={latestToolInvocation?.args?.template as TemplateId}
         />
       </div>
     </main>

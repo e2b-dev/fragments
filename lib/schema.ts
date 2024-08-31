@@ -1,7 +1,6 @@
 import { z } from 'zod'
 
 export const artifactSchema = z.object({
-  commentary: z.string().describe(`Describe what you're about to do and the steps you want to take for generating the artifact in great detail.`),
   template: z.string().describe('Name of the template used to generate the artifact.'),
   // template_ready: z.boolean().describe('Detect if finished identifying the template.'),
   title: z.string().describe('Short title of the artifact. Max 5 characters.'),

@@ -15,11 +15,9 @@ export type ExecutionResult = {
   url: string
 }
 
-export async function POST(req: Request) {
-  const { artifact, userID, apiKey }: { artifact: ArtifactSchema, userID: string, apiKey: string } = await req.json()
+export async function createSandbox ({ artifact, userID }: { artifact: ArtifactSchema, userID: string }) {
   console.log('artifact', artifact)
   console.log('userID', userID)
-  console.log('apiKey', apiKey)
 
   let sbx: Sandbox | CodeInterpreter | undefined = undefined
 
@@ -58,17 +56,17 @@ export async function POST(req: Request) {
   if (artifact.template === 'code-interpreter-multilang') {
     const result = await (sbx as CodeInterpreter).notebook.execCell(artifact.code || '')
     await (sbx as CodeInterpreter).close()
-    return new Response(JSON.stringify({
+    return {
       template: artifact.template,
       stdout: result.logs.stdout,
       stderr: result.logs.stderr,
       runtimeError: result.error,
       cellResults: result.results,
-    }))
+    }
   } else {
-    return new Response(JSON.stringify({
+    return {
       template: artifact.template,
       url: `https://${sbx?.getHost(artifact.port || 80)}`
-    }))
+    }
   }
 }

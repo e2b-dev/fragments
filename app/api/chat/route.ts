@@ -1,6 +1,8 @@
 import {
-  streamObject,
+  tool,
   LanguageModel,
+  streamText,
+  CoreMessage,
 } from 'ai'
 
 import ratelimit from '@/lib/ratelimit'
@@ -8,6 +10,7 @@ import { Templates, templatesToPrompt } from '@/lib/templates'
 import { getModelClient, getDefaultMode } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { artifactSchema as schema } from '@/lib/schema'
+import { createSandbox } from '@/lib/sandbox'
 
 export const maxDuration = 60
 
@@ -27,23 +30,29 @@ export async function POST(req: Request) {
     })
   }
 
-  const { prompt, userID, template, model, config }: { prompt: string, userID: string, template: Templates, model: LLMModel, config: LLMModelConfig } = await req.json()
+  const { messages, userID, template, model, config }: { messages: CoreMessage[], userID: string, template: Templates, model: LLMModel, config: LLMModelConfig } = await req.json()
   console.log('userID', userID)
   // console.log('template', template)
   console.log('model', model)
   console.log('config', config)
+  console.log('messages', messages)
 
   const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
   const modelClient = getModelClient(model, config)
 
-  const stream = await streamObject({
+  const stream = await streamText({
     model: modelClient as LanguageModel,
-    schema,
-    system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. You can install additional dependencies. You can use one of the following templates:\n${templatesToPrompt(template)}`,
-    prompt,
-    mode: getDefaultMode(model),
+    system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. Descibe the process step by step, which should also include the code. Then, execute it using e2b tool. You can install additional dependencies. You can use one of the following sandbox templates:\n${templatesToPrompt(template)}`,
+    messages,
+    tools: {
+      e2b: tool({
+        description: 'Execute code in a sandbox',
+        parameters: schema,
+        execute: (artifact) => createSandbox({ artifact, userID })
+      }),
+    },
     ...modelParams,
   })
 
-  return stream.toTextStreamResponse()
+  return stream.toDataStreamResponse()
 }

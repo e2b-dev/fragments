@@ -1,8 +1,8 @@
 import { ArrowUp, Square, Terminal } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
-import { Message } from '@/app/page'
 import { Button } from './ui/button'
+import { Message } from 'ai/react'
 
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
@@ -27,14 +27,15 @@ export function Chat({
         {messages.map((message: Message, index: number) => (
           <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white' : 'bg-white/40'} rounded-lg border-b border-[#FFE7CC] font-serif`} key={index}>
             {message.content}
-            {message.meta &&
+            {message.toolInvocations &&
               <div className="mt-4 flex justify-start items-start border border-[#FFE7CC] rounded-md">
                 <div className="p-2 self-stretch border-r border-[#FFE7CC] bg-[#FFE7CC] w-14 flex items-center justify-center">
                   <Terminal strokeWidth={2} className="text-[#FF8800]"/>
                 </div>
                 <div className="p-2 flex flex-col space-y-1 justify-start items-start min-w-[100px]">
-                  <span className="font-bold font-sans text-sm">{message.meta.title}</span>
-                  <span className="font-sans text-sm">{message.meta.description}</span>
+                  <span className="font-bold font-sans text-sm">{message.toolInvocations[0].args.title}</span>
+                  <span className="font-sans text-sm">{message.toolInvocations[0].args.description}</span>
+                  {/* <span className="font-sans text-sm">{message.toolInvocations[0].result.url}</span> */}
                 </div>
               </div>
             }
