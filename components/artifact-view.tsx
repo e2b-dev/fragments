@@ -8,7 +8,7 @@ import {
   AlertTitle,
   AlertDescription,
 } from '@/components/ui/alert'
-import { ExecutionResult } from '@/app/api/sandbox/route'
+import { ExecutionResult } from '@/lib/sandbox'
 import { TemplateId } from '@/lib/templates'
 
 function LogsOutput({ stdout, stderr }: {
