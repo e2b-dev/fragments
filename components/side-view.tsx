@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Link, Copy } from 'lucide-react'
 import { TemplateId } from '@/lib/templates'
 import { ArtifactSchema } from '@/lib/schema'
-import { ExecutionResult } from '@/app/api/sandbox/route'
+import { ExecutionResult } from '@/lib/sandbox'
 
 export function SideView({
   // userID,

@@ -115,7 +115,7 @@ export default function Home() {
         <SideView
           isLoading={isLoading}
           artifact={latestToolInvocation?.args as ArtifactSchema}
-          result={latestToolInvocation?.result as ExecutionResult}
+          result={(latestToolInvocation as any)?.result as ExecutionResult}
           selectedTemplate={latestToolInvocation?.args?.template as TemplateId}
         />
       </div>
