@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useChat, experimental_useObject as useObject } from 'ai/react'
+import { useChat } from 'ai/react'
 import { useLocalStorage } from 'usehooks-ts'
 import { usePostHog } from 'posthog-js/react'
 import { ArtifactSchema, artifactSchema as schema } from '@/lib/schema'
@@ -17,8 +17,7 @@ import { useAuth } from '@/lib/auth'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 import templates, { TemplateId } from '@/lib/templates';
-
-import { ExecutionResult } from '../lib/sandbox';
+import { ExecutionResult } from '@/lib/sandbox';
 
 export default function Home() {
   // const [chatInput, setChatInput] = useLocalStorage('chat', '')
@@ -114,7 +113,6 @@ export default function Home() {
         />
         <SideView
           isLoading={isLoading}
-          artifact={latestToolInvocation?.args as ArtifactSchema}
           result={(latestToolInvocation as any)?.result as ExecutionResult}
           selectedTemplate={latestToolInvocation?.args?.template as TemplateId}
         />
