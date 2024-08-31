@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 
   const stream = await streamText({
     model: modelClient as LanguageModel,
-    system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. Descibe the process step by step, which should also include the code. Then, execute it using e2b tool. You can install additional dependencies. You can use one of the following sandbox templates:\n${templatesToPrompt(template)}`,
+    system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. Describe the process step by step, which should additionally include the code. Then, execute it using e2b tool. You can install additional dependencies. You can use one of the following sandbox templates:\n${templatesToPrompt(template)}`,
     messages,
     tools: {
       e2b: tool({
