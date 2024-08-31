@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     messages,
     tools: {
       e2b: tool({
-        description: 'Execute code in a sandbox',
+        description: 'Execute code in a e2b sandbox',
         parameters: schema,
         execute: (artifact) => createSandbox({ artifact, userID })
       }),

@@ -3,6 +3,9 @@ import { ArrowUp, Square, Terminal } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from './ui/button'
 import { Message } from 'ai/react'
+import Markdown from 'react-markdown'
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import {dark} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
@@ -26,7 +29,26 @@ export function Chat({
       <div className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
         {messages.map((message: Message, index: number) => (
           <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white' : 'bg-white/40'} rounded-lg border-b border-[#FFE7CC] font-serif`} key={index}>
-            {message.content}
+            <Markdown children={message.content}
+    components={{
+      code(props) {
+        const {children, className, node, ...rest} = props
+        const match = /language-(\w+)/.exec(className || '')
+        return match ? (
+          <SyntaxHighlighter
+            {...rest}
+            PreTag="div"
+            children={String(children).replace(/\n$/, '')}
+            language={match[1]}
+            style={dark}
+          />
+        ) : (
+          <code {...rest} className={className}>
+            {children}
+          </code>
+        )
+      }
+    }} />
             {message.toolInvocations &&
               <div className="mt-4 flex justify-start items-start border border-[#FFE7CC] rounded-md">
                 <div className="p-2 self-stretch border-r border-[#FFE7CC] bg-[#FFE7CC] w-14 flex items-center justify-center">

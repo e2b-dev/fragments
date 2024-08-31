@@ -51,17 +51,17 @@ export function SideView({
 
   return (
     <div className="flex-1 flex flex-col shadow-2xl rounded-lg border border-[#FFE7CC] bg-white max-w-[800px]">
-      <Tabs defaultValue="code" className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
+      <Tabs defaultValue="artifact" className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
         <div className="w-full p-2 grid grid-cols-3 items-center justify-end bg-[#FAFAFA] rounded-t-lg border-b border-[#FFE7CC]">
           <div className='flex justify-start'>
             {isLoading && <LoaderCircle className="h-4 w-4 text-black/15 animate-spin" />}
           </div>
 
           <div className='flex justify-center'>
-            <TabsList className="px-1 py-0 border h-8">
+            {/* <TabsList className="px-1 py-0 border h-8">
               <TabsTrigger className="font-normal text-xs py-1 px-2" value="code">Code</TabsTrigger>
-              <TabsTrigger disabled={!result} className="font-normal text-xs py-1 px-2" value="artifact">Preview</TabsTrigger>
-            </TabsList>
+              <TabsTrigger className="font-normal text-xs py-1 px-2" value="artifact">Preview</TabsTrigger>
+            </TabsList> */}
           </div>
           <div className='flex items-center justify-end space-x-2'>
           {result && (

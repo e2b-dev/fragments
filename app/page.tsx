@@ -44,6 +44,21 @@ export default function Home() {
     }
   })
 
+  // Get the latest message
+  // const latestMessage = messages[messages.length - 1]
+
+  // Get the latest code from the message content markdown
+  // function getCodeFromMessage(message: any) {
+  //   const codeMatch = message?.content?.match(/^```[\s\S]*?```|(?<=\n)```[\s\S]*?```/m);
+  //   return codeMatch ? {
+  //     code: codeMatch[0].replace(/^```(\w+)?\s*|\s*```$/g, '').trim(),
+  //     language: codeMatch[0].match(/^```(\w+)?/)?.[1] || ''
+  //   } : null;
+  // }
+
+  // const code = getCodeFromMessage(latestMessage)
+  // console.log({ code })
+
   // For simplicity, we care only about the latest message that has a tool invocation
   const latestMessageWithToolInvocation = [...messages].reverse().find(message => message.toolInvocations && message.toolInvocations.length > 0)
 
