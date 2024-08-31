@@ -17,6 +17,20 @@ export const maxDuration = 60
 const rateLimitMaxRequests = 5
 const ratelimitWindow = '1m'
 
+const styleguide = `Use markdown to format your response.
+Markdown code-blocks should be following the following format: \`\`\`language,filename\nCODE\n\`\`\`.`
+
+function toSystemPrompt (template: Templates) {
+  return `
+  You are a skilled software engineer. You do not make mistakes. Generate an artifact according to user criteria.
+  Describe the process step by step, which should include the code.
+  Then, execute it using e2b tool.
+  You can install additional dependencies.
+  You can use one of the following sandbox templates:\n${templatesToPrompt(template)}
+  ${styleguide}
+  `
+}
+
 export async function POST(req: Request) {
   const limit = await ratelimit(req, rateLimitMaxRequests, ratelimitWindow)
   if (limit) {
@@ -42,7 +56,7 @@ export async function POST(req: Request) {
 
   const stream = await streamText({
     model: modelClient as LanguageModel,
-    system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. Describe the process step by step (in markdown), which should additionally include the code. Then, execute it using e2b tool. You can install additional dependencies. You can use one of the following sandbox templates:\n${templatesToPrompt(template)}`,
+    system: toSystemPrompt(template),
     messages,
     tools: {
       e2b: tool({

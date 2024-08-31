@@ -1,10 +1,11 @@
-import { ArrowUp, Square, Terminal } from "lucide-react";
+import { ArrowUp, ChevronDown, Loader2, Square, Terminal } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import { Message } from "ai/react";
 import Markdown from "react-markdown";
 import { CodeView } from "./code-view";
+import { File } from "lucide-react";
 
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
@@ -38,18 +39,20 @@ export function Chat({
               components={{
                 code(props) {
                   const { children, className, node, ...rest } = props;
-                  const match = /language-(\w+)/.exec(className || "");
-                  return match ? (
-                    <CodeView
-                      code={String(children).replace(/\n$/, "")}
-                      lang={match[1] || 'javascript'}
-                      {...rest}
-                    />
-                  ) : (
-                    <code className={className} {...rest}>
-                      {children}
-                    </code>
-                  );
+                  const [lang, filename] = className?.split(",") || [];
+                  return (
+                    <details open={true}>
+                      <summary className="font-bold bg-neutral-50 p-2 rounded-lg text-sm cursor-pointer mt-0 flex items-center gap-1 select-none">
+                        <File className="h-4 w-4" />
+                        {filename ? filename : "code"}
+                      </summary>
+                      <CodeView
+                        code={String(children).replace(/\n$/, "")}
+                        lang={lang ? lang.split("-")[1] : "javascript"}
+                        {...rest}
+                      />
+                    </details>
+                  )
                 },
               }}
             />

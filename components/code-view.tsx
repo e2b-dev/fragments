@@ -13,14 +13,13 @@ export function CodeView({ code, lang }: { code: string; lang: string }) {
     <ReactPrismjs
       source={code}
       language={lang}
+      className="rounded-lg border border-neutral-150"
       // className="line-numbers"
       // @ts-ignore
       style={{
         fontFamily: '"Fira code", "Fira Mono", monospace',
         fontSize: 14,
         backgroundColor: "rgba(0,0,0,.01)",
-        border: "0.5px solid rgba(0,0,0,.1)",
-        borderRadius: "8px",
       }}
     />
   );
