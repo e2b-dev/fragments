@@ -97,8 +97,8 @@
       "name": "Mistral Large"
     },
     {
-      "id": "anthropic/claude-3-opus-20240229",
-      "name": "Claude 3 Opus (via OpenRouter)",
+      "id": "anthropic/claude-3.5-sonnet",
+      "name": "Claude 3.5 Sonnet (via OpenRouter)",
       "provider": "OpenRouter",
       "providerId": "openrouter"
     }
