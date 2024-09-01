@@ -25,10 +25,10 @@ export async function POST(req: Request) {
 
   // Create a interpreter or a sandbox
   if (artifact.template === 'code-interpreter-multilang') {
-    sbx = await CodeInterpreter.create({ metadata: { template: artifact.template, userID: userID }, timeoutMs: sandboxTimeout })
+    sbx = await CodeInterpreter.create({ metadata: { template: artifact.template, userID: userID }, timeoutMs: sandboxTimeout, apiKey })
     console.log('Created code interpreter', sbx.sandboxID)
   } else {
-    sbx = await Sandbox.create(artifact.template, { metadata: { template: artifact.template, userID: userID }, timeoutMs: sandboxTimeout })
+    sbx = await Sandbox.create(artifact.template, { metadata: { template: artifact.template, userID: userID }, timeoutMs: sandboxTimeout, apiKey })
     console.log('Created sandbox', sbx.sandboxID)
   }
 
