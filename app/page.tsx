@@ -33,7 +33,6 @@ export type MessageImage = {
 export type Message = {
   role: 'assistant' | 'user'
   content: Array<MessageText | MessageImage>
-  code?: string
   meta?: {
     title?: string
     description?: string
@@ -99,8 +98,7 @@ export default function Home() {
       setArtifact(object as ArtifactSchema)
       const lastAssistantMessage = messages.findLast(message => message.role === 'assistant')
       if (lastAssistantMessage) {
-        lastAssistantMessage.content = [{ type: 'text', text: object.commentary || '' }]
-        lastAssistantMessage.code = object.code || ''
+        lastAssistantMessage.content = [{ type: 'text', text: object.commentary || '' }, { type: 'text', text: object.code || '' }]
         lastAssistantMessage.meta = {
           title: object.title,
           description: object.description
@@ -145,7 +143,6 @@ export default function Home() {
     addMessage({
       role: 'assistant',
       content: [{ type: 'text', text: 'Generating artifact...' }],
-      code: '',
     })
 
     setChatInput('')
