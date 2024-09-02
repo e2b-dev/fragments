@@ -1,7 +1,7 @@
 import { ArrowUp, ImagePlus, Square, Terminal, X } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
-import { Message, MessageText } from '@/app/page'
+import { Message, MessageText } from '@/lib/messages'
 import { Button } from './ui/button'
 import { useEffect, useState } from 'react'
 

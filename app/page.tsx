@@ -13,39 +13,13 @@ import NavBar from '@/components/navbar'
 import { supabase } from '@/lib/supabase'
 import { AuthDialog } from '@/components/AuthDialog'
 import { useAuth } from '@/lib/auth'
+import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 import templates, { TemplateId } from '@/lib/templates';
 
 import { ExecutionResult } from './api/sandbox/route';
-
-export type MessageText = {
-  type: 'text'
-  text: string
-}
-
-export type MessageImage = {
-  type: 'image'
-  image: string
-}
-
-export type Message = {
-  role: 'assistant' | 'user'
-  content: Array<MessageText | MessageImage>
-  meta?: {
-    title?: string
-    description?: string
-  }
-}
-
-async function toMessageImage(files: FileList | null) {
-  if (!files || files.length === 0) {
-    return []
-  }
-
-  return Promise.all(Array.from(files).map(async file => Buffer.from(await file.arrayBuffer()).toString('base64')))
-}
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
@@ -98,7 +72,7 @@ export default function Home() {
       setArtifact(object as ArtifactSchema)
       const lastAssistantMessage = messages.findLast(message => message.role === 'assistant')
       if (lastAssistantMessage) {
-        lastAssistantMessage.content = [{ type: 'text', text: object.commentary || '' }, { type: 'text', text: object.code || '' }]
+        lastAssistantMessage.content = [{ type: 'text', text: object.commentary || '' }, { type: 'code', text: object.code || '' }]
         lastAssistantMessage.meta = {
           title: object.title,
           description: object.description
@@ -134,7 +108,7 @@ export default function Home() {
 
     submit({
       userID: session?.user?.id,
-      messages: updatedMessages,
+      messages: toAISDKMessages(updatedMessages),
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
