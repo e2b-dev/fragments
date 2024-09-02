@@ -99,9 +99,7 @@ export default function Home() {
     }
   }, [object])
 
-  async function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-
+  async function handleSubmitAuth (e: FormData) {
     if (!session) {
       return setAuthDialog(true)
     }

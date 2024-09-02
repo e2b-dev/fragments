@@ -1,9 +1,9 @@
-import { ArrowUp, Square, Terminal } from 'lucide-react'
+import { ArrowUp, ImagePlus, Square, Terminal, X } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
 import { Message } from '@/app/page'
 import { Button } from './ui/button'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
@@ -20,7 +20,7 @@ export function Chat({
   messages: Message[],
   input: string,
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
+  handleSubmit: (formData: FormData) => void,
 }) {
   useEffect(() => {
     const chatContainer = document.getElementById('chat-container')
@@ -28,6 +28,14 @@ export function Chat({
       chatContainer.scrollTop = chatContainer.scrollHeight
     }
   }, [JSON.stringify(messages)])
+
+  const [files, setFiles] = useState<FileList | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFiles(e.target.files)
+    }
+  }
 
   return (
     <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto justify-between">
@@ -51,7 +59,14 @@ export function Chat({
       </div>
 
       <div className="flex flex-col gap-4">
-        <form onSubmit={handleSubmit} className="flex flex-row gap-2">
+        <form action={handleSubmit} className="flex flex-row gap-2">
+          <div className="relative">
+            <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileChange} />
+            <Button type="button" variant="outline" size="icon" className="rounded-full h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
+              <ImagePlus className="h-5 w-5" />
+            </Button>
+            { files && <div className="absolute top-[-3px] right-[-3px] bg-[#ff8800] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{files.length}</div> }
+          </div>
           <Input className="ring-0 rounded-xl" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange}/>
           { !isLoading ? (
               <Button variant="outline" size="icon" className='rounded-full h-10 w-11'>
