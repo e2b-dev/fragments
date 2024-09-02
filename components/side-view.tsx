@@ -89,7 +89,7 @@ export function SideView({
           <div className="w-full flex-1 flex flex-col items-start justify-start overflow-y-auto">
             <TabsContent value="code" className="flex-1 w-full">
               {artifact.code &&
-                <CodeView code={artifact.code} template={artifact.template as TemplateId}/>
+                <CodeView code={artifact.code} lang={artifact.file_path?.split('.').pop() || ''}/>
               }
             </TabsContent>
             <TabsContent value="artifact" className="flex-1 w-full flex flex-col items-start justify-start">
