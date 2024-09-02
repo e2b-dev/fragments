@@ -43,5 +43,8 @@ export async function toMessageImage(files: FileList | null) {
     return []
   }
 
-  return Promise.all(Array.from(files).map(async file => Buffer.from(await file.arrayBuffer()).toString('base64')))
+  return Promise.all(Array.from(files).map(async file => {
+    const base64 = Buffer.from(await file.arrayBuffer()).toString('base64')
+    return `data:${file.type};base64,${base64}`
+  }))
 }

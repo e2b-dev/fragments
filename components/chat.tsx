@@ -40,7 +40,15 @@ export function Chat({
       <div id="chat-container" className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
         {messages.map((message: Message, index: number) => (
           <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white' : 'bg-white/40'} rounded-lg border-b border-[#FFE7CC] font-serif`} key={index}>
-            {(message.content[0] as MessageText).text}
+            {message.content.map((content, id) => {
+              if (content.type === 'text') {
+                return <p key={content.text} className="flex-1">{content.text}</p>
+              }
+
+              if (content.type === 'image') {
+                return <img key={id} src={content.image} alt="artifact" className="mr-2 inline-block w-[50px] h-[50px] object-contain border border-[#FFE7CC] rounded-lg bg-white mt-2" />
+              }
+            })}
             {message.meta &&
               <div className="mt-4 flex justify-start items-start border border-[#FFE7CC] rounded-md">
                 <div className="p-2 self-stretch border-r border-[#FFE7CC] bg-[#FFE7CC] w-14 flex items-center justify-center">
