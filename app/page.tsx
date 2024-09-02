@@ -35,7 +35,7 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([])
   const [artifact, setArtifact] = useState<Partial<ArtifactSchema> | undefined>()
   const [currentTab, setCurrentTab] = useState<'code' | 'artifact'>('code')
-
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const { session, apiKey } = useAuth(setAuthDialog)
 
@@ -61,8 +61,10 @@ export default function Home() {
 
         const result = await response.json()
         console.log('result', result)
+
         setResult(result)
         setCurrentTab('artifact')
+        setIsPreviewLoading(false)
       }
     }
   })
@@ -122,6 +124,7 @@ export default function Home() {
     setChatInput('')
     setFiles(null)
     setCurrentTab('code')
+    setIsPreviewLoading(true)
 
     posthog.capture('chat_submit', {
       template: selectedTemplate,
@@ -192,7 +195,7 @@ export default function Home() {
         <SideView
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}
-          isLoading={isLoading}
+          isLoading={isPreviewLoading}
           artifact={artifact as ArtifactSchema}
           result={result}
           selectedTemplate={artifact?.template as TemplateId}
