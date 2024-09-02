@@ -14,6 +14,7 @@ export function Chat({
   input,
   handleInputChange,
   handleSubmit,
+  isMultiModal,
   files,
   handleFileChange,
 }: {
@@ -23,6 +24,7 @@ export function Chat({
   input: string,
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
+  isMultiModal: boolean,
   files: FileList | null,
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }) {
@@ -58,7 +60,7 @@ export function Chat({
         <form onSubmit={handleSubmit} className="flex flex-row gap-2">
           <div className="relative">
             <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileChange} />
-            <Button type="button" variant="outline" size="icon" className="rounded-full h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
+            <Button disabled={!isMultiModal} type="button" variant="outline" size="icon" className="rounded-full h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
               <ImagePlus className="h-5 w-5" />
             </Button>
             { files && <div className="absolute top-[-3px] right-[-3px] bg-[#ff8800] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{files.length}</div> }

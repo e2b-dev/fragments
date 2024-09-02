@@ -185,6 +185,7 @@ export default function Home() {
           input={chatInput}
           handleInputChange={handleSaveInputChange}
           handleSubmit={handleSubmitAuth}
+          isMultiModal={currentModel?.multiModal || false}
           files={files}
           handleFileChange={handleFileChange}
         />
