@@ -18,7 +18,7 @@ export function CodeView({ code, lang }: { code: string; lang: string }) {
       style={{
         fontFamily: '"Fira code", "Fira Mono", monospace',
         fontSize: 14,
-        backgroundColor: "rgba(0,0,0,.01)",
+        backgroundColor: "transparent",
         margin: 0,
         padding: 0,
       }}

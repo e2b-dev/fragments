@@ -41,6 +41,8 @@ export default function Home() {
 
   const [result, setResult] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
+  const [artifact, setArtifact] = useState<Partial<ArtifactSchema>>()
+  const [currentTab, setCurrentTab] = useState<'code' | 'artifact'>('code')
 
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const { session, apiKey } = useAuth(setAuthDialog)
@@ -48,7 +50,7 @@ export default function Home() {
   const currentModel = modelsList.models.find(model => model.id === languageModel.model)
   const currentTemplate = selectedTemplate === 'auto' ? templates : { [selectedTemplate]: templates[selectedTemplate] }
 
-  const { object: artifact, submit, isLoading, stop, error } = useObject({
+  const { object, submit, isLoading, stop, error } = useObject({
     api: '/api/chat',
     schema,
     onFinish: async ({ object: artifact, error }) => {
@@ -68,22 +70,24 @@ export default function Home() {
         const result = await response.json()
         console.log('result', result)
         setResult(result)
+        setCurrentTab('artifact')
       }
     }
   })
 
   useEffect(() => {
-    if (artifact) {
+    if (object) {
+      setArtifact(object as ArtifactSchema)
       const lastAssistantMessage = messages.findLast(message => message.role === 'assistant')
       if (lastAssistantMessage) {
-        lastAssistantMessage.content = artifact.commentary || ''
+        lastAssistantMessage.content = object.commentary || ''
         lastAssistantMessage.meta = {
-          title: artifact.title,
-          description: artifact.description
+          title: object.title,
+          description: object.description
         }
       }
     }
-  }, [artifact])
+  }, [object])
 
   function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -115,6 +119,7 @@ export default function Home() {
     })
 
     setChatInput('')
+    setCurrentTab('code')
 
     posthog.capture('chat_submit', {
       template: selectedTemplate,
@@ -173,6 +178,8 @@ export default function Home() {
           handleSubmit={handleSubmitAuth}
         />
         <SideView
+          selectedTab={currentTab}
+          onSelectedTabChange={setCurrentTab}
           isLoading={isLoading}
           artifact={artifact as ArtifactSchema}
           result={result}
