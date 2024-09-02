@@ -19,28 +19,38 @@ import modelsList from '@/lib/models.json'
 import templates, { TemplateId } from '@/lib/templates';
 
 import { ExecutionResult } from './api/sandbox/route';
-import { CoreMessage } from 'ai'
+
+export type MessageText = {
+  type: 'text'
+  text: string
+}
+
+export type MessageImage = {
+  type: 'image'
+  image: string
+}
 
 export type Message = {
-  // id: string
-  role: 'user' | 'assistant'
-  content: string
-  commentary?: string
+  role: 'assistant' | 'user'
+  content: Array<MessageText | MessageImage>
+  code?: string
   meta?: {
     title?: string
     description?: string
   }
 }
 
-function toAISDKMessages(messages: Message[]): CoreMessage[] {
-  return messages.map(message => ({
-    role: message.role,
-    content: message.content,
-  }))
+async function toMessageImage(files: FileList | null) {
+  if (!files || files.length === 0) {
+    return []
+  }
+
+  return Promise.all(Array.from(files).map(async file => Buffer.from(await file.arrayBuffer()).toString('base64')))
 }
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
+  const [files, setFiles] = useState<FileList | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<'auto' | TemplateId>('auto')
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
     model: 'claude-3-5-sonnet-20240620'
@@ -89,8 +99,8 @@ export default function Home() {
       setArtifact(object as ArtifactSchema)
       const lastAssistantMessage = messages.findLast(message => message.role === 'assistant')
       if (lastAssistantMessage) {
-        lastAssistantMessage.commentary = object.commentary || ''
-        lastAssistantMessage.content = object.code || ''
+        lastAssistantMessage.content = [{ type: 'text', text: object.commentary || '' }]
+        lastAssistantMessage.code = object.code || ''
         lastAssistantMessage.meta = {
           title: object.title,
           description: object.description
@@ -99,7 +109,9 @@ export default function Home() {
     }
   }, [object])
 
-  async function handleSubmitAuth (e: FormData) {
+  async function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
     if (!session) {
       return setAuthDialog(true)
     }
@@ -108,14 +120,23 @@ export default function Home() {
       stop()
     }
 
+    const content: Message['content'] = [{ type: 'text', text: chatInput }]
+    const images = await toMessageImage(files)
+
+    if (images.length > 0) {
+      images.forEach(image => {
+        content.push({ type: 'image', image })
+      })
+    }
+
     const updatedMessages = addMessage({
       role: 'user',
-      content: chatInput,
+      content,
     })
 
     submit({
       userID: session?.user?.id,
-      messages: toAISDKMessages(updatedMessages),
+      messages: updatedMessages,
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
@@ -123,11 +144,12 @@ export default function Home() {
 
     addMessage({
       role: 'assistant',
-      content: '',
-      commentary: 'Generating artifact...',
+      content: [{ type: 'text', text: 'Generating artifact...' }],
+      code: '',
     })
 
     setChatInput('')
+    setFiles(null)
     setCurrentTab('code')
 
     posthog.capture('chat_submit', {
@@ -143,6 +165,12 @@ export default function Home() {
 
   function handleSaveInputChange (e: React.ChangeEvent<HTMLInputElement>) {
     setChatInput(e.target.value)
+  }
+
+  function handleFileChange (e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) {
+      setFiles(e.target.files)
+    }
   }
 
   function logout () {
@@ -186,6 +214,8 @@ export default function Home() {
           input={chatInput}
           handleInputChange={handleSaveInputChange}
           handleSubmit={handleSubmitAuth}
+          files={files}
+          handleFileChange={handleFileChange}
         />
         <SideView
           selectedTab={currentTab}

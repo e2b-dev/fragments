@@ -1,7 +1,7 @@
 import { ArrowUp, ImagePlus, Square, Terminal, X } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
-import { Message } from '@/app/page'
+import { Message, MessageText } from '@/app/page'
 import { Button } from './ui/button'
 import { useEffect, useState } from 'react'
 
@@ -14,13 +14,17 @@ export function Chat({
   input,
   handleInputChange,
   handleSubmit,
+  files,
+  handleFileChange,
 }: {
   isLoading: boolean,
   stop: () => void,
   messages: Message[],
   input: string,
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-  handleSubmit: (formData: FormData) => void,
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
+  files: FileList | null,
+  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }) {
   useEffect(() => {
     const chatContainer = document.getElementById('chat-container')
@@ -29,20 +33,12 @@ export function Chat({
     }
   }, [JSON.stringify(messages)])
 
-  const [files, setFiles] = useState<FileList | null>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(e.target.files)
-    }
-  }
-
   return (
     <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto justify-between">
       <div id="chat-container" className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
         {messages.map((message: Message, index: number) => (
           <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white' : 'bg-white/40'} rounded-lg border-b border-[#FFE7CC] font-serif`} key={index}>
-            {message.role === 'assistant' ? message.commentary : message.content}
+            {(message.content[0] as MessageText).text}
             {message.meta &&
               <div className="mt-4 flex justify-start items-start border border-[#FFE7CC] rounded-md">
                 <div className="p-2 self-stretch border-r border-[#FFE7CC] bg-[#FFE7CC] w-14 flex items-center justify-center">
@@ -59,7 +55,7 @@ export function Chat({
       </div>
 
       <div className="flex flex-col gap-4">
-        <form action={handleSubmit} className="flex flex-row gap-2">
+        <form onSubmit={handleSubmit} className="flex flex-row gap-2">
           <div className="relative">
             <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileChange} />
             <Button type="button" variant="outline" size="icon" className="rounded-full h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
