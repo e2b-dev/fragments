@@ -3,6 +3,7 @@ import { ArrowUp, Square, Terminal } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Message } from '@/app/page'
 import { Button } from './ui/button'
+import { useEffect } from 'react'
 
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
@@ -16,14 +17,21 @@ export function Chat({
 }: {
   isLoading: boolean,
   stop: () => void,
-  messages: any,
+  messages: Message[],
   input: string,
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
 }) {
+  useEffect(() => {
+    const chatContainer = document.getElementById('chat-container')
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight
+    }
+  }, [JSON.stringify(messages)])
+
   return (
     <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto justify-between">
-      <div className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
+      <div id="chat-container" className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
         {messages.map((message: Message, index: number) => (
           <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white' : 'bg-white/40'} rounded-lg border-b border-[#FFE7CC] font-serif`} key={index}>
             {message.content}
