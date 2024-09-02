@@ -1,6 +1,7 @@
 import {
   streamObject,
   LanguageModel,
+  CoreMessage,
 } from 'ai'
 
 import ratelimit from '@/lib/ratelimit'
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     })
   }
 
-  const { prompt, userID, template, model, config }: { prompt: string, userID: string, template: Templates, model: LLMModel, config: LLMModelConfig } = await req.json()
+  const { messages, userID, template, model, config }: { messages: CoreMessage[], userID: string, template: Templates, model: LLMModel, config: LLMModelConfig } = await req.json()
   console.log('userID', userID)
   // console.log('template', template)
   console.log('model', model)
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
     model: modelClient as LanguageModel,
     schema,
     system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. You can install additional dependencies. You can use one of the following templates:\n${templatesToPrompt(template)}`,
-    prompt,
+    messages,
     mode: getDefaultMode(model),
     ...modelParams,
   })

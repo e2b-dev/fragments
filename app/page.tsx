@@ -19,15 +19,24 @@ import modelsList from '@/lib/models.json'
 import templates, { TemplateId } from '@/lib/templates';
 
 import { ExecutionResult } from './api/sandbox/route';
+import { CoreMessage } from 'ai'
 
 export type Message = {
   // id: string
   role: 'user' | 'assistant'
   content: string
+  commentary?: string
   meta?: {
     title?: string
     description?: string
   }
+}
+
+function toAISDKMessages(messages: Message[]): CoreMessage[] {
+  return messages.map(message => ({
+    role: message.role,
+    content: message.content,
+  }))
 }
 
 export default function Home() {
@@ -41,7 +50,7 @@ export default function Home() {
 
   const [result, setResult] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
-  const [artifact, setArtifact] = useState<Partial<ArtifactSchema>>()
+  const [artifact, setArtifact] = useState<Partial<ArtifactSchema> | undefined>()
   const [currentTab, setCurrentTab] = useState<'code' | 'artifact'>('code')
 
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
@@ -80,7 +89,8 @@ export default function Home() {
       setArtifact(object as ArtifactSchema)
       const lastAssistantMessage = messages.findLast(message => message.role === 'assistant')
       if (lastAssistantMessage) {
-        lastAssistantMessage.content = object.commentary || ''
+        lastAssistantMessage.commentary = object.commentary || ''
+        lastAssistantMessage.content = object.code || ''
         lastAssistantMessage.meta = {
           title: object.title,
           description: object.description
@@ -89,7 +99,7 @@ export default function Home() {
     }
   }, [object])
 
-  function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
     if (!session) {
@@ -100,22 +110,23 @@ export default function Home() {
       stop()
     }
 
+    const updatedMessages = addMessage({
+      role: 'user',
+      content: chatInput,
+    })
+
     submit({
       userID: session?.user?.id,
-      prompt: chatInput,
+      messages: toAISDKMessages(updatedMessages),
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
     })
 
     addMessage({
-      role: 'user',
-      content: chatInput
-    })
-
-    addMessage({
       role: 'assistant',
-      content: 'Generating artifact...',
+      content: '',
+      commentary: 'Generating artifact...',
     })
 
     setChatInput('')
@@ -129,6 +140,7 @@ export default function Home() {
 
   function addMessage (message: Message) {
     setMessages(previousMessages => [...previousMessages, message])
+    return [...messages, message]
   }
 
   function handleSaveInputChange (e: React.ChangeEvent<HTMLInputElement>) {
