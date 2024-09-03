@@ -160,6 +160,14 @@ export default function Home() {
     posthog.capture('github_click')
   }
 
+  function handleNewChat () {
+    setMessages([])
+    setArtifact(undefined)
+    setResult(undefined)
+    setCurrentTab('code')
+    setIsPreviewLoading(false)
+  }
+
   return (
     <main className="flex min-h-screen max-h-screen">
       {
@@ -176,6 +184,7 @@ export default function Home() {
         languageModel={languageModel}
         onLanguageModelChange={handleLanguageModelChange}
         onGitHubClick={handleGitHubClick}
+        onNewChat={handleNewChat}
         apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
         baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
       />

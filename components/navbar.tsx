@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Separator } from '@/components/ui/separator'
-import { GithubIcon, LogOut, Settings2, Sparkles } from 'lucide-react'
+import { GithubIcon, LogOut, Plus, Settings2, Sparkles } from 'lucide-react'
 
 import {
   Select,
@@ -39,6 +39,7 @@ export default function NavBar({
   apiKeyConfigurable,
   baseURLConfigurable,
   onGitHubClick,
+  onNewChat
 }: {
   session: Session | null,
   showLogin: () => void,
@@ -52,6 +53,7 @@ export default function NavBar({
   apiKeyConfigurable: boolean,
   baseURLConfigurable: boolean,
   onGitHubClick: () => void,
+  onNewChat: () => void,
 }) {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white">
@@ -82,7 +84,7 @@ export default function NavBar({
           )}
         </div>
       </div>
-      <div className="flex items-end border-b border-gray-300 px-4 py-2 space-x-2">
+      <div className="flex w-full items-end border-b border-gray-300 px-4 py-2 space-x-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="template">Persona</Label>
           <Select name="template" defaultValue={selectedTemplate} onValueChange={onSelectedTemplateChange}>
@@ -255,6 +257,9 @@ export default function NavBar({
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button variant="outline" className="!ml-auto" onClick={onNewChat}>
+          <Plus className="mr-2 h-4 w-4" /> New chat
+        </Button>
       </div>
     </nav>
   )
