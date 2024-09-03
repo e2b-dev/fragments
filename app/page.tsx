@@ -161,6 +161,7 @@ export default function Home() {
   }
 
   function handleNewChat () {
+    stop()
     setMessages([])
     setArtifact(undefined)
     setResult(undefined)
