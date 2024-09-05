@@ -4,7 +4,9 @@ import {
 } from '@supabase/auth-ui-shared'
 import { SupabaseClient } from '@supabase/supabase-js'
 
-function AuthForm({ supabase }: { supabase: SupabaseClient }) {
+type ViewType = "sign_in" | "sign_up" | "magic_link" | "forgotten_password" | "update_password" | "verify_otp"
+
+function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, view: ViewType }) {
   return (
     <div className="mx-auto flex flex-1 w-full justify-center items-center flex-col">
       <h1 className="text-4xl font-bold mt-8 mb-4">
@@ -32,7 +34,7 @@ function AuthForm({ supabase }: { supabase: SupabaseClient }) {
               },
             },
           }}
-          view='sign_in'
+          view={view}
           theme='default'
           showLinks={true}
           providers={['github']}
