@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from 'react'
-import { LoaderCircle, RotateCw } from 'lucide-react'
+import { Download, LoaderCircle, RotateCw } from 'lucide-react'
 
 import { ArtifactView } from '@/components/artifact-view'
 import { CodeView } from '@/components/code-view'
@@ -53,6 +53,19 @@ export function SideView({
       })
   }
 
+  function download (filename: string, content: string) {
+    const blob = new Blob([content], { type: 'text/plain' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.style.display = 'none'
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+  }
+
   return (
     <div className="flex-1 flex flex-col shadow-2xl rounded-lg border border-[#FFE7CC] bg-white max-w-[800px]">
       <Tabs value={selectedTab} onValueChange={(value) => onSelectedTabChange(value as 'code' | 'artifact')} className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
@@ -69,17 +82,17 @@ export function SideView({
           </div>
           <div className='flex items-center justify-end space-x-2'>
           {result && (
-            <Button disabled={!isLinkAvailable} variant="outline" className='h-8 rounded-md px-3' onClick={() => refreshIframe()}>
+            <Button disabled={!isLinkAvailable} variant="outline" className='h-8 rounded-md px-3' title='Refresh' onClick={() => refreshIframe()}>
               <RotateCw className="h-4 w-4" />
             </Button>
           )}
           {result && (
-            <Button disabled={!isLinkAvailable} variant="outline" className='h-8 rounded-md px-3' onClick={() => copy(result.url!)}>
-              <Link className="h-4 w-4" />
+            <Button disabled={!isLinkAvailable} variant="outline" className='h-8 rounded-md px-3' title='Download Artifact' onClick={() => download(artifact.file_path, artifact.code)}>
+              <Download className="h-4 w-4" />
             </Button>
           )}
           {result && (
-            <Button variant="outline" className='h-8 rounded-md px-3' onClick={() => copy(artifact.code)}>
+            <Button variant="outline" className='h-8 rounded-md px-3' title='Copy URL' onClick={() => copy(result.url!)}>
               <Copy className="h-4 w-4" />
             </Button>
           )}
