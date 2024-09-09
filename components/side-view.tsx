@@ -67,11 +67,11 @@ export function SideView({
   }
 
   return (
-    <div className="flex-1 flex flex-col shadow-2xl rounded-lg border border-[#FFE7CC] bg-white max-w-[800px]">
+    <div className="flex-1 flex flex-col shadow-2xl rounded-lg border max-w-[800px] bg-popover">
       <Tabs value={selectedTab} onValueChange={(value) => onSelectedTabChange(value as 'code' | 'artifact')} className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
-        <div className="w-full p-2 grid grid-cols-3 items-center justify-end bg-[#FAFAFA] rounded-t-lg border-b border-[#FFE7CC]">
+        <div className="w-full p-2 grid grid-cols-3 items-center justify-end rounded-t-lg border-b">
           <div className='flex justify-start'>
-            {isLoading && <LoaderCircle className="h-4 w-4 text-black/15 animate-spin" />}
+            {isLoading && <LoaderCircle className="h-4 w-4 text-[#a1a1aa] animate-spin" />}
           </div>
 
           <div className='flex justify-center'>
@@ -82,17 +82,17 @@ export function SideView({
           </div>
           <div className='flex items-center justify-end space-x-2'>
           {result && (
-            <Button disabled={!isLinkAvailable} variant="outline" className='h-8 rounded-md px-3' title='Refresh' onClick={() => refreshIframe()}>
+            <Button disabled={!isLinkAvailable} variant="ghost" className='h-8 rounded-md px-3 text-muted-foreground' title='Refresh' onClick={() => refreshIframe()}>
               <RotateCw className="h-4 w-4" />
             </Button>
           )}
           {result && (
-            <Button disabled={!isLinkAvailable} variant="outline" className='h-8 rounded-md px-3' title='Download Artifact' onClick={() => download(artifact.file_path, artifact.code)}>
+            <Button disabled={!isLinkAvailable} variant="ghost" className='h-8 rounded-md px-3 text-muted-foreground' title='Download Artifact' onClick={() => download(artifact.file_path, artifact.code)}>
               <Download className="h-4 w-4" />
             </Button>
           )}
           {result && (
-            <Button variant="outline" className='h-8 rounded-md px-3' title='Copy URL' onClick={() => copy(result.url!)}>
+            <Button variant="ghost" className='h-8 rounded-md px-3 text-muted-foreground' title='Copy URL' onClick={() => copy(result.url!)}>
               <Copy className="h-4 w-4" />
             </Button>
           )}

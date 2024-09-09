@@ -18,7 +18,7 @@ function LogsOutput({ stdout, stderr }: {
   if (stdout.length === 0 && stderr.length === 0) return null
 
   return (
-    <div className="w-full h-32 max-h-32 overflow-y-auto flex flex-col items-start justify-start space-y-1 p-4 bg-[#F5F5F5] rounded">
+    <div className="w-full h-32 max-h-32 overflow-y-auto flex flex-col items-start justify-start space-y-1 p-4 border-t">
       {stdout && stdout.length > 0 && stdout.map((out: string, index: number) => (
         <pre key={index} className="text-xs">
           {out}
