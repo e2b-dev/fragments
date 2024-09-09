@@ -65,7 +65,7 @@ export function Chat({
       </div>
 
       <div className="flex flex-col gap-4">
-        <form onSubmit={handleSubmit} className="flex flex-row gap-2">
+        <form onSubmit={handleSubmit} className="flex flex-row gap-2 items-center">
           <div className="relative">
             <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileChange} />
             <Button disabled={!isMultiModal} type="button" variant="outline" size="icon" className="rounded-full h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>

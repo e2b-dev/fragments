@@ -67,9 +67,9 @@ export function SideView({
   }
 
   return (
-    <div className="flex-1 flex flex-col shadow-2xl rounded-lg border border-[#FFE7CC] bg-white max-w-[800px]">
+    <div className="flex-1 flex flex-col shadow-2xl rounded-lg border max-w-[800px]">
       <Tabs value={selectedTab} onValueChange={(value) => onSelectedTabChange(value as 'code' | 'artifact')} className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
-        <div className="w-full p-2 grid grid-cols-3 items-center justify-end bg-[#FAFAFA] rounded-t-lg border-b border-[#FFE7CC]">
+        <div className="w-full p-2 grid grid-cols-3 items-center justify-end rounded-t-lg border-b">
           <div className='flex justify-start'>
             {isLoading && <LoaderCircle className="h-4 w-4 text-black/15 animate-spin" />}
           </div>

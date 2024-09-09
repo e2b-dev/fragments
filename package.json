@@ -52,6 +52,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.25.6",
     "@types/node": "^22.2.0",
     "@types/prismjs": "^1.26.4",
     "@types/react": "^18",
