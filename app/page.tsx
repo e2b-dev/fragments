@@ -12,7 +12,7 @@ import NavBar from '@/components/navbar'
 
 import { supabase } from '@/lib/supabase'
 import { AuthDialog } from '@/components/AuthDialog'
-import { useAuth } from '@/lib/auth'
+import { AuthViewType, useAuth } from '@/lib/auth'
 import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 
 import { LLMModel, LLMModelConfig } from '@/lib/models'
@@ -37,7 +37,8 @@ export default function Home() {
   const [currentTab, setCurrentTab] = useState<'code' | 'artifact'>('code')
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
-  const { session, apiKey } = useAuth(setAuthDialog)
+  const [authView, setAuthView] = useState<AuthViewType>('sign_in')
+  const { session, apiKey } = useAuth(setAuthDialog, setAuthView)
 
   const currentModel = modelsList.models.find(model => model.id === languageModel.model)
   const currentTemplate = selectedTemplate === 'auto' ? templates : { [selectedTemplate]: templates[selectedTemplate] }
@@ -172,7 +173,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen max-h-screen">
       {
-        supabase && <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} supabase={supabase} />
+        supabase && <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} view={authView} supabase={supabase} />
       }
       <NavBar
         session={session}

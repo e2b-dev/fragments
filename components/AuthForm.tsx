@@ -1,12 +1,11 @@
+import { AuthViewType } from '@/lib/auth'
 import { Auth } from '@supabase/auth-ui-react'
 import {
   ThemeSupa
 } from '@supabase/auth-ui-shared'
 import { SupabaseClient } from '@supabase/supabase-js'
 
-type ViewType = "sign_in" | "sign_up" | "magic_link" | "forgotten_password" | "update_password" | "verify_otp"
-
-function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, view: ViewType }) {
+function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, view: AuthViewType }) {
   return (
     <div className="mx-auto flex flex-1 w-full justify-center items-center flex-col">
       <h1 className="text-4xl font-bold mt-8 mb-4">

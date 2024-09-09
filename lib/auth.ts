@@ -3,6 +3,8 @@ import { Session } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 import { usePostHog } from 'posthog-js/react'
 
+export type AuthViewType = "sign_in" | "sign_up" | "magic_link" | "forgotten_password" | "update_password" | "verify_otp"
+
 interface UserTeam {
   id: string;
   name: string;
@@ -32,10 +34,11 @@ export async function getUserAPIKey (session: Session) {
   return defaultTeam?.apiKeys[0]
 }
 
-export function useAuth (setAuthDialog: (value: boolean) => void) {
+export function useAuth (setAuthDialog: (value: boolean) => void, setAuthView: (value: AuthViewType) => void) {
   const [session, setSession] = useState<Session | null>(null)
   const [apiKey, setApiKey] = useState<string | undefined>(undefined)
   const posthog = usePostHog()
+  let recovery = false
 
   useEffect(() => {
     if (!supabase) {
@@ -52,7 +55,17 @@ export function useAuth (setAuthDialog: (value: boolean) => void) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
 
-      if (_event === 'SIGNED_IN') {
+      if (_event === 'PASSWORD_RECOVERY') {
+        recovery = true
+        setAuthView('update_password')
+        setAuthDialog(true)
+      }
+
+      if (_event === 'USER_UPDATED' && recovery) {
+        recovery = false
+      }
+
+      if (_event === 'SIGNED_IN' && !recovery) {
         setAuthDialog(false)
         getUserAPIKey(session as Session).then(setApiKey)
         posthog.identify(session?.user.id, { email: session?.user.email })
@@ -61,6 +74,7 @@ export function useAuth (setAuthDialog: (value: boolean) => void) {
 
       if (_event === 'SIGNED_OUT') {
         setApiKey(undefined)
+        setAuthView('sign_in')
         posthog.capture('sign_out')
         posthog.reset()
       }
