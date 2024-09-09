@@ -56,7 +56,7 @@ export default function NavBar({
   onNewChat: () => void,
 }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white">
+    <nav className="fixed top-0 left-0 right-0 bg-background">
       <div className="flex px-4 py-2">
         <div className="flex flex-1 items-center">
           <Link href="/" className="flex items-center gap-2" target="_blank">
