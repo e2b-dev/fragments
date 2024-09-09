@@ -78,7 +78,7 @@ export default function NavBar({
               </Button>
             </div>
           ) : (
-            <Button variant="outline" size="icon" className="text-sm font-medium px-8 py-2" onClick={showLogin}>
+            <Button variant="default" size="icon" className="text-sm font-medium px-8 py-2" onClick={showLogin}>
               Sign in
             </Button>
           )}
@@ -257,7 +257,7 @@ export default function NavBar({
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant="outline" className="!ml-auto" onClick={onNewChat}>
+        <Button variant='secondary' className="!ml-auto" onClick={onNewChat}>
           <Plus className="mr-2 h-4 w-4" /> New chat
         </Button>
       </div>

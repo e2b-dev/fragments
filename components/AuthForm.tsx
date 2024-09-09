@@ -21,7 +21,12 @@ function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, vi
                 colors: {
                   brand: 'rgb(255, 136, 0)',
                   brandAccent: 'rgb(255, 136, 0)',
+                  inputText: '#FFF',
                 },
+                radii: {
+                  borderRadiusButton: '20px',
+                  inputBorderRadius: '12px'
+                }
               },
             },
           }}
