@@ -19,7 +19,7 @@ export function CodeView({ code, lang }: { code: string; lang: string }) {
     <pre
       className="p-4"
       style={{
-        fontSize: 12,
+        fontSize: 14,
         backgroundColor: "transparent",
         borderRadius: 0,
         margin: 0,

@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Message, MessageText } from '@/lib/messages'
 import { Button } from './ui/button'
 import { useEffect, useState } from 'react'
+import { Textarea } from './ui/textarea'
 
 // simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
 
@@ -23,7 +24,7 @@ export function Chat({
   stop: () => void,
   messages: Message[],
   input: string,
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void,
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
   isMultiModal: boolean,
   files: FileList | null,
@@ -70,25 +71,27 @@ export function Chat({
       </div>
 
       <div className="flex flex-col gap-4 mt-auto">
-        <form onSubmit={handleSubmit} className="flex flex-row gap-2 items-center">
-          <div className="relative">
+        <form onSubmit={handleSubmit} className="relative flex flex-row gap-2 items-start">
+          <div className='absolute top-2 right-2 flex flex-row gap-2 items-center'>
             <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileChange} />
-            <Button disabled={!isMultiModal} type="button" variant="outline" size="icon" className="rounded-full h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
-              <ImagePlus className="h-5 w-5" />
-            </Button>
-            { files && <div className="absolute top-[-3px] right-[-3px] bg-[#ff8800] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{files.length}</div> }
-          </div>
-          <Input className="ring-0 rounded-xl" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange}/>
-          { !isLoading ? (
-              <Button variant="secondary" size="icon" className='rounded-full h-10 w-11'>
+            <div className="relative">
+              <Button disabled={!isMultiModal} type="button" variant="outline" size="icon" className="rounded-xl h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
+                <ImagePlus className="h-5 w-5" />
+              </Button>
+              { files && <div className="absolute top-[-4px] right-[-4px] bg-[#ff8800] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{files.length}</div> }
+            </div>
+            { !isLoading ? (
+              <Button variant="default" size="icon" type="submit" className='rounded-xl h-10 w-10'>
                 <ArrowUp className="h-5 w-5" />
               </Button>
           ) : (
-              <Button variant="secondary" size="icon" className='rounded-full h-10 w-11' onClick={(e) => { e.preventDefault(); stop() }}>
+              <Button variant="secondary" size="icon" className='rounded-xl h-10 w-10' onClick={(e) => { e.preventDefault(); stop() }}>
                 <Square className="h-5 w-5" />
               </Button>
             )
           }
+          </div>
+          <Textarea rows={3} className="bg-background shadow-lg text-md p-4 resize-none ring-0 rounded-2xl" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange} />
         </form>
       </div>
     </div>

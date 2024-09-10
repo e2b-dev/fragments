@@ -44,26 +44,25 @@ export default function ModelSelector({
   baseURLConfigurable: boolean;
 }) {
   return (
-    <div className="flex w-full items-end space-x-2">
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="template">Persona</Label>
+    <div className="flex w-full items-center space-x-2">
+      <div className="flex flex-col">
         <Select
           name="template"
           defaultValue={selectedTemplate}
           onValueChange={onSelectedTemplateChange}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[200px] whitespace-nowrap shadow-none px-1 py-0 h-6 text-xs">
             <SelectValue placeholder="Select a persona" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent side="top">
             <SelectGroup>
               <SelectLabel>Persona</SelectLabel>
               <SelectItem value="auto">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
                   <Sparkles
                     className="flex text-[#a1a1aa]"
-                    width={16}
-                    height={16}
+                    width={14}
+                    height={14}
                   />
                   <span>Auto</span>
                 </div>
@@ -75,8 +74,8 @@ export default function ModelSelector({
                       className="flex"
                       src={`/thirdparty/templates/${templateId}.svg`}
                       alt={templateId}
-                      width={16}
-                      height={16}
+                      width={14}
+                      height={14}
                     />
                     <span>{template.name}</span>
                   </div>
@@ -86,14 +85,13 @@ export default function ModelSelector({
           </SelectContent>
         </Select>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="languageModel">Model</Label>
+      <div className="flex flex-col">
         <Select
           name="languageModel"
           defaultValue={languageModel.model}
           onValueChange={(e) => onLanguageModelChange({ model: e })}
         >
-          <SelectTrigger className="w-[200px] whitespace-nowrap">
+          <SelectTrigger className="w-[200px] whitespace-nowrap text-xs shadow-none px-1 py-0 h-6">
             <SelectValue placeholder="Language model" />
           </SelectTrigger>
           <SelectContent>
@@ -104,13 +102,13 @@ export default function ModelSelector({
                 <SelectLabel>{provider}</SelectLabel>
                 {models?.map((model) => (
                   <SelectItem key={model.id} value={model.id}>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1">
                       <Image
                         className="flex"
                         src={`/thirdparty/logos/${model.providerId}.svg`}
                         alt={model.provider}
-                        width={16}
-                        height={16}
+                        width={14}
+                        height={14}
                       />
                       <span>{model.name}</span>
                     </div>
@@ -123,7 +121,7 @@ export default function ModelSelector({
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" className="h-6 w-6">
             <Settings2 className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>

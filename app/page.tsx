@@ -139,7 +139,7 @@ export default function Home() {
     return [...messages, message]
   }
 
-  function handleSaveInputChange (e: React.ChangeEvent<HTMLInputElement>) {
+  function handleSaveInputChange (e: React.ChangeEvent<HTMLTextAreaElement>) {
     setChatInput(e.target.value)
   }
 
