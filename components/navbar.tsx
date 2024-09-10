@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Separator } from '@/components/ui/separator'
-import { GithubIcon, LogOut, Plus, Settings2, Sparkles } from 'lucide-react'
+import { ArrowRight, LogOut, Plus, Settings2, Sparkles } from 'lucide-react'
 
 import {
   Select,
@@ -25,6 +27,8 @@ import { Templates, TemplateId } from '@/lib/templates'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { DiscordLogoIcon, GitHubLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons'
 
 export default function NavBar({
   session,
@@ -38,8 +42,8 @@ export default function NavBar({
   onLanguageModelChange,
   apiKeyConfigurable,
   baseURLConfigurable,
-  onGitHubClick,
-  onNewChat
+  onNewChat,
+  onSocialClick,
 }: {
   session: Session | null,
   showLogin: () => void,
@@ -52,8 +56,8 @@ export default function NavBar({
   onLanguageModelChange: (config: LLMModelConfig) => void,
   apiKeyConfigurable: boolean,
   baseURLConfigurable: boolean,
-  onGitHubClick: () => void,
   onNewChat: () => void,
+  onSocialClick: (target: 'github' | 'x' | 'discord') => void,
 }) {
   return (
     <nav className="fixed top-0 left-0 right-0 bg-background">
@@ -66,20 +70,46 @@ export default function NavBar({
           <Link href="https://e2b.dev" className="underline decoration-[#ff8800] decoration-2 text-[#ff8800]" target="_blank">E2B</Link>
         </div>
         <div className="flex justify-end space-x-4">
-          <Button variant="outline" onClick={onGitHubClick}>
-            <GithubIcon className="mr-2 h-4 w-4" /> Star us on GitHub
+          <Button variant='outline' onClick={onNewChat}>
+            <Plus className="mr-2 h-4 w-4" /> New chat
           </Button>
           <Separator orientation="vertical" />
           {session ? (
-            <div className="flex items-center">
-              <span className="text-sm font-medium">{session.user.email}</span>
-              <Button variant="link" size="icon" onClick={signOut}>
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className='w-9 h-9'>
+                  <AvatarImage src={session.user.user_metadata?.avatar_url || 'https://avatar.vercel.sh/' + session.user.email} alt="@shadcn" />
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align='end'>
+                <DropdownMenuLabel className="flex flex-col">
+                  <span className="text-sm">My Account</span>
+                  <span className="text-xs text-muted-foreground">{session.user.email}</span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onSocialClick('github')}>
+                  <GitHubLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  Star us on GitHub
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onSocialClick('discord')}>
+                  <DiscordLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  Join us on Discord
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onSocialClick('x')}>
+                  <TwitterLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  Follow us on X
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut}>
+                  <LogOut className="mr-2 h-4 w-4 text-muted-foreground" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <Button variant="default" size="icon" className="text-sm font-medium px-8 py-2" onClick={showLogin}>
+            <Button variant="default" className="text-sm font-medium px-8 py-2" onClick={showLogin}>
               Sign in
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
         </div>
@@ -257,9 +287,6 @@ export default function NavBar({
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant='secondary' className="!ml-auto" onClick={onNewChat}>
-          <Plus className="mr-2 h-4 w-4" /> New chat
-        </Button>
       </div>
     </nav>
   )
