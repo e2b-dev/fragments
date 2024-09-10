@@ -67,9 +67,9 @@ export function SideView({
   }
 
   return (
-    <div className="flex-1 flex flex-col shadow-2xl rounded-lg border max-w-[800px] bg-popover">
+    <div className="my-2 flex-1 flex flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y max-w-[800px] bg-popover">
       <Tabs value={selectedTab} onValueChange={(value) => onSelectedTabChange(value as 'code' | 'artifact')} className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
-        <div className="w-full p-2 grid grid-cols-3 items-center justify-end rounded-t-lg border-b">
+        <div className="w-full p-2 grid grid-cols-3 items-center justify-end border-b">
           <div className='flex justify-start'>
             {isLoading && <LoaderCircle className="h-4 w-4 text-[#a1a1aa] animate-spin" />}
           </div>
@@ -80,7 +80,7 @@ export function SideView({
               <TabsTrigger disabled={!result} className="font-normal text-xs py-1 px-2" value="artifact">Preview</TabsTrigger>
             </TabsList>
           </div>
-          <div className='flex items-center justify-end space-x-2'>
+          <div className='flex items-center justify-end'>
           {result && (
             <Button disabled={!isLinkAvailable} variant="ghost" className='h-8 rounded-md px-3 text-muted-foreground' title='Refresh' onClick={() => refreshIframe()}>
               <RotateCw className="h-4 w-4" />

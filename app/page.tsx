@@ -20,6 +20,7 @@ import modelsList from '@/lib/models.json'
 import templates, { TemplateId } from '@/lib/templates';
 
 import { ExecutionResult } from './api/sandbox/route';
+import ModelSelector from '@/components/select'
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
@@ -182,23 +183,7 @@ export default function Home() {
       {
         supabase && <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} view={authView} supabase={supabase} />
       }
-      <NavBar
-        session={session}
-        showLogin={() => setAuthDialog(true)}
-        signOut={logout}
-        templates={templates}
-        selectedTemplate={selectedTemplate}
-        onSelectedTemplateChange={setSelectedTemplate}
-        models={modelsList.models}
-        languageModel={languageModel}
-        onLanguageModelChange={handleLanguageModelChange}
-        onSocialClick={handleSocialClick}
-        onNewChat={handleNewChat}
-        apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
-        baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
-      />
-
-      <div className="flex-1 flex space-x-8 w-full pt-36 pb-8 px-4">
+      <div className="flex-1 flex space-x-8 w-full">
         <Chat
           isLoading={isLoading}
           stop={stop}
@@ -209,7 +194,25 @@ export default function Home() {
           isMultiModal={currentModel?.multiModal || false}
           files={files}
           handleFileChange={handleFileChange}
-        />
+        >
+          <NavBar
+            session={session}
+            showLogin={() => setAuthDialog(true)}
+            signOut={logout}
+            onSocialClick={handleSocialClick}
+            onNewChat={handleNewChat}
+          />
+          <ModelSelector
+            templates={templates}
+            selectedTemplate={selectedTemplate}
+            onSelectedTemplateChange={setSelectedTemplate}
+            models={modelsList.models}
+            languageModel={languageModel}
+            onLanguageModelChange={handleLanguageModelChange}
+            apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
+            baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
+          />
+        </Chat>
         <SideView
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}

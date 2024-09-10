@@ -17,6 +17,7 @@ export function Chat({
   isMultiModal,
   files,
   handleFileChange,
+  children,
 }: {
   isLoading: boolean,
   stop: () => void,
@@ -27,6 +28,7 @@ export function Chat({
   isMultiModal: boolean,
   files: FileList | null,
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  children: React.ReactNode,
 }) {
   useEffect(() => {
     const chatContainer = document.getElementById('chat-container')
@@ -36,8 +38,11 @@ export function Chat({
   }, [JSON.stringify(messages)])
 
   return (
-    <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto justify-between">
-      <div id="chat-container" className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
+    <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto px-4">
+      <div className="relative w-full space-y-4">
+        {children}
+      </div>
+      <div id="chat-container" className="flex flex-col gap-2 overflow-y-auto max-h-full">
         {messages.map((message: Message, index: number) => (
           <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white/5 border text-muted-foreground' : 'bg-white/20'} rounded-lg font-serif`} key={index}>
             {message.content.map((content, id) => {
@@ -64,7 +69,7 @@ export function Chat({
         ))}
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mt-auto">
         <form onSubmit={handleSubmit} className="flex flex-row gap-2 items-center">
           <div className="relative">
             <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileChange} />
