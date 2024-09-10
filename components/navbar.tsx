@@ -107,7 +107,7 @@ export default function NavBar({
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="default" className="text-sm font-medium px-8 py-2" onClick={showLogin}>
+            <Button variant="default" onClick={showLogin}>
               Sign in
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
