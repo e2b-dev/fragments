@@ -67,7 +67,7 @@ export function SideView({
   }
 
   return (
-    <div className="my-2 flex-1 flex flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y max-w-[800px] bg-popover">
+    <div className="my-4 flex-1 flex flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y max-w-[800px] bg-popover">
       <Tabs value={selectedTab} onValueChange={(value) => onSelectedTabChange(value as 'code' | 'artifact')} className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
         <div className="w-full p-2 grid grid-cols-3 items-center justify-end border-b">
           <div className='flex justify-start'>
