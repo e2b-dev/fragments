@@ -25,7 +25,7 @@ export function CodeView({ code, lang }: { code: string; lang: string }) {
         margin: 0,
       }}
     >
-      <code className={`language-tsx`}>{code}</code>
+      <code className={`language-${lang}`}>{code}</code>
     </pre>
   );
 }

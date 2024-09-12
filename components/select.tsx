@@ -8,21 +8,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-
 import Image from "next/image";
 import { LLMModel, LLMModelConfig } from "@/lib/models";
 import { TemplateId, Templates } from "@/lib/templates";
-import { Settings2, Sparkles } from "lucide-react";
-import { Button } from "./ui/button";
+import { Sparkles } from "lucide-react";
 
 export default function ModelSelector({
   templates,
@@ -31,8 +20,6 @@ export default function ModelSelector({
   models,
   languageModel,
   onLanguageModelChange,
-  apiKeyConfigurable,
-  baseURLConfigurable,
 }: {
   templates: Templates;
   selectedTemplate: "auto" | TemplateId;
@@ -40,8 +27,6 @@ export default function ModelSelector({
   models: LLMModel[];
   languageModel: LLMModelConfig;
   onLanguageModelChange: (config: LLMModelConfig) => void;
-  apiKeyConfigurable: boolean;
-  baseURLConfigurable: boolean;
 }) {
   return (
     <div className="flex w-full items-center space-x-2">
@@ -51,14 +36,14 @@ export default function ModelSelector({
           defaultValue={selectedTemplate}
           onValueChange={onSelectedTemplateChange}
         >
-          <SelectTrigger className="w-[200px] whitespace-nowrap shadow-none px-1 py-0 h-6 text-xs">
+          <SelectTrigger className="whitespace-nowrap border-none shadow-none focus:ring-0 px-0 py-0 h-6 text-xs">
             <SelectValue placeholder="Select a persona" />
           </SelectTrigger>
           <SelectContent side="top">
             <SelectGroup>
               <SelectLabel>Persona</SelectLabel>
               <SelectItem value="auto">
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center space-x-2">
                   <Sparkles
                     className="flex text-[#a1a1aa]"
                     width={14}
@@ -91,7 +76,7 @@ export default function ModelSelector({
           defaultValue={languageModel.model}
           onValueChange={(e) => onLanguageModelChange({ model: e })}
         >
-          <SelectTrigger className="w-[200px] whitespace-nowrap text-xs shadow-none px-1 py-0 h-6">
+          <SelectTrigger className="whitespace-nowrap border-none shadow-none focus:ring-0 px-0 py-0 h-6 text-xs">
             <SelectValue placeholder="Language model" />
           </SelectTrigger>
           <SelectContent>
@@ -102,7 +87,7 @@ export default function ModelSelector({
                 <SelectLabel>{provider}</SelectLabel>
                 {models?.map((model) => (
                   <SelectItem key={model.id} value={model.id}>
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-2">
                       <Image
                         className="flex"
                         src={`/thirdparty/logos/${model.providerId}.svg`}
@@ -119,161 +104,6 @@ export default function ModelSelector({
           </SelectContent>
         </Select>
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="h-6 w-6">
-            <Settings2 className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {apiKeyConfigurable && (
-            <>
-              <div className="flex flex-col gap-1.5 px-2 py-2">
-                <Label htmlFor="apiKey">API Key</Label>
-                <Input
-                  name="apiKey"
-                  type="text"
-                  placeholder="Auto"
-                  required={true}
-                  defaultValue={languageModel.apiKey}
-                  onChange={(e) =>
-                    onLanguageModelChange({
-                      apiKey:
-                        e.target.value.length > 0 ? e.target.value : undefined,
-                    })
-                  }
-                  className="text-sm"
-                />
-              </div>
-              <DropdownMenuSeparator />
-            </>
-          )}
-          {baseURLConfigurable && (
-            <>
-              <div className="flex flex-col gap-1.5 px-2 py-2">
-                <Label htmlFor="baseURL">Base URL</Label>
-                <Input
-                  name="baseURL"
-                  type="text"
-                  placeholder="Auto"
-                  required={true}
-                  defaultValue={languageModel.baseURL}
-                  onChange={(e) =>
-                    onLanguageModelChange({
-                      baseURL:
-                        e.target.value.length > 0 ? e.target.value : undefined,
-                    })
-                  }
-                  className="text-sm"
-                />
-              </div>
-              <DropdownMenuSeparator />
-            </>
-          )}
-          <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
-            <span className="text-sm flex-1">Output tokens</span>
-            <Input
-              type="number"
-              defaultValue={languageModel.maxTokens}
-              min={50}
-              max={10000}
-              step={1}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
-              placeholder="Auto"
-              onChange={(e) =>
-                onLanguageModelChange({
-                  maxTokens: parseFloat(e.target.value) || undefined,
-                })
-              }
-            />
-          </div>
-          <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
-            <span className="text-sm flex-1">Temperature</span>
-            <Input
-              type="number"
-              defaultValue={languageModel.temperature}
-              min={0}
-              max={5}
-              step={0.01}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
-              placeholder="Auto"
-              onChange={(e) =>
-                onLanguageModelChange({
-                  temperature: parseFloat(e.target.value) || undefined,
-                })
-              }
-            />
-          </div>
-          <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
-            <span className="text-sm flex-1">Top P</span>
-            <Input
-              type="number"
-              defaultValue={languageModel.topP}
-              min={0}
-              max={1}
-              step={0.01}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
-              placeholder="Auto"
-              onChange={(e) =>
-                onLanguageModelChange({
-                  topP: parseFloat(e.target.value) || undefined,
-                })
-              }
-            />
-          </div>
-          <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
-            <span className="text-sm flex-1">Top K</span>
-            <Input
-              type="number"
-              defaultValue={languageModel.topK}
-              min={0}
-              max={500}
-              step={1}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
-              placeholder="Auto"
-              onChange={(e) =>
-                onLanguageModelChange({
-                  topK: parseFloat(e.target.value) || undefined,
-                })
-              }
-            />
-          </div>
-          <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
-            <span className="text-sm flex-1">Frequence penalty</span>
-            <Input
-              type="number"
-              defaultValue={languageModel.frequencyPenalty}
-              min={0}
-              max={2}
-              step={0.01}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
-              placeholder="Auto"
-              onChange={(e) =>
-                onLanguageModelChange({
-                  frequencyPenalty: parseFloat(e.target.value) || undefined,
-                })
-              }
-            />
-          </div>
-          <div className="flex gap-1.5 px-2 py-2 items-center space-x-4">
-            <span className="text-sm flex-1">Presence penalty</span>
-            <Input
-              type="number"
-              defaultValue={languageModel.presencePenalty}
-              min={0}
-              max={2}
-              step={0.01}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
-              placeholder="Auto"
-              onChange={(e) =>
-                onLanguageModelChange({
-                  presencePenalty: parseFloat(e.target.value) || undefined,
-                })
-              }
-            />
-          </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   );
 }

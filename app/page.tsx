@@ -21,10 +21,11 @@ import templates, { TemplateId } from '@/lib/templates';
 
 import { ExecutionResult } from './api/sandbox/route';
 import ModelSelector from '@/components/select'
+import { ChatInput } from '@/components/chatInput'
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
-  const [files, setFiles] = useState<FileList | null>(null)
+  const [files, setFiles] = useState<File[] | null>(null)
   const [selectedTemplate, setSelectedTemplate] = useState<'auto' | TemplateId>('auto')
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
     model: 'claude-3-5-sonnet-20240620'
@@ -145,8 +146,13 @@ export default function Home() {
 
   function handleFileChange (e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
-      setFiles(e.target.files)
+      setFiles(Array.from(e.target.files))
     }
+  }
+
+  function handleFileRemove (file: File) {
+    const newFiles = files ? Array.from(files).filter(f => f !== file) : []
+    setFiles(newFiles)
   }
 
   function logout () {
@@ -184,35 +190,40 @@ export default function Home() {
         supabase && <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} view={authView} supabase={supabase} />
       }
       <div className="flex-1 flex space-x-8 w-full">
-        <Chat
-          isLoading={isLoading}
-          stop={stop}
-          messages={messages}
-          input={chatInput}
-          handleInputChange={handleSaveInputChange}
-          handleSubmit={handleSubmitAuth}
-          isMultiModal={currentModel?.multiModal || false}
-          files={files}
-          handleFileChange={handleFileChange}
-        >
+        <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto px-4">
           <NavBar
             session={session}
             showLogin={() => setAuthDialog(true)}
             signOut={logout}
             onSocialClick={handleSocialClick}
             onNewChat={handleNewChat}
-          />
-          <ModelSelector
-            templates={templates}
-            selectedTemplate={selectedTemplate}
-            onSelectedTemplateChange={setSelectedTemplate}
-            models={modelsList.models}
             languageModel={languageModel}
             onLanguageModelChange={handleLanguageModelChange}
             apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
             baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
           />
-        </Chat>
+          <Chat messages={messages} />
+          <ChatInput
+            isLoading={isLoading}
+            stop={stop}
+            input={chatInput}
+            handleInputChange={handleSaveInputChange}
+            handleSubmit={handleSubmitAuth}
+            isMultiModal={currentModel?.multiModal || false}
+            files={files}
+            handleFileChange={handleFileChange}
+            handleFileRemove={handleFileRemove}
+          >
+            <ModelSelector
+              templates={templates}
+              selectedTemplate={selectedTemplate}
+              onSelectedTemplateChange={setSelectedTemplate}
+              models={modelsList.models}
+              languageModel={languageModel}
+              onLanguageModelChange={handleLanguageModelChange}
+            />
+          </ChatInput>
+        </div>
         <SideView
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}
