@@ -53,7 +53,7 @@ export function ChatInput({
       <div className="px-3 py-2">
         {children}
       </div>
-      <TextareaAutosize minRows={1} maxRows={5} className="text-normal px-3 resize-none ring-0 bg-inherit w-full m-0 outline-none" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange} />
+      <TextareaAutosize autoFocus={true} minRows={1} maxRows={5} className="text-normal px-3 resize-none ring-0 bg-inherit w-full m-0 outline-none" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange} />
       <div className='flex p-3 gap-2 items-center'>
         <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileInput} />
         <div className="flex items-center flex-1 gap-2">
