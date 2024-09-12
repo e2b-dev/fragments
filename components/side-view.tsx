@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from 'react'
-import { Download, LoaderCircle, RotateCw } from 'lucide-react'
+import { ChevronRight, ChevronsRight, Download, LoaderCircle, RotateCw } from 'lucide-react'
 
 import { ArtifactView } from '@/components/artifact-view'
 import { CodeView } from '@/components/code-view'
@@ -67,39 +67,31 @@ export function SideView({
   }
 
   return (
-    <div className="my-4 flex-1 flex flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y max-w-[800px] bg-popover">
+    <div className="flex-1 flex flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y max-w-[800px] bg-popover">
       <Tabs value={selectedTab} onValueChange={(value) => onSelectedTabChange(value as 'code' | 'artifact')} className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
-        <div className="w-full p-2 grid grid-cols-3 items-center justify-end border-b">
-          <div className='flex justify-start'>
-            {isLoading && <LoaderCircle className="h-4 w-4 text-[#a1a1aa] animate-spin" />}
-          </div>
-
+        <div className="w-full p-2 grid grid-cols-3 items-center border-b">
+          <Button variant="ghost" size="icon" className='text-muted-foreground'>
+            <ChevronsRight className="h-5 w-5" />
+          </Button>
           <div className='flex justify-center'>
             <TabsList className="px-1 py-0 border h-8">
               <TabsTrigger className="font-normal text-xs py-1 px-2" value="code">Code</TabsTrigger>
               <TabsTrigger disabled={!result} className="font-normal text-xs py-1 px-2" value="artifact">Preview</TabsTrigger>
             </TabsList>
           </div>
-          <div className='flex items-center justify-end'>
           {result && (
-            <Button disabled={!isLinkAvailable} variant="ghost" className='h-8 rounded-md px-3 text-muted-foreground' title='Refresh' onClick={() => refreshIframe()}>
-              <RotateCw className="h-4 w-4" />
-            </Button>
+            <div className='flex items-center justify-end'>
+              <Button disabled={!isLinkAvailable} variant="ghost" className='text-muted-foreground' title='Refresh' onClick={() => refreshIframe()}>
+                <RotateCw className="h-4 w-4" />
+              </Button>
+              <Button disabled={!isLinkAvailable} variant="ghost" className='text-muted-foreground' title='Download Artifact' onClick={() => download(artifact.file_path, artifact.code)}>
+                <Download className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" className='text-muted-foreground' title='Copy URL' onClick={() => copy(result.url!)}>
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
           )}
-          {result && (
-            <Button disabled={!isLinkAvailable} variant="ghost" className='h-8 rounded-md px-3 text-muted-foreground' title='Download Artifact' onClick={() => download(artifact.file_path, artifact.code)}>
-              <Download className="h-4 w-4" />
-            </Button>
-          )}
-          {result && (
-            <Button variant="ghost" className='h-8 rounded-md px-3 text-muted-foreground' title='Copy URL' onClick={() => copy(result.url!)}>
-              <Copy className="h-4 w-4" />
-            </Button>
-          )}
-          {/* {selectedTemplate === SandboxTemplate.NextJS && (
-            <DeployDialog userID={userID} />
-          )} */}
-          </div>
         </div>
 
         {artifact && (

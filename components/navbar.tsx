@@ -46,7 +46,7 @@ export default function NavBar({
   baseURLConfigurable: boolean;
 }) {
   return (
-    <nav className="w-full flex bg-background">
+    <nav className="w-full flex bg-background py-4">
       <div className="flex flex-1 items-center">
         <Link href="/" className="flex items-center gap-2" target="_blank">
           <Image src="/logo.svg" alt="logo" width={24} height={24} />
@@ -62,12 +62,12 @@ export default function NavBar({
       </div>
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={onNewChat}>
-          <Plus className="h-4 w-4" />
+          <Plus className="h-5 w-5" />
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
-              <Settings2 className="h-4 w-4" />
+              <Settings2 className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
