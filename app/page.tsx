@@ -25,7 +25,7 @@ import { ChatInput } from '@/components/chatInput'
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
-  const [files, setFiles] = useState<File[] | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const [selectedTemplate, setSelectedTemplate] = useState<'auto' | TemplateId>('auto')
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
     model: 'claude-3-5-sonnet-20240620'
@@ -125,7 +125,7 @@ export default function Home() {
     })
 
     setChatInput('')
-    setFiles(null)
+    setFiles([])
     setCurrentTab('code')
     setIsPreviewLoading(true)
 
@@ -144,15 +144,8 @@ export default function Home() {
     setChatInput(e.target.value)
   }
 
-  function handleFileChange (e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files) {
-      setFiles(Array.from(e.target.files))
-    }
-  }
-
-  function handleFileRemove (file: File) {
-    const newFiles = files ? Array.from(files).filter(f => f !== file) : []
-    setFiles(newFiles)
+  function handleFileChange (files: File[]) {
+    setFiles(files)
   }
 
   function logout () {
@@ -212,7 +205,6 @@ export default function Home() {
             isMultiModal={currentModel?.multiModal || false}
             files={files}
             handleFileChange={handleFileChange}
-            handleFileRemove={handleFileRemove}
           >
             <ModelSelector
               templates={templates}

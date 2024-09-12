@@ -13,7 +13,6 @@ export function ChatInput({
   isMultiModal,
   files,
   handleFileChange,
-  handleFileRemove,
   children,
 }: {
   isLoading: boolean,
@@ -22,13 +21,21 @@ export function ChatInput({
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void,
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
   isMultiModal: boolean,
-  files: File[] | null,
-  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-  handleFileRemove: (file: File) => void,
+  files: File[],
+  handleFileChange: (files: File[]) => void,
   children: React.ReactNode,
 }) {
+  function handleFileInput (e: React.ChangeEvent<HTMLInputElement>) {
+    handleFileChange(Array.from(e.target.files || []))
+  }
+
+  function handleFileRemove (file: File) {
+    const newFiles = files ? Array.from(files).filter(f => f !== file) : []
+    handleFileChange(newFiles)
+  }
+
   const filePreview = useMemo(() => {
-    if (!files) return null
+    if (files.length === 0) return null
     return Array.from(files).map((file) => {
       return (
         <div className="relative">
@@ -48,12 +55,12 @@ export function ChatInput({
       </div>
       <TextareaAutosize minRows={1} maxRows={5} className="text-normal px-3 resize-none ring-0 bg-inherit w-full m-0 outline-none" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange} />
       <div className='flex p-3 gap-2 items-center'>
-        <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileChange} />
+        <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileInput} />
         <div className="flex items-center flex-1 gap-2">
           <Button disabled={!isMultiModal} type="button" variant="outline" size="icon" className="rounded-xl h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
             <Paperclip className="h-5 w-5" />
           </Button>
-          {files && filePreview}
+          {files.length > 0 && filePreview}
         </div>
         <div>
           { !isLoading ? (

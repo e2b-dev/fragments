@@ -38,8 +38,8 @@ export function toAISDKMessages(messages: Message[]) {
   }))
 }
 
-export async function toMessageImage(files: File[] | null) {
-  if (!files || files.length === 0) {
+export async function toMessageImage(files: File[]) {
+  if (files.length === 0) {
     return []
   }
 
