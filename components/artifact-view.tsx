@@ -2,6 +2,12 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Copy, RefreshCcw, RotateCw, Terminal } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 import {
   Alert,
@@ -65,13 +71,31 @@ export function ArtifactView({
         />
         <div className='p-2 border-t'>
           <div className='flex items-center bg-white/10 rounded-2xl'>
-            <Button variant="link" className='text-muted-foreground' title='Refresh' onClick={refreshIframe}>
-              <RotateCw className="h-4 w-4" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="link" className='text-muted-foreground' onClick={refreshIframe}>
+                    <RotateCw className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Refresh
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <span className='text-muted-foreground text-xs flex-1 text-ellipsis overflow-hidden whitespace-nowrap'>{result.url}</span>
-            <Button variant="link" className='text-muted-foreground' title='Copy URL' onClick={() => copy(result.url!)}>
-              <Copy className="h-4 w-4" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="link" className='text-muted-foreground' onClick={() => copy(result.url!)}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Copy link
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </div>

@@ -9,6 +9,12 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
 import { Link, Copy } from 'lucide-react'
 import { TemplateId } from '@/lib/templates'
@@ -55,11 +61,18 @@ export function SideView({
     <div className="flex-1 flex flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y max-w-[800px] bg-popover">
       <Tabs value={selectedTab} onValueChange={(value) => onSelectedTabChange(value as 'code' | 'artifact')} className="h-full max-h-full overflow-hidden flex flex-col items-start justify-start">
         <div className="w-full p-2 grid grid-cols-3 items-center border-b">
-          <div className='flex items-center gap-1'>
-            <Button variant="ghost" size="icon" className='text-muted-foreground'>
-              <ChevronsRight className="h-5 w-5" />
-            </Button>
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className='text-muted-foreground'>
+                  <ChevronsRight className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Close sidebar
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <div className='flex justify-center'>
             <TabsList className="px-1 py-0 border h-8">
               <TabsTrigger className="font-normal text-xs py-1 px-2 gap-1 flex items-center" value="code">
@@ -73,9 +86,18 @@ export function SideView({
           </div>
           {result && (
             <div className='flex items-center justify-end'>
-              <Button disabled={!isLinkAvailable} variant="ghost" className='text-muted-foreground' title='Download Artifact' onClick={() => download(artifact.file_path, artifact.code)}>
-                <Download className="h-4 w-4" />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button disabled={!isLinkAvailable} variant="ghost" className='text-muted-foreground' onClick={() => download(artifact.file_path, artifact.code)}>
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Download
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           )}
         </div>

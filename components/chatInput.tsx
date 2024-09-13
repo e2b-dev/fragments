@@ -1,6 +1,13 @@
 import { ArrowUp, ImagePlus, Paperclip, Square, X } from 'lucide-react'
 
 import { Button } from './ui/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 import TextareaAutosize from 'react-textarea-autosize'
 import { useMemo } from 'react'
 
@@ -57,20 +64,47 @@ export function ChatInput({
       <div className='flex p-3 gap-2 items-center'>
         <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileInput} />
         <div className="flex items-center flex-1 gap-2">
-          <Button disabled={!isMultiModal} type="button" variant="outline" size="icon" className="rounded-xl h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
-            <Paperclip className="h-5 w-5" />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button disabled={!isMultiModal} type="button" variant="outline" size="icon" className="rounded-xl h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
+                  <Paperclip className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Add attachments
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           {files.length > 0 && filePreview}
         </div>
         <div>
           { !isLoading ? (
-            <Button variant="default" size="icon" type="submit" className='rounded-xl h-10 w-10'>
-              <ArrowUp className="h-5 w-5" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="default" size="icon" type="submit" className='rounded-xl h-10 w-10'>
+                    <ArrowUp className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Send message
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           ) : (
-            <Button variant="secondary" size="icon" className='rounded-xl h-10 w-10' onClick={(e) => { e.preventDefault(); stop() }}>
-              <Square className="h-5 w-5" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="secondary" size="icon" className='rounded-xl h-10 w-10' onClick={(e) => { e.preventDefault(); stop() }}>
+                    <Square className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Stop generation
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )
         }
         </div>

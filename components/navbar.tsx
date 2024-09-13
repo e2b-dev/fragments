@@ -12,6 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { ArrowRight, LogOut, Plus, Settings2 } from "lucide-react";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -61,15 +67,33 @@ export default function NavBar({
         </Link>
       </div>
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onNewChat}>
-          <Plus className="h-5 w-5" />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={onNewChat}>
+                <Plus className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              New chat
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Settings2 className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Settings2 className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                LLM settings
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <DropdownMenuContent align="end">
             {apiKeyConfigurable && (
               <>
