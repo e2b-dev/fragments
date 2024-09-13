@@ -75,10 +75,23 @@ export default function Home() {
   useEffect(() => {
     if (object) {
       setArtifact(object as ArtifactSchema)
-      const lastAssistantMessage = messages.findLast(message => message.role === 'assistant')
-      if (lastAssistantMessage) {
-        lastAssistantMessage.content = [{ type: 'text', text: object.commentary || '' }, { type: 'code', text: object.code || '' }]
-        lastAssistantMessage.meta = {
+      const lastMessage = messages[messages.length - 1]
+      const content: Message['content'] = [{ type: 'text', text: object.commentary || '' }, { type: 'code', text: object.code || '' }]
+
+      if (!lastMessage || lastMessage.role !== 'assistant') {
+        addMessage({
+          role: 'assistant',
+          content,
+          meta: {
+            title: object.title,
+            description: object.description
+          }
+        })
+      }
+
+      if (lastMessage && lastMessage.role === 'assistant') {
+        lastMessage.content = content
+        lastMessage.meta = {
           title: object.title,
           description: object.description
         }
@@ -117,11 +130,6 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-    })
-
-    addMessage({
-      role: 'assistant',
-      content: [{ type: 'text', text: 'Generating artifact...' }],
     })
 
     setChatInput('')

@@ -64,7 +64,7 @@ export function ChatInput({
         </div>
         <div>
           { !isLoading ? (
-            <Button variant="default" size="icon" type="submit" className='rounded-xl h-10 w-10' disabled={input.length === 0}>
+            <Button variant="default" size="icon" type="submit" className='rounded-xl h-10 w-10'>
               <ArrowUp className="h-5 w-5" />
             </Button>
           ) : (
