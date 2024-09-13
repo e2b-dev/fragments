@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Terminal } from 'lucide-react'
+import { Copy, RefreshCcw, RotateCw, Terminal } from 'lucide-react'
 
 import {
   Alert,
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/alert'
 import { ExecutionResult } from '@/app/api/sandbox/route'
 import { TemplateId } from '@/lib/templates'
+import { Button } from './ui/button'
 
 function LogsOutput({ stdout, stderr }: {
   stdout: string[]
@@ -34,19 +35,27 @@ function LogsOutput({ stdout, stderr }: {
 }
 
 export function ArtifactView({
-  iframeKey,
   result,
   template,
 }: {
-  iframeKey: number
   result: ExecutionResult
   template?: TemplateId
 }) {
   if (!result) return null
 
+  const [iframeKey, setIframeKey] = useState(0)
+  function refreshIframe() {
+    setIframeKey(prevKey => prevKey + 1)
+  }
+
+  async function copy (content: string) {
+    await navigator.clipboard.writeText(content)
+    alert('URL copied to clipboard')
+  }
+
   if (template !== 'code-interpreter-multilang') {
     return (
-      <div className="w-full h-full">
+      <div className="flex flex-col w-full h-full">
         <iframe
           key={iframeKey}
           className="h-full w-full"
@@ -54,6 +63,17 @@ export function ArtifactView({
           loading="lazy"
           src={result.url}
         />
+        <div className='p-2 border-t'>
+          <div className='flex items-center bg-white/10 rounded-2xl'>
+            <Button variant="link" className='text-muted-foreground' title='Refresh' onClick={refreshIframe}>
+              <RotateCw className="h-4 w-4" />
+            </Button>
+            <span className='text-muted-foreground text-xs flex-1 text-ellipsis overflow-hidden whitespace-nowrap'>{result.url}</span>
+            <Button variant="link" className='text-muted-foreground' title='Copy URL' onClick={() => copy(result.url!)}>
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </div>
     )
   }

@@ -32,26 +32,11 @@ export function SideView({
   result?: ExecutionResult
   selectedTemplate: TemplateId
 }) {
-  const [iframeKey, setIframeKey] = useState(0)
-  function refreshIframe() {
-    setIframeKey(prevKey => prevKey + 1)
-  }
-
   if (!artifact) {
     return null
   }
 
   const isLinkAvailable = selectedTemplate !== 'code-interpreter-multilang'
-
-  function copy (content: string) {
-    navigator.clipboard.writeText(content)
-      .then(() => {
-        alert('Copied to clipboard')
-      })
-      .catch(err => {
-        alert('Failed to copy: ' + content)
-      })
-  }
 
   function download (filename: string, content: string) {
     const blob = new Blob([content], { type: 'text/plain' })
@@ -74,24 +59,22 @@ export function SideView({
             <Button variant="ghost" size="icon" className='text-muted-foreground'>
               <ChevronsRight className="h-5 w-5" />
             </Button>
-            {isLoading && <LoaderCircle className="h-4 w-4 text-muted-foreground animate-spin" />}
           </div>
           <div className='flex justify-center'>
             <TabsList className="px-1 py-0 border h-8">
-              <TabsTrigger className="font-normal text-xs py-1 px-2" value="code">Code</TabsTrigger>
-              <TabsTrigger disabled={!result} className="font-normal text-xs py-1 px-2" value="artifact">Preview</TabsTrigger>
+              <TabsTrigger className="font-normal text-xs py-1 px-2 gap-1 flex items-center" value="code">
+                {isLoading && <LoaderCircle strokeWidth={3} className="h-3 w-3 animate-spin" />}
+                Code
+              </TabsTrigger>
+              <TabsTrigger disabled={!result} className="font-normal text-xs py-1 px-2" value="artifact">
+                Preview
+              </TabsTrigger>
             </TabsList>
           </div>
           {result && (
             <div className='flex items-center justify-end'>
-              <Button disabled={!isLinkAvailable} variant="ghost" className='text-muted-foreground' title='Refresh' onClick={() => refreshIframe()}>
-                <RotateCw className="h-4 w-4" />
-              </Button>
               <Button disabled={!isLinkAvailable} variant="ghost" className='text-muted-foreground' title='Download Artifact' onClick={() => download(artifact.file_path, artifact.code)}>
                 <Download className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" className='text-muted-foreground' title='Copy URL' onClick={() => copy(result.url!)}>
-                <Copy className="h-4 w-4" />
               </Button>
             </div>
           )}
@@ -107,7 +90,6 @@ export function SideView({
             <TabsContent value="artifact" className="flex-1 w-full flex flex-col items-start justify-start">
               {result &&
                 <ArtifactView
-                  iframeKey={iframeKey}
                   template={artifact.template as TemplateId}
                   result={result}
                 />
