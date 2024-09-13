@@ -45,7 +45,7 @@ export function ChatInput({
     if (files.length === 0) return null
     return Array.from(files).map((file) => {
       return (
-        <div className="relative">
+        <div className="relative" key={file.name}>
           <span onClick={() => handleFileRemove(file)} className="absolute top-[-8] right-[-8] bg-muted rounded-full p-1">
             <X className="h-3 w-3" />
           </span>

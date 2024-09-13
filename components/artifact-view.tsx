@@ -47,9 +47,9 @@ export function ArtifactView({
   result: ExecutionResult
   template?: TemplateId
 }) {
+  const [iframeKey, setIframeKey] = useState(0)
   if (!result) return null
 
-  const [iframeKey, setIframeKey] = useState(0)
   function refreshIframe() {
     setIframeKey(prevKey => prevKey + 1)
   }
