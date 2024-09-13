@@ -77,7 +77,7 @@ export default function NavBar({
                   <Label htmlFor="apiKey">API Key</Label>
                   <Input
                     name="apiKey"
-                    type="text"
+                    type="password"
                     placeholder="Auto"
                     required={true}
                     defaultValue={languageModel.apiKey}
