@@ -17,7 +17,7 @@ export function Chat({
   return (
     <div id="chat-container" className="flex flex-col pb-4 gap-2 overflow-y-auto max-h-full">
       {messages.map((message: Message, index: number) => (
-        <div className={`flex flex-col w-fit px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white/5 border text-muted-foreground py-4 rounded-2xl gap-4' : 'bg-black/30 py-2 rounded-xl gap-2'} font-serif`} key={index}>
+        <div className={`flex flex-col px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white/5 border text-muted-foreground py-4 rounded-2xl gap-4 w-full' : 'bg-gradient-to-b from-black/30 to-black/50 py-2 rounded-xl gap-2 w-fit'} font-serif`} key={index}>
           {message.content.map((content, id) => {
             if (content.type === 'text') {
               return content.text

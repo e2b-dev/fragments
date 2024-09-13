@@ -49,7 +49,7 @@ export function ChatInput({
   }, [files])
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 relative flex flex-col mt-auto bg-background shadow-lg rounded-2xl overflow-hidden border">
+    <form onSubmit={handleSubmit} className="mb-4 flex flex-col mt-auto bg-background shadow-lg rounded-2xl border">
       <div className="px-3 py-2">
         {children}
       </div>
