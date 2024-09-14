@@ -22,6 +22,7 @@ import templates, { TemplateId } from '@/lib/templates';
 import { ExecutionResult } from './api/sandbox/route';
 import ModelSelector from '@/components/select'
 import { ChatInput } from '@/components/chatInput'
+import { DeepPartial } from 'ai'
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
@@ -34,8 +35,9 @@ export default function Home() {
   const posthog = usePostHog()
 
   const [result, setResult] = useState<ExecutionResult>()
+  const [preview, setPreview] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
-  const [artifact, setArtifact] = useState<Partial<ArtifactSchema> | undefined>()
+  const [artifact, setArtifact] = useState<DeepPartial<ArtifactSchema> | undefined>()
   const [currentTab, setCurrentTab] = useState<'code' | 'artifact'>('code')
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
@@ -44,6 +46,7 @@ export default function Home() {
 
   const currentModel = modelsList.models.find(model => model.id === languageModel.model)
   const currentTemplate = selectedTemplate === 'auto' ? templates : { [selectedTemplate]: templates[selectedTemplate] }
+  const lastMessage = messages[messages.length - 1]
 
   const { object, submit, isLoading, stop, error } = useObject({
     api: '/api/chat',
@@ -66,6 +69,7 @@ export default function Home() {
         console.log('result', result)
 
         setResult(result)
+        setCurrentPreview({ object: artifact, result })
         setCurrentTab('artifact')
         setIsPreviewLoading(false)
       }
@@ -74,30 +78,41 @@ export default function Home() {
 
   useEffect(() => {
     if (object) {
-      setArtifact(object as ArtifactSchema)
-      const lastMessage = messages[messages.length - 1]
+      setArtifact(object)
       const content: Message['content'] = [{ type: 'text', text: object.commentary || '' }, { type: 'code', text: object.code || '' }]
 
       if (!lastMessage || lastMessage.role !== 'assistant') {
         addMessage({
           role: 'assistant',
           content,
-          meta: {
-            title: object.title,
-            description: object.description
-          }
+          object
         })
       }
 
       if (lastMessage && lastMessage.role === 'assistant') {
-        lastMessage.content = content
-        lastMessage.meta = {
-          title: object.title,
-          description: object.description
-        }
+        setLastMessage({
+          ...lastMessage,
+          content,
+          object
+        })
       }
     }
   }, [object])
+
+  useEffect(() => {
+    setLastMessage({
+      ...lastMessage,
+      result
+    })
+  }, [result])
+
+  function setLastMessage(message: Message) {
+    setMessages(previousMessages => {
+      const updatedMessages = [...previousMessages]
+      updatedMessages[updatedMessages.length - 1] = message
+      return updatedMessages
+    })
+  }
 
   async function handleSubmitAuth (e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -185,6 +200,11 @@ export default function Home() {
     setIsPreviewLoading(false)
   }
 
+  function setCurrentPreview(preview: { object: DeepPartial<ArtifactSchema> | undefined, result: ExecutionResult }) {
+    setArtifact(preview.object)
+    setPreview(preview.result)
+  }
+
   return (
     <main className="flex min-h-screen max-h-screen">
       {
@@ -203,7 +223,7 @@ export default function Home() {
             apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
             baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
           />
-          <Chat messages={messages} />
+          <Chat messages={messages} setCurrentPreview={setCurrentPreview} />
           <ChatInput
             isLoading={isLoading}
             stop={stop}
@@ -228,8 +248,8 @@ export default function Home() {
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}
           isLoading={isPreviewLoading}
-          artifact={artifact as ArtifactSchema}
-          result={result}
+          artifact={artifact}
+          result={preview}
           selectedTemplate={artifact?.template as TemplateId}
         />
       </div>

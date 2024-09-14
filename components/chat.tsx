@@ -4,8 +4,10 @@ import { useEffect } from 'react'
 
 export function Chat({
   messages,
+  setCurrentPreview
 }: {
   messages: Message[],
+  setCurrentPreview: any
 }) {
   useEffect(() => {
     const chatContainer = document.getElementById('chat-container')
@@ -26,13 +28,13 @@ export function Chat({
               return <img key={id} src={content.image} alt="artifact" className="mr-2 inline-block w-12 h-12 object-cover rounded-lg bg-white mb-2" />
             }
           })}
-          {message.meta &&
-            <div className="py-2 pl-2 w-max flex items-center justify-center border rounded-xl select-none hover:bg-white/5 hover:cursor-pointer">
+          {message.object &&
+            <div onClick={() => setCurrentPreview({ object: message.object, result: message.result })} className="py-2 pl-2 w-max flex items-center justify-center border rounded-xl select-none hover:bg-white/5 hover:cursor-pointer">
               <div className="rounded-[0.5rem] w-12 h-12 bg-white/5 self-stretch flex items-center justify-center">
                 <Terminal strokeWidth={2} className="text-[#FF8800]"/>
               </div>
               <div className="px-4 flex flex-col">
-                <span className="font-bold font-sans text-sm text-primary">{message.meta.title}</span>
+                <span className="font-bold font-sans text-sm text-primary">{message.object.title}</span>
                 <span className="font-sans text-sm">Click to open fragment</span>
               </div>
             </div>

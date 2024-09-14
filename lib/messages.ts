@@ -1,3 +1,7 @@
+import { DeepPartial } from "ai"
+import { ArtifactSchema } from "./schema"
+import { ExecutionResult } from "@/app/api/sandbox/route"
+
 export type MessageText = {
   type: 'text'
   text: string
@@ -16,10 +20,8 @@ export type MessageImage = {
 export type Message = {
   role: 'assistant' | 'user'
   content: Array<MessageText | MessageCode | MessageImage>
-  meta?: {
-    title?: string
-    description?: string
-  }
+  object?: DeepPartial<ArtifactSchema>
+  result?: ExecutionResult
 }
 
 export function toAISDKMessages(messages: Message[]) {

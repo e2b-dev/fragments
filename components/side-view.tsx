@@ -20,6 +20,7 @@ import { Link, Copy } from 'lucide-react'
 import { TemplateId } from '@/lib/templates'
 import { ArtifactSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/app/api/sandbox/route'
+import { DeepPartial } from 'ai'
 
 export function SideView({
   // userID,
@@ -34,7 +35,7 @@ export function SideView({
   selectedTab: 'code' | 'artifact'
   onSelectedTabChange: Dispatch<SetStateAction<"code" | "artifact">>
   isLoading: boolean
-  artifact?: ArtifactSchema
+  artifact?: DeepPartial<ArtifactSchema>
   result?: ExecutionResult
   selectedTemplate: TemplateId
 }) {
@@ -89,7 +90,7 @@ export function SideView({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button disabled={!isLinkAvailable} variant="ghost" className='text-muted-foreground' onClick={() => download(artifact.file_path, artifact.code)}>
+                    <Button disabled={!isLinkAvailable} variant="ghost" className='text-muted-foreground' onClick={() => download(artifact.file_path || '', artifact.code || '')}>
                       <Download className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
