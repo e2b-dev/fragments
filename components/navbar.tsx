@@ -18,7 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ArrowRight, LogOut, Plus, Settings2 } from "lucide-react";
+import { ArrowRight, LogOut, Plus, Settings2, Undo } from "lucide-react";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -40,6 +40,8 @@ export default function NavBar({
   onLanguageModelChange,
   apiKeyConfigurable,
   baseURLConfigurable,
+  onUndo,
+  canUndo,
 }: {
   session: Session | null;
   showLogin: () => void;
@@ -50,6 +52,8 @@ export default function NavBar({
   onLanguageModelChange: (config: LLMModelConfig) => void;
   apiKeyConfigurable: boolean;
   baseURLConfigurable: boolean;
+  onUndo: () => void;
+  canUndo: boolean;
 }) {
   return (
     <nav className="w-full flex bg-background py-4">
@@ -67,6 +71,18 @@ export default function NavBar({
         </Link>
       </div>
       <div className="flex items-center gap-4">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo}>
+                <Undo className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Undo
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>

@@ -196,13 +196,19 @@ export default function Home() {
     setMessages([])
     setArtifact(undefined)
     setResult(undefined)
+    setPreview(undefined)
     setCurrentTab('code')
     setIsPreviewLoading(false)
   }
 
-  function setCurrentPreview(preview: { object: DeepPartial<ArtifactSchema> | undefined, result: ExecutionResult }) {
+  function setCurrentPreview(preview: { object: DeepPartial<ArtifactSchema> | undefined, result: ExecutionResult | undefined }) {
     setArtifact(preview.object)
     setPreview(preview.result)
+  }
+
+  function handleUndo() {
+    setMessages(messages.slice(0, -2))
+    setCurrentPreview({ object: undefined, result: undefined })
   }
 
   return (
@@ -222,6 +228,8 @@ export default function Home() {
             onLanguageModelChange={handleLanguageModelChange}
             apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
             baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
+            canUndo={messages.length > 1 && !isLoading}
+            onUndo={handleUndo}
           />
           <Chat messages={messages} setCurrentPreview={setCurrentPreview} />
           <ChatInput
