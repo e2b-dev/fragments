@@ -59,7 +59,7 @@ export function SideView({
   }
 
   return (
-    <div className="shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y bg-popover max-h-full overflow-auto">
+    <div className="flex-1 basis-0 shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y bg-popover max-h-full overflow-auto">
       <Tabs value={selectedTab} onValueChange={(value) => onSelectedTabChange(value as 'code' | 'artifact')} className="h-full flex flex-col items-start justify-start">
         <div className="w-full p-2 grid grid-cols-3 items-center border-b">
           <TooltipProvider>

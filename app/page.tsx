@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { experimental_useObject as useObject } from 'ai/react'
-import { useLocalStorage } from 'usehooks-ts'
+import { useLocalStorage, useMediaQuery } from 'usehooks-ts'
 import { usePostHog } from 'posthog-js/react'
 import { ArtifactSchema, artifactSchema as schema } from '@/lib/schema'
 
@@ -33,6 +33,7 @@ export default function Home() {
   })
 
   const posthog = usePostHog()
+  const isMobile = useMediaQuery('(max-width: 768px)')
 
   const [result, setResult] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
@@ -211,7 +212,7 @@ export default function Home() {
       {
         supabase && <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} view={authView} supabase={supabase} />
       }
-      <div className="grid grid-cols-2 space-x-8 w-full">
+      <div className={`grid grid-cols-2 w-full ${isMobile ? 'grid-cols-1' : ''}`}>
         <div className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${artifact ? 'col-span-1' : 'col-span-2'}`}>
           <NavBar
             session={session}
