@@ -35,7 +35,6 @@ export default function Home() {
   const posthog = usePostHog()
 
   const [result, setResult] = useState<ExecutionResult>()
-  const [preview, setPreview] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
   const [artifact, setArtifact] = useState<DeepPartial<ArtifactSchema> | undefined>()
   const [currentTab, setCurrentTab] = useState<'code' | 'artifact'>('code')
@@ -70,6 +69,7 @@ export default function Home() {
 
         setResult(result)
         setCurrentPreview({ object: artifact, result })
+        setMessage({ result })
         setCurrentTab('artifact')
         setIsPreviewLoading(false)
       }
@@ -90,8 +90,7 @@ export default function Home() {
       }
 
       if (lastMessage && lastMessage.role === 'assistant') {
-        setLastMessage({
-          ...lastMessage,
+        setMessage({
           content,
           object
         })
@@ -99,17 +98,14 @@ export default function Home() {
     }
   }, [object])
 
-  useEffect(() => {
-    setLastMessage({
-      ...lastMessage,
-      result
-    })
-  }, [result])
-
-  function setLastMessage(message: Message) {
+  function setMessage(message: Partial<Message>, index?: number) {
     setMessages(previousMessages => {
       const updatedMessages = [...previousMessages]
-      updatedMessages[updatedMessages.length - 1] = message
+      updatedMessages[index ?? previousMessages.length - 1] = {
+        ...previousMessages[index ?? previousMessages.length - 1],
+        ...message
+      }
+
       return updatedMessages
     })
   }
@@ -196,18 +192,17 @@ export default function Home() {
     setMessages([])
     setArtifact(undefined)
     setResult(undefined)
-    setPreview(undefined)
     setCurrentTab('code')
     setIsPreviewLoading(false)
   }
 
   function setCurrentPreview(preview: { object: DeepPartial<ArtifactSchema> | undefined, result: ExecutionResult | undefined }) {
     setArtifact(preview.object)
-    setPreview(preview.result)
+    setResult(preview.result)
   }
 
   function handleUndo() {
-    setMessages(messages.slice(0, -2))
+    setMessages((previousMessages) => [...previousMessages.slice(0, -2)])
     setCurrentPreview({ object: undefined, result: undefined })
   }
 
@@ -257,7 +252,7 @@ export default function Home() {
           onSelectedTabChange={setCurrentTab}
           isLoading={isPreviewLoading}
           artifact={artifact}
-          result={preview}
+          result={result}
           selectedTemplate={artifact?.template as TemplateId}
         />
       </div>
