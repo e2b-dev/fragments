@@ -14,7 +14,7 @@ import { openai } from '@ai-sdk/openai'
 
 export const maxDuration = 60
 
-const rateLimitMaxRequests = 5
+const rateLimitMaxRequests = 15
 const ratelimitWindow = '1m'
 
 export async function POST(req: Request) {
