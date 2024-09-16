@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Copy, RefreshCcw, RotateCw, Terminal } from 'lucide-react'
+import { Copy, RefreshCcw, RotateCw, Share, Terminal } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
@@ -41,9 +41,11 @@ function LogsOutput({ stdout, stderr }: {
 }
 
 export function ArtifactView({
+  title,
   result,
   template,
 }: {
+  title?: string
   result: ExecutionResult
   template?: TemplateId
 }) {
@@ -54,9 +56,20 @@ export function ArtifactView({
     setIframeKey(prevKey => prevKey + 1)
   }
 
-  async function copy (content: string) {
-    await navigator.clipboard.writeText(content)
-    alert('URL copied to clipboard')
+  async function share (url: string, title?: string) {
+    const shareData = {
+      title: title,
+      url: url,
+    }
+
+    if (navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData)
+      } catch (error) {}
+    } else {
+      await navigator.clipboard.writeText(url)
+      alert('URL copied to clipboard')
+    }
   }
 
   if (template !== 'code-interpreter-multilang') {
@@ -87,12 +100,12 @@ export function ArtifactView({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="link" className='text-muted-foreground' onClick={() => copy(result.url!)}>
-                    <Copy className="h-4 w-4" />
+                  <Button variant="link" className='text-muted-foreground' onClick={() => share(result.url, title)}>
+                    <Share className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  Copy link
+                  Share link
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
