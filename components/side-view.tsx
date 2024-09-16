@@ -30,6 +30,7 @@ export function SideView({
   artifact,
   result,
   selectedTemplate,
+  onClose,
 }: {
   // userID: string
   selectedTab: 'code' | 'artifact'
@@ -38,6 +39,7 @@ export function SideView({
   artifact?: DeepPartial<ArtifactSchema>
   result?: ExecutionResult
   selectedTemplate: TemplateId
+  onClose: () => void
 }) {
   if (!artifact) {
     return null
@@ -59,13 +61,13 @@ export function SideView({
   }
 
   return (
-    <div className="flex-1 basis-0 shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y bg-popover max-h-full overflow-auto">
+    <div className="absolute md:relative top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover h-full w-full overflow-auto">
       <Tabs value={selectedTab} onValueChange={(value) => onSelectedTabChange(value as 'code' | 'artifact')} className="h-full flex flex-col items-start justify-start">
         <div className="w-full p-2 grid grid-cols-3 items-center border-b">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className='text-muted-foreground'>
+                <Button variant="ghost" size="icon" className='text-muted-foreground' onClick={onClose}>
                   <ChevronsRight className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>

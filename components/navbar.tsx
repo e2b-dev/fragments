@@ -70,12 +70,12 @@ export default function NavBar({
           E2B
         </Link>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-1 md:gap-4">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo}>
-                <Undo className="h-5 w-5" />
+                <Undo className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -87,7 +87,7 @@ export default function NavBar({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" onClick={onNewChat}>
-                <Plus className="h-5 w-5" />
+                <Plus className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -101,7 +101,7 @@ export default function NavBar({
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">
-                    <Settings2 className="h-5 w-5" />
+                    <Settings2 className="h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
@@ -265,7 +265,7 @@ export default function NavBar({
         </DropdownMenu>
         {session ? (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <Avatar className="w-8 h-8">
                 <AvatarImage
                   src={
