@@ -18,7 +18,7 @@ const rateLimitMaxRequests = 5
 const ratelimitWindow = '1m'
 
 export async function POST(req: Request) {
-  const limit = await ratelimit(req, rateLimitMaxRequests, ratelimitWindow)
+  const limit = await ratelimit('o1', rateLimitMaxRequests, ratelimitWindow)
   if (limit) {
     return new Response('You have reached your request limit for the day.', {
       status: 429,

@@ -4,7 +4,7 @@ import {
   CoreMessage,
 } from 'ai'
 
-import ratelimit from '@/lib/ratelimit'
+import ratelimit, { Duration } from '@/lib/ratelimit'
 import { Templates, templatesToPrompt } from '@/lib/templates'
 import { getModelClient, getDefaultMode } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
@@ -12,11 +12,11 @@ import { artifactSchema as schema } from '@/lib/schema'
 
 export const maxDuration = 60
 
-const rateLimitMaxRequests = 5
-const ratelimitWindow = '1m'
+const rateLimitMaxRequests = process.env.RATE_LIMIT_MAX_REQUESTS ? parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) : 5
+const ratelimitWindow = process.env.RATE_LIMIT_WINDOW ? process.env.RATE_LIMIT_WINDOW as Duration : '1m'
 
 export async function POST(req: Request) {
-  const limit = await ratelimit(req, rateLimitMaxRequests, ratelimitWindow)
+  const limit = await ratelimit(req.headers.get('x-forwarded-for'), rateLimitMaxRequests, ratelimitWindow)
   if (limit) {
     return new Response('You have reached your request limit for the day.', {
       status: 429,
