@@ -211,8 +211,8 @@ export default function Home() {
       {
         supabase && <AuthDialog open={isAuthDialogOpen} setOpen={setAuthDialog} view={authView} supabase={supabase} />
       }
-      <div className="flex-1 flex space-x-8 w-full">
-        <div className="flex-1 flex flex-col max-h-full max-w-[800px] mx-auto px-4">
+      <div className="grid grid-cols-2 space-x-8 w-full">
+        <div className="flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto">
           <NavBar
             session={session}
             showLogin={() => setAuthDialog(true)}
