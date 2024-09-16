@@ -189,6 +189,8 @@ export default function Home() {
 
   function handleNewChat () {
     stop()
+    setChatInput('')
+    setFiles([])
     setMessages([])
     setArtifact(undefined)
     setResult(undefined)
