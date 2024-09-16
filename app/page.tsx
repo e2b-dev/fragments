@@ -187,8 +187,8 @@ export default function Home() {
         onLanguageModelChange={handleLanguageModelChange}
         onGitHubClick={handleGitHubClick}
         onNewChat={handleNewChat}
-        apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
-        baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
+        apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
+        baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
       />
 
       <div className="flex-1 flex space-x-8 w-full pt-36 pb-8 px-4">
