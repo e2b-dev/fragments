@@ -35,7 +35,7 @@ export function Chat({
               </div>
               <div className="px-4 flex flex-col">
                 <span className="font-bold font-sans text-sm text-primary">{message.object.title}</span>
-                <span className="font-sans text-sm">Click to open fragment</span>
+                <span className="font-sans text-sm">Click to open the fragment</span>
               </div>
             </div>
           }
