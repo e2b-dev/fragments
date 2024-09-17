@@ -59,8 +59,19 @@ export function ChatInput({
     })
   }, [files])
 
+  function onEnter (e: React.KeyboardEvent<HTMLFormElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      if (e.currentTarget.checkValidity()) {
+        handleSubmit(e)
+      } else {
+        e.currentTarget.reportValidity()
+      }
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="mb-4 flex flex-col mt-auto bg-background shadow-lg rounded-2xl border overflow-hidden">
+    <form onSubmit={handleSubmit} onKeyDown={onEnter} className="mb-4 flex flex-col mt-auto bg-background shadow-lg rounded-2xl border overflow-hidden">
       {error !== undefined &&
         <div className='bg-red-400/10 text-red-400 px-3 py-2 text-sm font-medium'>
           An unexpected error has occurred. Please <button className='underline' onClick={retry}>try again</button>.

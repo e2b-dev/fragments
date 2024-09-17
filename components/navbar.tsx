@@ -272,7 +272,7 @@ export default function NavBar({
                     session.user.user_metadata?.avatar_url ||
                     "https://avatar.vercel.sh/" + session.user.email
                   }
-                  alt="@shadcn"
+                  alt={session.user.email}
                 />
               </Avatar>
             </DropdownMenuTrigger>
