@@ -29,11 +29,11 @@ export function Chat({
             }
           })}
           {message.object &&
-            <div onClick={() => setCurrentPreview({ object: message.object, result: message.result })} className="py-2 pl-2 w-full md:w-max flex items-center justify-center border rounded-xl select-none hover:bg-white/5 hover:cursor-pointer">
-              <div className="rounded-[0.5rem] w-12 h-12 bg-white/5 self-stretch flex items-center justify-center">
+            <div onClick={() => setCurrentPreview({ object: message.object, result: message.result })} className="py-2 pl-2 w-full md:w-max flex items-center border rounded-xl select-none hover:bg-white/5 hover:cursor-pointer">
+              <div className="rounded-[0.5rem] w-10 h-10 bg-white/5 self-stretch flex items-center justify-center">
                 <Terminal strokeWidth={2} className="text-[#FF8800]"/>
               </div>
-              <div className="px-4 flex flex-col">
+              <div className="pl-2 pr-4 flex flex-col">
                 <span className="font-bold font-sans text-sm text-primary">{message.object.title}</span>
                 <span className="font-sans text-sm">Click to open the fragment</span>
               </div>
