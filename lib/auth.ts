@@ -47,6 +47,7 @@ export function useAuth (setAuthDialog: (value: boolean) => void, setAuthView: (
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      getUserAPIKey(session as Session).then(setApiKey)
       setSession(session)
     })
 
