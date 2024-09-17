@@ -7,11 +7,12 @@ import { SupabaseClient } from '@supabase/supabase-js'
 
 function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, view: AuthViewType }) {
   return (
-    <div className="mx-auto flex flex-1 w-full justify-center items-center flex-col">
-      <h1 className="text-4xl font-bold mt-8 mb-4">
+    <div className="flex justify-center items-center flex-col">
+      <img src="/logo-colored.svg" alt="E2B" className="w-12 h-12 mt-8" />
+      <h1 className="text-2xl font-semibold mt-6 mb-2">
         Sign in to E2B
       </h1>
-      <div className="md:w-[420px] w-[240px]">
+      <div className="w-full">
         <Auth
           supabaseClient={supabase}
           appearance={{
@@ -22,10 +23,19 @@ function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, vi
                   brand: 'rgb(255, 136, 0)',
                   brandAccent: 'rgb(255, 136, 0)',
                   inputText: '#FFF',
+                  dividerBackground: 'hsla(270, 2%, 19%)',
+                  inputBorder: 'hsla(240 3.7% 15.9%)',
+                  inputBorderFocus: 'hsla(0, 0%, 100%, .1)',
+                  inputBorderHover: 'hsla(240 3.7% 15.9%)',
+                  inputLabelText: 'hsla(240 5% 64.9%)',
+                  defaultButtonText: '#FFF',
+                  defaultButtonBackground: 'hsla(240 3.7% 15.9%)',
+                  defaultButtonBackgroundHover: 'hsla(240 3.7% 15.9%)',
+                  defaultButtonBorder: 'hsla(240 3.7% 15.9%)',
                 },
                 radii: {
-                  borderRadiusButton: '20px',
-                  inputBorderRadius: '12px'
+                  borderRadiusButton: '0.7rem',
+                  inputBorderRadius: '0.7rem'
                 }
               },
             },
