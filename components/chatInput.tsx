@@ -12,6 +12,8 @@ import TextareaAutosize from 'react-textarea-autosize'
 import { useMemo } from 'react'
 
 export function ChatInput({
+  error,
+  retry,
   isLoading,
   stop,
   input,
@@ -22,6 +24,8 @@ export function ChatInput({
   handleFileChange,
   children,
 }: {
+  error: undefined | unknown,
+  retry: () => void,
   isLoading: boolean,
   stop: () => void,
   input: string,
@@ -56,7 +60,12 @@ export function ChatInput({
   }, [files])
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 flex flex-col mt-auto bg-background shadow-lg rounded-2xl border">
+    <form onSubmit={handleSubmit} className="mb-4 flex flex-col mt-auto bg-background shadow-lg rounded-2xl border overflow-hidden">
+      {error !== undefined &&
+        <div className='bg-red-400/10 text-red-400 px-3 py-2 text-sm font-medium'>
+          An unexpected error occurred. Please <button className='underline' onClick={retry}>try again</button>.
+        </div>
+      }
       <div className="px-3 py-2">
         {children}
       </div>

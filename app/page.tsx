@@ -98,6 +98,10 @@ export default function Home() {
     }
   }, [object])
 
+  useEffect(() => {
+    if (error) stop()
+  }, [error])
+
   function setMessage(message: Partial<Message>, index?: number) {
     setMessages(previousMessages => {
       const updatedMessages = [...previousMessages]
@@ -151,6 +155,16 @@ export default function Home() {
     posthog.capture('chat_submit', {
       template: selectedTemplate,
       model: languageModel.model,
+    })
+  }
+
+  function retry() {
+    submit({
+      userID: session?.user?.id,
+      messages: toAISDKMessages(messages),
+      template: currentTemplate,
+      model: currentModel,
+      config: languageModel,
     })
   }
 
@@ -230,6 +244,8 @@ export default function Home() {
           />
           <Chat messages={messages} setCurrentPreview={setCurrentPreview} />
           <ChatInput
+            error={error}
+            retry={retry}
             isLoading={isLoading}
             stop={stop}
             input={chatInput}
