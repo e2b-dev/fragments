@@ -8,8 +8,8 @@ import { SupabaseClient } from '@supabase/supabase-js'
 function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, view: AuthViewType }) {
   return (
     <div className="flex justify-center items-center flex-col">
-      <img src="/logo-colored.svg" alt="E2B" className="w-12 h-12 mt-8" />
-      <h1 className="text-2xl font-semibold mt-6 mb-2">
+      <h1 className="flex items-center gap-4 text-xl font-bold mb-2 w-full">
+        <img src="/logo-colored.svg" alt="E2B" className="w-8 h-8" />
         Sign in to E2B
       </h1>
       <div className="w-full">
