@@ -51,7 +51,7 @@ function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, vi
           view={view}
           theme='default'
           showLinks={true}
-          providers={['github']}
+          providers={['github', 'google']}
           providerScopes={{
             github: 'email',
           }}
