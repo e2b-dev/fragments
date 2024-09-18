@@ -40,6 +40,7 @@
     "core-js": "^3.38.0",
     "lucide-react": "^0.396.0",
     "next": "^14.2.8",
+    "next-themes": "^0.3.0",
     "ollama-ai-provider": "^0.12.0",
     "posthog-js": "^1.158.3",
     "prismjs": "^1.29.0",
