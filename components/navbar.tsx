@@ -1,6 +1,6 @@
 import "core-js/features/object/group-by.js";
 import Link from "next/link";
-import Image from "next/image";
+import Logo from "./logo";
 import { Session } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,7 +59,7 @@ export default function NavBar({
     <nav className="w-full flex bg-background py-4">
       <div className="flex flex-1 items-center">
         <Link href="/" className="flex items-center gap-2" target="_blank">
-          <Image src="/logo.svg" alt="logo" width={24} height={24} />
+          <Logo className="text-primary" alt="logo" width={24} height={24} />
           <h1 className="whitespace-pre">Fragments by </h1>
         </Link>
         <Link
