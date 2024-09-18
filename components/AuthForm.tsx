@@ -4,13 +4,16 @@ import {
   ThemeSupa
 } from '@supabase/auth-ui-shared'
 import { SupabaseClient } from '@supabase/supabase-js'
+import Logo from './logo'
 
 function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, view: AuthViewType }) {
   return (
     <div className="flex justify-center items-center flex-col">
       <h1 className="flex items-center gap-4 text-xl font-bold mb-2 w-full">
-        <img src="/logo-colored.svg" alt="E2B" className="w-8 h-8" />
-        Sign in to E2B
+        <div className="flex items-center justify-center rounded-md shadow-md bg-black p-2">
+          <Logo className="text-white w-6 h-6" />
+        </div>
+        Sign in to Fragments
       </h1>
       <div className="w-full">
         <Auth
@@ -22,16 +25,16 @@ function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, vi
                 colors: {
                   brand: 'rgb(255, 136, 0)',
                   brandAccent: 'rgb(255, 136, 0)',
-                  inputText: '#FFF',
-                  dividerBackground: 'hsla(270, 2%, 19%)',
-                  inputBorder: 'hsla(240 3.7% 15.9%)',
-                  inputBorderFocus: 'hsla(0, 0%, 100%, .1)',
-                  inputBorderHover: 'hsla(240 3.7% 15.9%)',
-                  inputLabelText: 'hsla(240 5% 64.9%)',
-                  defaultButtonText: '#FFF',
-                  defaultButtonBackground: 'hsla(240 3.7% 15.9%)',
-                  defaultButtonBackgroundHover: 'hsla(240 3.7% 15.9%)',
-                  defaultButtonBorder: 'hsla(240 3.7% 15.9%)',
+                  inputText: 'hsl(var(--foreground))',
+                  dividerBackground: 'hsl(var(--border))',
+                  inputBorder: 'hsl(var(--input))',
+                  inputBorderFocus: 'hsl(var(--ring))',
+                  inputBorderHover: 'hsl(var(--input))',
+                  inputLabelText: 'hsl(var(--muted-foreground))',
+                  defaultButtonText: 'hsl(var(--primary))',
+                  defaultButtonBackground: 'hsl(var(--secondary))',
+                  defaultButtonBackgroundHover: 'hsl(var(--secondary))',
+                  defaultButtonBorder: 'hsl(var(--secondary))',
                 },
                 radii: {
                   borderRadiusButton: '0.7rem',
