@@ -160,7 +160,7 @@ export default function NavBar({
               </>
             )}
             <div className="flex flex-col gap-1.5 px-2 py-2">
-              <span className="text-sm font-medium">Configuration</span>
+              <span className="text-sm font-medium">Parameters</span>
               <div className="flex space-x-4 items-center">
                 <span className="text-sm flex-1 text-muted-foreground">Output tokens</span>
                 <Input

@@ -6,7 +6,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AI Artifacts by E2B',
+  title: 'Fragments by E2B',
   description: 'About Hackable open-source version of Anthropic\'s AI Artifacts chat',
 }
 
