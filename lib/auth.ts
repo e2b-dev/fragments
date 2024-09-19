@@ -47,8 +47,12 @@ export function useAuth (setAuthDialog: (value: boolean) => void, setAuthView: (
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      getUserAPIKey(session as Session).then(setApiKey)
       setSession(session)
+      if (session) {
+        getUserAPIKey(session).then(setApiKey)
+        posthog.identify(session?.user.id, { email: session?.user.email })
+        posthog.capture('sign_in')
+      }
     })
 
     const {
