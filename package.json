@@ -12,7 +12,7 @@
     "@ai-sdk/anthropic": "^0.0.23",
     "@ai-sdk/google": "^0.0.44",
     "@ai-sdk/mistral": "^0.0.37",
-    "@ai-sdk/openai": "^0.0.44",
+    "@ai-sdk/openai": "^0.0.59",
     "@ai-sdk/ui-utils": "^0.0.32",
     "@e2b/code-interpreter": "^0.0.9-beta.3",
     "@radix-ui/react-avatar": "^1.1.0",

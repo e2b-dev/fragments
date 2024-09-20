@@ -48,7 +48,7 @@ export default function Home() {
   const lastMessage = messages[messages.length - 1]
 
   const { object, submit, isLoading, stop, error } = useObject({
-    api: '/api/chat',
+    api: currentModel?.id === 'o1-preview' || currentModel?.id === 'o1-mini' ? '/api/chat-o1' : '/api/chat',
     schema,
     onFinish: async ({ object: artifact, error }) => {
       if (!error) {
