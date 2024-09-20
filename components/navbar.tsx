@@ -1,4 +1,3 @@
-import "core-js/features/object/group-by.js";
 import Link from "next/link";
 import Logo from "./logo";
 import { Session } from "@supabase/supabase-js";

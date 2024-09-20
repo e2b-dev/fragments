@@ -1,3 +1,4 @@
+import "core-js/features/object/group-by.js";
 import {
   Select,
   SelectContent,
