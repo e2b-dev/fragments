@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Copy } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 
 export function PublishDialog({
@@ -19,6 +20,8 @@ export function PublishDialog({
   sbxId: string
   apiKey: string | undefined
 }) {
+  const posthog = usePostHog()
+
   const [publishedURL, setPublishedURL] = useState<string | null>(null)
   useEffect(() => {
     setPublishedURL(null)
@@ -27,6 +30,9 @@ export function PublishDialog({
   async function publishURL() {
     const { url: publishedURL } = await publish(url, sbxId, apiKey)
     setPublishedURL(publishedURL)
+    posthog.capture('publish_url', {
+      url: publishedURL,
+    })
   }
 
   function copy(content: string) {
