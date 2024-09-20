@@ -69,6 +69,7 @@ export async function POST(req: Request) {
     await (sbx as CodeInterpreter).close()
     return new Response(
       JSON.stringify({
+        sbxId: sbx?.sandboxID,
         template: artifact.template,
         stdout: result.logs.stdout,
         stderr: result.logs.stderr,
@@ -79,6 +80,7 @@ export async function POST(req: Request) {
   } else {
     return new Response(
       JSON.stringify({
+        sbxId: sbx?.sandboxID,
         template: artifact.template,
         url: `https://${sbx?.getHost(artifact.port || 80)}`,
       }),

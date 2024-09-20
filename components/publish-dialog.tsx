@@ -9,14 +9,14 @@ import { Input } from '@/components/ui/input'
 import { Copy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-export function PublishDialog({ url }: { url: string }) {
+export function PublishDialog({ url, sbxId }: { url: string; sbxId: string }) {
   const [publishedURL, setPublishedURL] = useState<string | null>(null)
   useEffect(() => {
     setPublishedURL(null)
   }, [url])
 
-  async function publishURL(url: string) {
-    const { url: publishedURL } = await publish(url)
+  async function publishURL() {
+    const { url: publishedURL } = await publish(url, sbxId)
     setPublishedURL(publishedURL)
   }
 
@@ -51,7 +51,7 @@ export function PublishDialog({ url }: { url: string }) {
           )}
           <Button
             variant="default"
-            onClick={() => publishURL(url)}
+            onClick={publishURL}
             disabled={publishedURL !== null}
           >
             {publishedURL ? 'Published' : 'Confirm and publish'}

@@ -138,7 +138,9 @@ export function SideView({
                   <TooltipContent>Download</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              {isLinkAvailable && <PublishDialog url={result.url!} />}
+              {isLinkAvailable && (
+                <PublishDialog url={result.url!} sbxId={result.sbxId!} />
+              )}
             </div>
           )}
         </div>
