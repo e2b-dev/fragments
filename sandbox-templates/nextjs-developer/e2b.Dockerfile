@@ -11,9 +11,11 @@ RUN chmod +x /compile_page.sh
 WORKDIR /home/user/nextjs-app
 
 RUN npx create-next-app@latest . --ts --tailwind --no-eslint --import-alias "@/*" --use-npm --no-app --no-src-dir
+COPY _app.tsx pages/_app.tsx
 
 RUN npx shadcn@latest init -d
 RUN npx shadcn@latest add --all
+RUN npm install posthog-js
 
 # Move the Nextjs app to the home directory and remove the nextjs-app directory
 RUN mv /home/user/nextjs-app/* /home/user/ && rm -rf /home/user/nextjs-app
