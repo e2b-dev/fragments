@@ -66,6 +66,7 @@ export default function Home() {
         setResult(result)
         setCurrentTab('artifact')
         setIsPreviewLoading(false)
+        posthog.capture('sandbox_created', { url: result.url })
       }
     }
   })
