@@ -297,7 +297,6 @@ export default function Home() {
           isLoading={isPreviewLoading}
           artifact={artifact}
           result={result}
-          selectedTemplate={artifact?.template as TemplateId}
           onClose={() => setArtifact(undefined)}
         />
       </div>

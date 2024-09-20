@@ -100,7 +100,7 @@ export function ArtifactView({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="link" className='text-muted-foreground' onClick={() => share(result.url, title)}>
+                  <Button variant="link" className='text-muted-foreground' onClick={() => share(result.url!, title)}>
                     <Share className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>

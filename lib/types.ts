@@ -7,5 +7,5 @@ export type ExecutionResult = {
   stderr: string[]
   runtimeError?: ExecutionError
   cellResults: Result[]
-  url: string
+  url?: string
 }
