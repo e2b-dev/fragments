@@ -1,24 +1,23 @@
 'use client'
-import { useState } from 'react'
-import Image from 'next/image'
-import { RotateCw, Share, Terminal } from 'lucide-react'
+
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-
-import {
-  Alert,
-  AlertTitle,
-  AlertDescription,
-} from '@/components/ui/alert'
-import { ExecutionResult } from '@/lib/types'
+} from '@/components/ui/tooltip'
 import { TemplateId } from '@/lib/templates'
-import { Button } from '@/components/ui/button'
+import { ExecutionResult } from '@/lib/types'
+import { Copy, RotateCw, Terminal } from 'lucide-react'
+import Image from 'next/image'
+import { useState } from 'react'
 
-function LogsOutput({ stdout, stderr }: {
+function LogsOutput({
+  stdout,
+  stderr,
+}: {
   stdout: string[]
   stderr: string[]
 }) {
@@ -26,16 +25,20 @@ function LogsOutput({ stdout, stderr }: {
 
   return (
     <div className="w-full h-32 max-h-32 overflow-y-auto flex flex-col items-start justify-start space-y-1 p-4 border-t">
-      {stdout && stdout.length > 0 && stdout.map((out: string, index: number) => (
-        <pre key={index} className="text-xs">
-          {out}
-        </pre>
-      ))}
-      {stderr && stderr.length > 0 && stderr.map((err: string, index: number) => (
-        <pre key={index} className="text-xs text-red-500">
-          {err}
-        </pre>
-      ))}
+      {stdout &&
+        stdout.length > 0 &&
+        stdout.map((out: string, index: number) => (
+          <pre key={index} className="text-xs">
+            {out}
+          </pre>
+        ))}
+      {stderr &&
+        stderr.length > 0 &&
+        stderr.map((err: string, index: number) => (
+          <pre key={index} className="text-xs text-red-500">
+            {err}
+          </pre>
+        ))}
     </div>
   )
 }
@@ -53,23 +56,12 @@ export function ArtifactView({
   if (!result) return null
 
   function refreshIframe() {
-    setIframeKey(prevKey => prevKey + 1)
+    setIframeKey((prevKey) => prevKey + 1)
   }
 
-  async function share (url: string, title?: string) {
-    const shareData = {
-      title: title,
-      url: url,
-    }
-
-    if (navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData)
-      } catch (error) {}
-    } else {
-      await navigator.clipboard.writeText(url)
-      alert('URL copied to clipboard')
-    }
+  async function copy(url: string) {
+    await navigator.clipboard.writeText(url)
+    alert('URL copied to clipboard')
   }
 
   if (template !== 'code-interpreter-multilang') {
@@ -82,31 +74,37 @@ export function ArtifactView({
           loading="lazy"
           src={result.url}
         />
-        <div className='p-2 border-t'>
-          <div className='flex items-center bg-muted dark:bg-white/10 rounded-2xl'>
+        <div className="p-2 border-t">
+          <div className="flex items-center bg-muted dark:bg-white/10 rounded-2xl">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="link" className='text-muted-foreground' onClick={refreshIframe}>
+                  <Button
+                    variant="link"
+                    className="text-muted-foreground"
+                    onClick={refreshIframe}
+                  >
                     <RotateCw className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  Refresh
-                </TooltipContent>
+                <TooltipContent>Refresh</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <span className='text-muted-foreground text-xs flex-1 text-ellipsis overflow-hidden whitespace-nowrap'>{result.url}</span>
+            <span className="text-muted-foreground text-xs flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
+              {result.url}
+            </span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="link" className='text-muted-foreground' onClick={() => share(result.url!, title)}>
-                    <Share className="h-4 w-4" />
+                  <Button
+                    variant="link"
+                    className="text-muted-foreground"
+                    onClick={() => copy(result.url!)}
+                  >
+                    <Copy className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  Share link
-                </TooltipContent>
+                <TooltipContent>Share link</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
@@ -123,8 +121,10 @@ export function ArtifactView({
     return (
       <div className="p-4">
         <Alert variant="destructive">
-          <Terminal className="h-4 w-4"/>
-          <AlertTitle>{name}: {value}</AlertTitle>
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>
+            {name}: {value}
+          </AlertTitle>
           <AlertDescription className="font-mono whitespace-pre-wrap">
             {tracebackRaw}
           </AlertDescription>
@@ -155,12 +155,8 @@ export function ArtifactView({
 
   // No cell results, but there is stdout or stderr
   if (stdout.length > 0 || stderr.length > 0) {
-    return (
-      <LogsOutput stdout={stdout} stderr={stderr} />
-    )
+    return <LogsOutput stdout={stdout} stderr={stderr} />
   }
 
-  return (
-    <span>No output or logs</span>
-  )
+  return <span>No output or logs</span>
 }

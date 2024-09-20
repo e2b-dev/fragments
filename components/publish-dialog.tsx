@@ -1,3 +1,4 @@
+import Logo from './logo'
 import { publish } from '@/app/actions/publish'
 import { Button } from '@/components/ui/button'
 import {
@@ -28,13 +29,16 @@ export function PublishDialog({ url, sbxId }: { url: string; sbxId: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="default">Publish</Button>
+        <Button variant="default">
+          <Logo style="e2b" width={16} height={16} className="mr-2" />
+          Publish
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-4 w-80 flex flex-col gap-2">
-        <div className="text-sm font-semibold">Publish fragment</div>
+        <div className="text-sm font-semibold">Publish to E2B</div>
         <div className="text-sm text-muted-foreground">
           Publishing the fragment will make it publicly available to others via
-          link.
+          link, hosted on E2B.
         </div>
         <div className="flex flex-col gap-2">
           {publishedURL && (
