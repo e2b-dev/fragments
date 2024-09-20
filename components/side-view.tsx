@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { TemplateId } from '@/lib/templates'
 import { ArtifactSchema } from '@/lib/schema'
-import { ExecutionResult } from '@/app/api/sandbox/route'
+import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 
 export function SideView({

@@ -1,7 +1,7 @@
 import { createAnthropic } from '@ai-sdk/anthropic'
-import { createOpenAI } from '@ai-sdk/openai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createMistral } from '@ai-sdk/mistral'
+import { createOpenAI } from '@ai-sdk/openai'
 import { createOllama } from 'ollama-ai-provider'
 
 export type LLMModel = {
@@ -30,15 +30,29 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
   const providerConfigs = {
     anthropic: () => createAnthropic({ apiKey, baseURL })(modelNameString),
     openai: () => createOpenAI({ apiKey, baseURL })(modelNameString),
-    google: () => createGoogleGenerativeAI({ apiKey, baseURL })(modelNameString),
+    google: () =>
+      createGoogleGenerativeAI({ apiKey, baseURL })(modelNameString),
     mistral: () => createMistral({ apiKey, baseURL })(modelNameString),
-    groq: () => createOpenAI({ apiKey: apiKey || process.env.GROQ_API_KEY, baseURL: baseURL || 'https://api.groq.com/openai/v1' })(modelNameString),
-    togetherai: () => createOpenAI({ apiKey: apiKey || process.env.TOGETHER_AI_API_KEY, baseURL: baseURL || 'https://api.together.xyz/v1' })(modelNameString),
+    groq: () =>
+      createOpenAI({
+        apiKey: apiKey || process.env.GROQ_API_KEY,
+        baseURL: baseURL || 'https://api.groq.com/openai/v1',
+      })(modelNameString),
+    togetherai: () =>
+      createOpenAI({
+        apiKey: apiKey || process.env.TOGETHER_AI_API_KEY,
+        baseURL: baseURL || 'https://api.together.xyz/v1',
+      })(modelNameString),
     ollama: () => createOllama({ baseURL })(modelNameString),
-    fireworks: () => createOpenAI({ apiKey: apiKey || process.env.FIREWORKS_API_KEY, baseURL: baseURL || 'https://api.fireworks.ai/inference/v1' })(modelNameString),
+    fireworks: () =>
+      createOpenAI({
+        apiKey: apiKey || process.env.FIREWORKS_API_KEY,
+        baseURL: baseURL || 'https://api.fireworks.ai/inference/v1',
+      })(modelNameString),
   }
 
-  const createClient = providerConfigs[providerId as keyof typeof providerConfigs]
+  const createClient =
+    providerConfigs[providerId as keyof typeof providerConfigs]
 
   if (!createClient) {
     throw new Error(`Unsupported provider: ${providerId}`)
@@ -47,7 +61,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
   return createClient()
 }
 
-export function getDefaultMode (model: LLMModel) {
+export function getDefaultMode(model: LLMModel) {
   const { id: modelNameString, providerId } = model
 
   // monkey patch fireworks

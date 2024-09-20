@@ -11,5 +11,5 @@ export default function Logo({ ...props }) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }

@@ -14,9 +14,9 @@ import {
   AlertTitle,
   AlertDescription,
 } from '@/components/ui/alert'
-import { ExecutionResult } from '@/app/api/sandbox/route'
+import { ExecutionResult } from '@/lib/types'
 import { TemplateId } from '@/lib/templates'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 
 function LogsOutput({ stdout, stderr }: {
   stdout: string[]

@@ -1,14 +1,20 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import AuthForm from "./AuthForm"
-import { SupabaseClient } from "@supabase/supabase-js"
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
-import { AuthViewType } from "@/lib/auth"
+import AuthForm from './AuthForm'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { AuthViewType } from '@/lib/auth'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { SupabaseClient } from '@supabase/supabase-js'
 
-export function AuthDialog({ open, setOpen, supabase, view }: { open: boolean, setOpen: (open: boolean) => void, supabase: SupabaseClient, view: AuthViewType }) {
+export function AuthDialog({
+  open,
+  setOpen,
+  supabase,
+  view,
+}: {
+  open: boolean
+  setOpen: (open: boolean) => void
+  supabase: SupabaseClient
+  view: AuthViewType
+}) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>

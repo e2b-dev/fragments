@@ -14,7 +14,7 @@ import { LLMModel, LLMModelConfig } from "@/lib/models";
 import { TemplateId, Templates } from "@/lib/templates";
 import { Sparkles } from "lucide-react";
 
-export default function ModelSelector({
+export function ModelSelector({
   templates,
   selectedTemplate,
   onSelectedTemplateChange,

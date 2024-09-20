@@ -1,9 +1,9 @@
 /* Prism.js GitHub Dark Theme */
 
-code[class*="language-"],
-pre[class*="language-"] {
-  font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono",
-    "Droid Sans Mono", "Source Code Pro", monospace;
+code[class*='language-'],
+pre[class*='language-'] {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono',
+    'Droid Sans Mono', 'Source Code Pro', monospace;
   text-align: left;
   white-space: pre;
   word-spacing: normal;
@@ -14,8 +14,8 @@ pre[class*="language-"] {
   hyphens: none;
 }
 
-code[class*="language-"],
-pre[class*="language-"] {
+code[class*='language-'],
+pre[class*='language-'] {
   color: #24292e;
 }
 
@@ -91,8 +91,8 @@ pre[class*="language-"] {
 }
 
 /* Dark */
-.dark code[class*="language-"],
-.dark pre[class*="language-"] {
+.dark code[class*='language-'],
+.dark pre[class*='language-'] {
   color: #e1e4e8;
 }
 

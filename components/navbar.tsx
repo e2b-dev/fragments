@@ -1,7 +1,6 @@
-import Link from "next/link";
-import Logo from "./logo";
-import { Session } from "@supabase/supabase-js";
-import { Button } from "@/components/ui/button";
+import Logo from './logo'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,27 +8,35 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { ArrowRight, LogOut, MoonIcon, Plus, Settings2, SunIcon, Undo } from "lucide-react";
-
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+} from '@/components/ui/tooltip'
+import { LLMModelConfig } from '@/lib/models'
 import {
   DiscordLogoIcon,
   GitHubLogoIcon,
   TwitterLogoIcon,
-} from "@radix-ui/react-icons";
-import { Input } from "./ui/input";
-import { LLMModelConfig } from "@/lib/models";
-import { Label } from "./ui/label";
-import { useTheme } from "next-themes";
+} from '@radix-ui/react-icons'
+import { Session } from '@supabase/supabase-js'
+import {
+  ArrowRight,
+  LogOut,
+  MoonIcon,
+  Plus,
+  Settings2,
+  SunIcon,
+  Undo,
+} from 'lucide-react'
+import { useTheme } from 'next-themes'
+import Link from 'next/link'
 
-export default function NavBar({
+export function NavBar({
   session,
   showLogin,
   signOut,
@@ -42,17 +49,17 @@ export default function NavBar({
   onUndo,
   canUndo,
 }: {
-  session: Session | null;
-  showLogin: () => void;
-  signOut: () => void;
-  onNewChat: () => void;
-  onSocialClick: (target: "github" | "x" | "discord") => void;
-  languageModel: LLMModelConfig;
-  onLanguageModelChange: (config: LLMModelConfig) => void;
-  apiKeyConfigurable: boolean;
-  baseURLConfigurable: boolean;
-  onUndo: () => void;
-  canUndo: boolean;
+  session: Session | null
+  showLogin: () => void
+  signOut: () => void
+  onNewChat: () => void
+  onSocialClick: (target: 'github' | 'x' | 'discord') => void
+  languageModel: LLMModelConfig
+  onLanguageModelChange: (config: LLMModelConfig) => void
+  apiKeyConfigurable: boolean
+  baseURLConfigurable: boolean
+  onUndo: () => void
+  canUndo: boolean
 }) {
   const { setTheme, theme } = useTheme()
   return (
@@ -74,13 +81,16 @@ export default function NavBar({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onUndo}
+                disabled={!canUndo}
+              >
                 <Undo className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              Undo
-            </TooltipContent>
+            <TooltipContent>Undo</TooltipContent>
           </Tooltip>
         </TooltipProvider>
         <TooltipProvider>
@@ -90,9 +100,7 @@ export default function NavBar({
                 <Plus className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              New chat
-            </TooltipContent>
+            <TooltipContent>New chat</TooltipContent>
           </Tooltip>
         </TooltipProvider>
         <DropdownMenu>
@@ -105,9 +113,7 @@ export default function NavBar({
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
-              <TooltipContent>
-                LLM settings
-              </TooltipContent>
+              <TooltipContent>LLM settings</TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <DropdownMenuContent align="end">
@@ -162,7 +168,9 @@ export default function NavBar({
             <div className="flex flex-col gap-1.5 px-2 py-2">
               <span className="text-sm font-medium">Parameters</span>
               <div className="flex space-x-4 items-center">
-                <span className="text-sm flex-1 text-muted-foreground">Output tokens</span>
+                <span className="text-sm flex-1 text-muted-foreground">
+                  Output tokens
+                </span>
                 <Input
                   type="number"
                   defaultValue={languageModel.maxTokens}
@@ -179,7 +187,9 @@ export default function NavBar({
                 />
               </div>
               <div className="flex space-x-4 items-center">
-                <span className="text-sm flex-1 text-muted-foreground">Temperature</span>
+                <span className="text-sm flex-1 text-muted-foreground">
+                  Temperature
+                </span>
                 <Input
                   type="number"
                   defaultValue={languageModel.temperature}
@@ -196,7 +206,9 @@ export default function NavBar({
                 />
               </div>
               <div className="flex space-x-4 items-center">
-                <span className="text-sm flex-1 text-muted-foreground">Top P</span>
+                <span className="text-sm flex-1 text-muted-foreground">
+                  Top P
+                </span>
                 <Input
                   type="number"
                   defaultValue={languageModel.topP}
@@ -213,7 +225,9 @@ export default function NavBar({
                 />
               </div>
               <div className="flex space-x-4 items-center">
-                <span className="text-sm flex-1 text-muted-foreground">Top K</span>
+                <span className="text-sm flex-1 text-muted-foreground">
+                  Top K
+                </span>
                 <Input
                   type="number"
                   defaultValue={languageModel.topK}
@@ -230,7 +244,9 @@ export default function NavBar({
                 />
               </div>
               <div className="flex space-x-4 items-center">
-                <span className="text-sm flex-1 text-muted-foreground">Frequence penalty</span>
+                <span className="text-sm flex-1 text-muted-foreground">
+                  Frequence penalty
+                </span>
                 <Input
                   type="number"
                   defaultValue={languageModel.frequencyPenalty}
@@ -247,7 +263,9 @@ export default function NavBar({
                 />
               </div>
               <div className="flex space-x-4 items-center">
-                <span className="text-sm flex-1 text-muted-foreground">Presence penalty</span>
+                <span className="text-sm flex-1 text-muted-foreground">
+                  Presence penalty
+                </span>
                 <Input
                   type="number"
                   defaultValue={languageModel.presencePenalty}
@@ -273,7 +291,7 @@ export default function NavBar({
                 <AvatarImage
                   src={
                     session.user.user_metadata?.avatar_url ||
-                    "https://avatar.vercel.sh/" + session.user.email
+                    'https://avatar.vercel.sh/' + session.user.email
                   }
                   alt={session.user.email}
                 />
@@ -287,27 +305,27 @@ export default function NavBar({
                 </span>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onSocialClick("github")}>
+              <DropdownMenuItem onClick={() => onSocialClick('github')}>
                 <GitHubLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 Star us on GitHub
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onSocialClick("discord")}>
+              <DropdownMenuItem onClick={() => onSocialClick('discord')}>
                 <DiscordLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 Join us on Discord
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onSocialClick("x")}>
+              <DropdownMenuItem onClick={() => onSocialClick('x')}>
                 <TwitterLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 Follow us on X
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {theme === "light" && (
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
+              {theme === 'light' && (
+                <DropdownMenuItem onClick={() => setTheme('dark')}>
                   <SunIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   Light theme
                 </DropdownMenuItem>
               )}
-              {theme === "dark" && (
-                <DropdownMenuItem onClick={() => setTheme("light")}>
+              {theme === 'dark' && (
+                <DropdownMenuItem onClick={() => setTheme('light')}>
                   <MoonIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   Dark theme
                 </DropdownMenuItem>
@@ -327,5 +345,5 @@ export default function NavBar({
         )}
       </div>
     </nav>
-  );
+  )
 }

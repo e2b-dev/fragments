@@ -1,16 +1,15 @@
-"use client";
+'use client'
 
-import posthog from "posthog-js";
-import { PostHogProvider as PostHogProviderJS } from "posthog-js/react";
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import { type ThemeProviderProps } from 'next-themes/dist/types'
+import posthog from 'posthog-js'
+import { PostHogProvider as PostHogProviderJS } from 'posthog-js/react'
 
-import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { type ThemeProviderProps } from "next-themes/dist/types";
-
-if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_ENABLE_POSTHOG) {
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "", {
+if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_ENABLE_POSTHOG) {
+  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY ?? '', {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    person_profiles: "identified_only",
-  });
+    person_profiles: 'identified_only',
+  })
 }
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
@@ -18,9 +17,9 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     <PostHogProviderJS client={posthog}>{children}</PostHogProviderJS>
   ) : (
     children
-  );
+  )
 }
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
 }
