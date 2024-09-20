@@ -1,4 +1,4 @@
-import { ArrowUp, ImagePlus, Paperclip, Square, X } from 'lucide-react'
+import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
 
 import { Button } from './ui/button'
 import {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { experimental_useObject as useObject } from 'ai/react'
-import { useLocalStorage, useMediaQuery } from 'usehooks-ts'
+import { useLocalStorage } from 'usehooks-ts'
 import { usePostHog } from 'posthog-js/react'
 import { ArtifactSchema, artifactSchema as schema } from '@/lib/schema'
 
@@ -15,7 +15,7 @@ import { AuthDialog } from '@/components/AuthDialog'
 import { AuthViewType, useAuth } from '@/lib/auth'
 import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 
-import { LLMModel, LLMModelConfig } from '@/lib/models'
+import { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 import templates, { TemplateId } from '@/lib/templates';
 

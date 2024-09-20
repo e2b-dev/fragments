@@ -1,7 +1,7 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
-import { Copy, RefreshCcw, RotateCw, Share, Terminal } from 'lucide-react'
+import { RotateCw, Share, Terminal } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,

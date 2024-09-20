@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, useState } from 'react'
-import { ChevronRight, ChevronsRight, Download, LoaderCircle, RotateCw } from 'lucide-react'
+import { Dispatch, SetStateAction } from 'react'
+import { ChevronsRight, Download, LoaderCircle } from 'lucide-react'
 
 import { ArtifactView } from '@/components/artifact-view'
 import { CodeView } from '@/components/code-view'
@@ -16,7 +16,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
-import { Link, Copy } from 'lucide-react'
 import { TemplateId } from '@/lib/templates'
 import { ArtifactSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/app/api/sandbox/route'

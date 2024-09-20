@@ -13,7 +13,6 @@
     "@ai-sdk/google": "^0.0.44",
     "@ai-sdk/mistral": "^0.0.37",
     "@ai-sdk/openai": "^0.0.59",
-    "@ai-sdk/ui-utils": "^0.0.32",
     "@e2b/code-interpreter": "^0.0.9-beta.3",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-dialog": "^1.1.1",
@@ -43,8 +42,6 @@
     "prismjs": "^1.29.0",
     "react": "^18",
     "react-dom": "^18",
-    "react-drag-drop-files": "^2.3.10",
-    "react-resize-detector": "^11.0.1",
     "react-textarea-autosize": "^8.5.3",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
@@ -52,6 +49,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^22.2.0",
     "@types/prismjs": "^1.26.4",
     "@types/react": "^18",
