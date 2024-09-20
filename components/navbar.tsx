@@ -18,7 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { ArrowRight, LogOut, Plus, Settings2, Undo } from "lucide-react";
+import { ArrowRight, LogOut, MoonIcon, Plus, Settings2, SunIcon, Undo } from "lucide-react";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -29,6 +29,7 @@ import {
 import { Input } from "./ui/input";
 import { LLMModelConfig } from "@/lib/models";
 import { Label } from "./ui/label";
+import { useTheme } from "next-themes";
 
 export default function NavBar({
   session,
@@ -55,6 +56,7 @@ export default function NavBar({
   onUndo: () => void;
   canUndo: boolean;
 }) {
+  const { setTheme, theme } = useTheme()
   return (
     <nav className="w-full flex bg-background py-4">
       <div className="flex flex-1 items-center">
@@ -299,6 +301,19 @@ export default function NavBar({
                 <TwitterLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 Follow us on X
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {theme === "light" && (
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  <SunIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  Light theme
+                </DropdownMenuItem>
+              )}
+              {theme === "dark" && (
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  <MoonIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  Dark theme
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut}>
                 <LogOut className="mr-2 h-4 w-4 text-muted-foreground" />
