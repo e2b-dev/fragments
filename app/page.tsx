@@ -292,6 +292,7 @@ export default function Home() {
           </ChatInput>
         </div>
         <SideView
+          apiKey={apiKey}
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}
           isLoading={isPreviewLoading}

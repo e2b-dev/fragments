@@ -10,14 +10,22 @@ import { Input } from '@/components/ui/input'
 import { Copy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-export function PublishDialog({ url, sbxId }: { url: string; sbxId: string }) {
+export function PublishDialog({
+  url,
+  sbxId,
+  apiKey,
+}: {
+  url: string
+  sbxId: string
+  apiKey: string | undefined
+}) {
   const [publishedURL, setPublishedURL] = useState<string | null>(null)
   useEffect(() => {
     setPublishedURL(null)
   }, [url])
 
   async function publishURL() {
-    const { url: publishedURL } = await publish(url, sbxId)
+    const { url: publishedURL } = await publish(url, sbxId, apiKey)
     setPublishedURL(publishedURL)
   }
 

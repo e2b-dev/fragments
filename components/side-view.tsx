@@ -18,6 +18,7 @@ import { Dispatch, SetStateAction } from 'react'
 
 export function SideView({
   // userID,
+  apiKey,
   selectedTab,
   onSelectedTabChange,
   isLoading,
@@ -26,6 +27,7 @@ export function SideView({
   onClose,
 }: {
   // userID: string
+  apiKey: string | undefined
   selectedTab: 'code' | 'artifact'
   onSelectedTabChange: Dispatch<SetStateAction<'code' | 'artifact'>>
   isLoading: boolean
@@ -139,7 +141,7 @@ export function SideView({
                 </Tooltip>
               </TooltipProvider>
               {isLinkAvailable && (
-                <PublishDialog url={result.url!} sbxId={result.sbxId!} />
+                <PublishDialog url={result.url!} sbxId={result.sbxId!} apiKey={apiKey} />
               )}
             </div>
           )}
