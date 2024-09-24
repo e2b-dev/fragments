@@ -43,14 +43,14 @@
       "multiModal": true
     },
     {
-      "id": "models/gemini-1.5-pro-latest",
+      "id": "models/gemini-1.5-pro-002",
       "provider": "Google AI",
       "providerId": "google",
       "name": "Gemini Pro",
       "multiModal": true
     },
     {
-      "id": "models/gemini-1.5-flash-latest",
+      "id": "models/gemini-1.5-flash-002",
       "provider": "Google AI",
       "providerId": "google",
       "name": "Gemini Flash",
