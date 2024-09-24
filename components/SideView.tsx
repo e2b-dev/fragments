@@ -1,6 +1,6 @@
-import { PublishDialog } from './publish-dialog'
-import { ArtifactView } from '@/components/artifact-view'
-import { CodeView } from '@/components/code-view'
+import { ArtifactView } from './ArtifactView'
+import { CodeView } from './CodeView'
+import { PublishDialog } from './PublishDialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -141,7 +141,11 @@ export function SideView({
                 </Tooltip>
               </TooltipProvider>
               {isLinkAvailable && (
-                <PublishDialog url={result.url!} sbxId={result.sbxId!} apiKey={apiKey} />
+                <PublishDialog
+                  url={result.url!}
+                  sbxId={result.sbxId!}
+                  apiKey={apiKey}
+                />
               )}
             </div>
           )}

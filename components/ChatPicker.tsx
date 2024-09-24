@@ -13,7 +13,7 @@ import 'core-js/features/object/group-by.js'
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
 
-export function ModelSelector({
+export function ChatPicker({
   templates,
   selectedTemplate,
   onSelectedTemplateChange,

@@ -1,11 +1,11 @@
 'use client'
 
 import { AuthDialog } from '@/components/AuthDialog'
-import { Chat } from '@/components/chat'
-import { ChatInput } from '@/components/chatInput'
-import { NavBar } from '@/components/navbar'
-import { ModelSelector } from '@/components/select'
-import { SideView } from '@/components/side-view'
+import { Chat } from '@/components/Chat'
+import { ChatInput } from '@/components/ChatInput'
+import { ChatPicker } from '@/components/ChatPicker'
+import { NavBar } from '@/components/NavBar'
+import { SideView } from '@/components/SideView'
 import { AuthViewType, useAuth } from '@/lib/auth'
 import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import { LLMModelConfig } from '@/lib/models'
@@ -281,7 +281,7 @@ export default function Home() {
             files={files}
             handleFileChange={handleFileChange}
           >
-            <ModelSelector
+            <ChatPicker
               templates={templates}
               selectedTemplate={selectedTemplate}
               onSelectedTemplateChange={setSelectedTemplate}

@@ -1,4 +1,4 @@
-import Logo from './logo'
+import Logo from './Logo'
 import { publish } from '@/app/actions/publish'
 import { Button } from '@/components/ui/button'
 import {
@@ -55,7 +55,16 @@ export function PublishDialog({
           link.
         </div>
         <div className="text-sm text-muted-foreground">
-          The link will be available for up 1 hour or 3 hours depending on your active <a href="https://e2b.dev/dashboard?tab=billing" target="_blank" className="underline">Plan</a>.
+          The link will be available for up 1 hour or 3 hours depending on your
+          active{' '}
+          <a
+            href="https://e2b.dev/dashboard?tab=billing"
+            target="_blank"
+            className="underline"
+          >
+            Plan
+          </a>
+          .
         </div>
         <div className="flex flex-col gap-2">
           {publishedURL && (
