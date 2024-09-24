@@ -3,7 +3,7 @@ import { ExecutionError, Result } from '@e2b/code-interpreter'
 
 export type ExecutionResult = {
   sbxId: string
-  template: TemplateId
+  template: TemplateId | string
   stdout: string[]
   stderr: string[]
   runtimeError?: ExecutionError

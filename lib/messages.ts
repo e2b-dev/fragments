@@ -21,7 +21,7 @@ export type Message = {
   role: 'assistant' | 'user'
   content: Array<MessageText | MessageCode | MessageImage>
   object?: DeepPartial<ArtifactSchema>
-  result?: ExecutionResult
+  result?: Partial<ExecutionResult>
 }
 
 export function toAISDKMessages(messages: Message[]) {

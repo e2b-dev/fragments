@@ -1,5 +1,6 @@
 'use client'
 
+import { createSandbox } from './actions/sandbox'
 import { AuthDialog } from '@/components/AuthDialog'
 import { Chat } from '@/components/Chat'
 import { ChatInput } from '@/components/ChatInput'
@@ -35,7 +36,7 @@ export default function Home() {
 
   const posthog = usePostHog()
 
-  const [result, setResult] = useState<ExecutionResult>()
+  const [result, setResult] = useState<Partial<ExecutionResult>>()
   const [messages, setMessages] = useState<Message[]>([])
   const [artifact, setArtifact] = useState<
     DeepPartial<ArtifactSchema> | undefined
@@ -66,16 +67,12 @@ export default function Home() {
         // send it to /api/sandbox
         console.log('artifact', artifact)
 
-        const response = await fetch('/api/sandbox', {
-          method: 'POST',
-          body: JSON.stringify({
-            artifact,
-            userID: session?.user?.id,
-            apiKey,
-          }),
+        const result = await createSandbox({
+          artifact: artifact as ArtifactSchema,
+          userID: session?.user?.id || 'none',
+          apiKey,
         })
 
-        const result = await response.json()
         console.log('result', result)
 
         setResult(result)
@@ -230,7 +227,7 @@ export default function Home() {
 
   function setCurrentPreview(preview: {
     object: DeepPartial<ArtifactSchema> | undefined
-    result: ExecutionResult | undefined
+    result: Partial<ExecutionResult> | undefined
   }) {
     setArtifact(preview.object)
     setResult(preview.result)
@@ -297,7 +294,7 @@ export default function Home() {
           onSelectedTabChange={setCurrentTab}
           isLoading={isPreviewLoading}
           artifact={artifact}
-          result={result}
+          result={result as ExecutionResult}
           onClose={() => setArtifact(undefined)}
         />
       </div>
