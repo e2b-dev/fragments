@@ -17,7 +17,7 @@ function AuthForm({
         <div className="flex items-center justify-center rounded-md shadow-md bg-black p-2">
           <Logo className="text-white w-6 h-6" />
         </div>
-        Sign in to Fragments
+        Sign in to Artifacts
       </h1>
       <div className="w-full">
         <Auth

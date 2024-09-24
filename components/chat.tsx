@@ -58,7 +58,7 @@ export function Chat({
                 <span className="font-bold font-sans text-sm text-primary">
                   {message.object.title}
                 </span>
-                <span className="font-sans text-sm">Click to see fragment</span>
+                <span className="font-sans text-sm">Click to see artifact</span>
               </div>
             </div>
           )}

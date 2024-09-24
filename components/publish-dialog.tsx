@@ -51,8 +51,11 @@ export function PublishDialog({
       <DropdownMenuContent className="p-4 w-80 flex flex-col gap-2">
         <div className="text-sm font-semibold">Publish to E2B</div>
         <div className="text-sm text-muted-foreground">
-          Publishing the fragment will make it publicly available to others via
-          link, hosted on E2B.
+          Publishing the artifact will make it publicly available to others via
+          link.
+        </div>
+        <div className="text-sm text-muted-foreground">
+          The link will be available for up 1 hour or 3 hours depending on your active <a href="https://e2b.dev/dashboard?tab=billing" target="_blank" className="underline">Plan</a>.
         </div>
         <div className="flex flex-col gap-2">
           {publishedURL && (

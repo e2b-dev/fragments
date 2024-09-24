@@ -5,7 +5,7 @@ import { kv } from '@vercel/kv'
 import { customAlphabet } from 'nanoid'
 
 const nanoid = customAlphabet('1234567890abcdef', 7)
-const sandboxTimeout = 1 * 60 * 60 * 1000 // 1 hour
+const sandboxTimeout = 3 * 60 * 60 * 1000 // 3 hours
 
 export async function publish(
   url: string,
