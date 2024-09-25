@@ -15,7 +15,7 @@ import { DeepPartial } from 'ai'
 import { ChevronsRight, Copy, Download, LoaderCircle } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
 
-export function SideView({
+export function Preview({
   apiKey,
   selectedTab,
   onSelectedTabChange,

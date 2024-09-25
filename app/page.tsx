@@ -6,7 +6,7 @@ import { Chat } from '@/components/chat'
 import { ChatInput } from '@/components/chat-input'
 import { ChatPicker } from '@/components/chat-picker'
 import { NavBar } from '@/components/navbar'
-import { SideView } from '@/components/side'
+import { Preview } from '@/components/preview'
 import { AuthViewType, useAuth } from '@/lib/auth'
 import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import { LLMModelConfig } from '@/lib/models'
@@ -286,7 +286,7 @@ export default function Home() {
             />
           </ChatInput>
         </div>
-        <SideView
+        <Preview
           apiKey={apiKey}
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}
