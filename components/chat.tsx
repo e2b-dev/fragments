@@ -1,4 +1,7 @@
 import { Message } from '@/lib/messages'
+import { ArtifactSchema } from '@/lib/schema'
+import { ExecutionResult } from '@/lib/types'
+import { DeepPartial } from 'ai'
 import { Terminal } from 'lucide-react'
 import { useEffect } from 'react'
 
@@ -7,7 +10,10 @@ export function Chat({
   setCurrentPreview,
 }: {
   messages: Message[]
-  setCurrentPreview: any
+  setCurrentPreview: (preview: {
+    object: DeepPartial<ArtifactSchema> | undefined
+    result: ExecutionResult | undefined
+  }) => void
 }) {
   useEffect(() => {
     const chatContainer = document.getElementById('chat-container')

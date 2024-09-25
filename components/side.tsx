@@ -1,4 +1,4 @@
-import { ArtifactView } from './artifact-view'
+import { Artifact } from './artifact'
 import { CodeView } from './code-view'
 import { PublishDialog } from './publish-dialog'
 import { Button } from '@/components/ui/button'
@@ -10,14 +10,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { ArtifactSchema } from '@/lib/schema'
-import { TemplateId } from '@/lib/templates'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { ChevronsRight, Copy, Download, LoaderCircle } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
 
 export function SideView({
-  // userID,
   apiKey,
   selectedTab,
   onSelectedTabChange,
@@ -26,7 +24,6 @@ export function SideView({
   result,
   onClose,
 }: {
-  // userID: string
   apiKey: string | undefined
   selectedTab: 'code' | 'artifact'
   onSelectedTabChange: Dispatch<SetStateAction<'code' | 'artifact'>>
@@ -165,7 +162,7 @@ export function SideView({
               value="artifact"
               className="flex-1 w-full flex flex-col items-start justify-start"
             >
-              {result && <ArtifactView result={result as ExecutionResult} />}
+              {result && <Artifact result={result as ExecutionResult} />}
             </TabsContent>
           </div>
         )}
