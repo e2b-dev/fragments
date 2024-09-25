@@ -1,4 +1,4 @@
-import Logo from './Logo'
+import Logo from './logo'
 import { AuthViewType } from '@/lib/auth'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'

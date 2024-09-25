@@ -1,4 +1,4 @@
-import Logo from './Logo'
+import Logo from './logo'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {

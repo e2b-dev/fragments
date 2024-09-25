@@ -1,4 +1,4 @@
-import AuthForm from './AuthForm'
+import AuthForm from './auth-form'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { AuthViewType } from '@/lib/auth'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'

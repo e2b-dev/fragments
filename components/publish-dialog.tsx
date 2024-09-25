@@ -1,4 +1,4 @@
-import Logo from './Logo'
+import Logo from './logo'
 import { publish } from '@/app/actions/publish'
 import { Button } from '@/components/ui/button'
 import {

@@ -1,6 +1,6 @@
-import { ArtifactView } from './ArtifactView'
-import { CodeView } from './CodeView'
-import { PublishDialog } from './PublishDialog'
+import { ArtifactView } from './artifact-view'
+import { CodeView } from './code-view'
+import { PublishDialog } from './publish-dialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
