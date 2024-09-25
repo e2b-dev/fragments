@@ -79,10 +79,10 @@ export function ChatInput({
     <form
       onSubmit={handleSubmit}
       onKeyDown={onEnter}
-      className="mb-4 flex flex-col mt-auto bg-background shadow-lg rounded-2xl border"
+      className="mb-4 flex flex-col mt-auto bg-background"
     >
       {error !== undefined && (
-        <div className="bg-red-400/10 text-red-400 px-3 py-2 text-sm font-medium">
+        <div className="bg-red-400/10 text-red-400 px-3 py-2 text-sm font-medium mb-2 rounded-xl">
           An unexpected error has occurred. Please{' '}
           <button className="underline" onClick={retry}>
             try again
@@ -90,87 +90,89 @@ export function ChatInput({
           .
         </div>
       )}
-      <div className="px-3 py-2">{children}</div>
-      <TextareaAutosize
-        autoFocus={true}
-        minRows={1}
-        maxRows={5}
-        className="text-normal px-3 resize-none ring-0 bg-inherit w-full m-0 outline-none"
-        required={true}
-        placeholder="Describe your app..."
-        value={input}
-        onChange={handleInputChange}
-      />
-      <div className="flex p-3 gap-2 items-center">
-        <input
-          type="file"
-          id="multimodal"
-          name="multimodal"
-          accept="image/*"
-          multiple={true}
-          className="hidden"
-          onChange={handleFileInput}
+      <div className="shadow-lg rounded-2xl border">
+        <div className="px-3 py-2">{children}</div>
+        <TextareaAutosize
+          autoFocus={true}
+          minRows={1}
+          maxRows={5}
+          className="text-normal px-3 resize-none ring-0 bg-inherit w-full m-0 outline-none"
+          required={true}
+          placeholder="Describe your app..."
+          value={input}
+          onChange={handleInputChange}
         />
-        <div className="flex items-center flex-1 gap-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  disabled={!isMultiModal}
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  className="rounded-xl h-10 w-10"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    document.getElementById('multimodal')?.click()
-                  }}
-                >
-                  <Paperclip className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Add attachments</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          {files.length > 0 && filePreview}
-        </div>
-        <div>
-          {!isLoading ? (
+        <div className="flex p-3 gap-2 items-center">
+          <input
+            type="file"
+            id="multimodal"
+            name="multimodal"
+            accept="image/*"
+            multiple={true}
+            className="hidden"
+            onChange={handleFileInput}
+          />
+          <div className="flex items-center flex-1 gap-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="default"
-                    size="icon"
-                    type="submit"
-                    className="rounded-xl h-10 w-10"
-                  >
-                    <ArrowUp className="h-5 w-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Send message</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="secondary"
+                    disabled={!isMultiModal}
+                    type="button"
+                    variant="outline"
                     size="icon"
                     className="rounded-xl h-10 w-10"
                     onClick={(e) => {
                       e.preventDefault()
-                      stop()
+                      document.getElementById('multimodal')?.click()
                     }}
                   >
-                    <Square className="h-5 w-5" />
+                    <Paperclip className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Stop generation</TooltipContent>
+                <TooltipContent>Add attachments</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          )}
+            {files.length > 0 && filePreview}
+          </div>
+          <div>
+            {!isLoading ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="default"
+                      size="icon"
+                      type="submit"
+                      className="rounded-xl h-10 w-10"
+                    >
+                      <ArrowUp className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Send message</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="rounded-xl h-10 w-10"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        stop()
+                      }}
+                    >
+                      <Square className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Stop generation</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </div>
       </div>
     </form>
