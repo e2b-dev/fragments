@@ -1,12 +1,21 @@
 import { TemplateId } from './templates'
 import { ExecutionError, Result } from '@e2b/code-interpreter'
 
-export type ExecutionResult = {
+type ExecutionResultBase = {
   sbxId: string
-  template: TemplateId | string
+}
+
+export type ExecutionResultInterpreter = ExecutionResultBase & {
+  template: 'code-interpreter-multilang'
   stdout: string[]
   stderr: string[]
   runtimeError?: ExecutionError
   cellResults: Result[]
-  url?: string
 }
+
+export type ExecutionResultWeb = ExecutionResultBase & {
+  template: Exclude<TemplateId, 'code-interpreter-multilang'>
+  url: string
+}
+
+export type ExecutionResult = ExecutionResultInterpreter | ExecutionResultWeb

@@ -165,13 +165,7 @@ export function SideView({
               value="artifact"
               className="flex-1 w-full flex flex-col items-start justify-start"
             >
-              {result && (
-                <ArtifactView
-                  title={artifact.title}
-                  template={artifact.template as TemplateId}
-                  result={result}
-                />
-              )}
+              {result && <ArtifactView result={result as ExecutionResult} />}
             </TabsContent>
           </div>
         )}

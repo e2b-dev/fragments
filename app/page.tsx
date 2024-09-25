@@ -36,11 +36,9 @@ export default function Home() {
 
   const posthog = usePostHog()
 
-  const [result, setResult] = useState<Partial<ExecutionResult>>()
+  const [result, setResult] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
-  const [artifact, setArtifact] = useState<
-    DeepPartial<ArtifactSchema> | undefined
-  >()
+  const [artifact, setArtifact] = useState<DeepPartial<ArtifactSchema>>()
   const [currentTab, setCurrentTab] = useState<'code' | 'artifact'>('code')
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
@@ -227,7 +225,7 @@ export default function Home() {
 
   function setCurrentPreview(preview: {
     object: DeepPartial<ArtifactSchema> | undefined
-    result: Partial<ExecutionResult> | undefined
+    result: ExecutionResult | undefined
   }) {
     setArtifact(preview.object)
     setResult(preview.result)

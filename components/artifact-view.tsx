@@ -8,7 +8,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { TemplateId } from '@/lib/templates'
 import { ExecutionResult } from '@/lib/types'
 import { Copy, RotateCw, Terminal } from 'lucide-react'
 import Image from 'next/image'
@@ -44,13 +43,9 @@ function LogsOutput({
 }
 
 export function ArtifactView({
-  title,
   result,
-  template,
 }: {
-  title?: string
   result: ExecutionResult
-  template?: TemplateId
 }) {
   const [iframeKey, setIframeKey] = useState(0)
   if (!result) return null
@@ -64,7 +59,7 @@ export function ArtifactView({
     alert('URL copied to clipboard')
   }
 
-  if (template !== 'code-interpreter-multilang') {
+  if (result.template !== 'code-interpreter-multilang') {
     return (
       <div className="flex flex-col w-full h-full">
         <iframe

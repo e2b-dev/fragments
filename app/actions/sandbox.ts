@@ -1,7 +1,7 @@
 'use server'
 
 import { ArtifactSchema } from '@/lib/schema'
-import { ExecutionResult } from '@/lib/types'
+import { ExecutionResult, ExecutionResultWeb } from '@/lib/types'
 import { Sandbox, CodeInterpreter } from '@e2b/code-interpreter'
 
 const sandboxTimeout = 10 * 60 * 1000 // 10 minute in ms
@@ -10,7 +10,7 @@ export async function createSandbox(options: {
   artifact: ArtifactSchema
   userID: string
   apiKey?: string
-}): Promise<Partial<ExecutionResult>> {
+}): Promise<ExecutionResult> {
   const { artifact, userID, apiKey } = options
 
   console.log('artifact', artifact)
@@ -79,7 +79,7 @@ export async function createSandbox(options: {
   } else {
     return {
       sbxId: sbx?.sandboxID,
-      template: artifact.template,
+      template: artifact.template as ExecutionResultWeb['template'],
       url: `https://${sbx?.getHost(artifact.port || 80)}`,
     }
   }
