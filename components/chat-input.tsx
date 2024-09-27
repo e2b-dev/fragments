@@ -79,7 +79,7 @@ export function ChatInput({
     <form
       onSubmit={handleSubmit}
       onKeyDown={onEnter}
-      className="mb-4 flex flex-col mt-auto bg-background"
+      className="mb-2 flex flex-col mt-auto bg-background"
     >
       {error !== undefined && (
         <div className="bg-red-400/10 text-red-400 px-3 py-2 text-sm font-medium mb-2 rounded-xl">
@@ -90,7 +90,7 @@ export function ChatInput({
           .
         </div>
       )}
-      <div className="shadow-lg rounded-2xl border">
+      <div className="shadow-md rounded-2xl border">
         <div className="px-3 py-2">{children}</div>
         <TextareaAutosize
           autoFocus={true}
@@ -175,6 +175,17 @@ export function ChatInput({
           </div>
         </div>
       </div>
+      <p className="text-xs text-muted-foreground mt-2 text-center">
+        Artifacts is an open-source project made by{' '}
+        <a
+          href="https://e2b.dev"
+          target="_blank"
+          className="underline"
+        >
+          E2B
+        </a>
+        . Use with discretion.
+      </p>
     </form>
   )
 }
