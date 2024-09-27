@@ -55,7 +55,7 @@ export function ArtifactWeb({ result }: { result: ExecutionResultWeb }) {
                   className="text-muted-foreground"
                 />
               </TooltipTrigger>
-              <TooltipContent>Share link</TooltipContent>
+              <TooltipContent>Copy URL</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
