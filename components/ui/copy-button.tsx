@@ -22,12 +22,12 @@ export const CopyButton = forwardRef<
 
   return (
     <Button
+      {...props}
       ref={ref}
       variant={variant}
       size="icon"
       className={className}
       onClick={() => copy(content)}
-      {...props}
     >
       {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
     </Button>
