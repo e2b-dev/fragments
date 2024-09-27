@@ -1,5 +1,5 @@
-import { Artifact } from './artifact'
-import { CodeView } from './code-view'
+import { ArtifactCode } from './artifact-code'
+import { ArtifactPreview } from './artifact-preview'
 import { PublishDialog } from './publish-dialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -37,24 +37,6 @@ export function Preview({
   }
 
   const isLinkAvailable = result?.template !== 'code-interpreter-multilang'
-
-  function copy(content: string) {
-    navigator.clipboard.writeText(content)
-    alert('Copied to clipboard')
-  }
-
-  function download(filename: string, content: string) {
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.style.display = 'none'
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    window.URL.revokeObjectURL(url)
-    document.body.removeChild(a)
-  }
 
   return (
     <div className="absolute md:relative top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover h-full w-full overflow-auto">
@@ -106,37 +88,6 @@ export function Preview({
           </div>
           {result && (
             <div className="flex items-center justify-end gap-2">
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="text-muted-foreground"
-                      onClick={() => copy(artifact.code || '')}
-                      disabled={!artifact.code}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Copy</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="text-muted-foreground"
-                      onClick={() =>
-                        download(artifact.file_path || '', artifact.code || '')
-                      }
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Download</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
               {isLinkAvailable && (
                 <PublishDialog
                   url={result.url!}
@@ -147,22 +98,22 @@ export function Preview({
             </div>
           )}
         </div>
-
         {artifact && (
-          <div className="w-full flex-1 flex flex-col items-start justify-start overflow-y-auto">
-            <TabsContent value="code" className="flex-1 w-full">
-              {artifact.code && (
-                <CodeView
-                  code={artifact.code}
-                  lang={artifact.file_path?.split('.').pop() || ''}
+          <div className="overflow-y-auto w-full h-full">
+            <TabsContent value="code" className="h-full">
+              {artifact.code && artifact.file_path && (
+                <ArtifactCode
+                  files={[
+                    {
+                      name: artifact.file_path,
+                      content: artifact.code,
+                    },
+                  ]}
                 />
               )}
             </TabsContent>
-            <TabsContent
-              value="artifact"
-              className="flex-1 w-full flex flex-col items-start justify-start"
-            >
-              {result && <Artifact result={result as ExecutionResult} />}
+            <TabsContent value="artifact" className="h-full">
+              {result && <ArtifactPreview result={result as ExecutionResult} />}
             </TabsContent>
           </div>
         )}

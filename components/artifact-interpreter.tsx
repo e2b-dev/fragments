@@ -63,7 +63,7 @@ export function ArtifactInterpreter({
   if (cellResults.length > 0) {
     const imgInBase64 = cellResults[0].png
     return (
-      <>
+      <div className="flex flex-col h-full">
         <div className="w-full flex-1 p-4 flex items-start justify-center border-b">
           <Image
             src={`data:image/png;base64,${imgInBase64}`}
@@ -73,7 +73,7 @@ export function ArtifactInterpreter({
           />
         </div>
         <LogsOutput stdout={stdout} stderr={stderr} />
-      </>
+      </div>
     )
   }
 
