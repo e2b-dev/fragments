@@ -212,7 +212,7 @@ export default function Home() {
     posthog.capture(`${target}_click`)
   }
 
-  function handleNewChat() {
+  function handleClearChat() {
     stop()
     setChatInput('')
     setFiles([])
@@ -255,7 +255,8 @@ export default function Home() {
             showLogin={() => setAuthDialog(true)}
             signOut={logout}
             onSocialClick={handleSocialClick}
-            onNewChat={handleNewChat}
+            onClear={handleClearChat}
+            canClear={messages.length > 0}
             languageModel={languageModel}
             onLanguageModelChange={handleLanguageModelChange}
             apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}

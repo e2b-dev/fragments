@@ -28,9 +28,9 @@ import {
   ArrowRight,
   LogOut,
   MoonIcon,
-  Plus,
   Settings2,
   SunIcon,
+  Trash,
   Undo,
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
@@ -40,7 +40,8 @@ export function NavBar({
   session,
   showLogin,
   signOut,
-  onNewChat,
+  onClear,
+  canClear,
   onSocialClick,
   languageModel,
   onLanguageModelChange,
@@ -52,7 +53,8 @@ export function NavBar({
   session: Session | null
   showLogin: () => void
   signOut: () => void
-  onNewChat: () => void
+  onClear: () => void
+  canClear: boolean
   onSocialClick: (target: 'github' | 'x' | 'discord') => void
   languageModel: LLMModelConfig
   onLanguageModelChange: (config: LLMModelConfig) => void
@@ -96,11 +98,11 @@ export function NavBar({
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={onNewChat}>
-                <Plus className="h-4 w-4 md:h-5 md:w-5" />
+              <Button variant="ghost" size="icon" onClick={onClear} disabled={!canClear}>
+                <Trash className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>New chat</TooltipContent>
+            <TooltipContent>Clear chat</TooltipContent>
           </Tooltip>
         </TooltipProvider>
         <DropdownMenu>
@@ -305,6 +307,14 @@ export function NavBar({
                 </span>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  window.open('https://e2b.dev', '_blank')
+                }}
+              >
+                <Logo className="mr-2 h-4 w-4 text-muted-foreground" />
+                About E2B
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onSocialClick('github')}>
                 <GitHubLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 Star us on GitHub
