@@ -91,9 +91,7 @@ export function ChatInput({
         </div>
       )}
       <div className="shadow-md rounded-2xl border">
-        <div className="flex items-center px-3 py-2">
-          {children}
-        </div>
+        <div className="flex items-center px-3 py-2">{children}</div>
         <TextareaAutosize
           autoFocus={true}
           minRows={1}
@@ -179,10 +177,13 @@ export function ChatInput({
       </div>
       <p className="text-xs text-muted-foreground mt-2 text-center">
         Artifacts is an open-source project made by{' '}
-        <a href="https://e2b.dev" target="_blank" className="underline">
-          E2B
+        <a
+          href="https://e2b.dev"
+          target="_blank"
+          className="text-[#ff8800]"
+        >
+          ✶ E2B
         </a>
-        . Use with discretion.
       </p>
     </form>
   )
