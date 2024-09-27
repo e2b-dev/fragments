@@ -2,14 +2,16 @@ import { Message } from '@/lib/messages'
 import { ArtifactSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
-import { Terminal } from 'lucide-react'
+import { Loader2Icon, LoaderIcon, Terminal } from 'lucide-react'
 import { useEffect } from 'react'
 
 export function Chat({
   messages,
+  isLoading,
   setCurrentPreview,
 }: {
   messages: Message[]
+  isLoading: boolean
   setCurrentPreview: (preview: {
     object: DeepPartial<ArtifactSchema> | undefined
     result: ExecutionResult | undefined
@@ -72,6 +74,12 @@ export function Chat({
           )}
         </div>
       ))}
+      {isLoading && (
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <LoaderIcon strokeWidth={2} className="animate-spin w-4 h-4" />
+          <span>Generating...</span>
+        </div>
+      )}
     </div>
   )
 }

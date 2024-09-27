@@ -264,7 +264,11 @@ export default function Home() {
             canUndo={messages.length > 1 && !isLoading}
             onUndo={handleUndo}
           />
-          <Chat messages={messages} setCurrentPreview={setCurrentPreview} />
+          <Chat
+            messages={messages}
+            isLoading={isLoading}
+            setCurrentPreview={setCurrentPreview}
+          />
           <ChatInput
             error={error}
             retry={retry}

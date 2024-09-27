@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ArrowUp, LoaderCircle, Paperclip, Square, X } from 'lucide-react'
+import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
 import { useMemo } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
@@ -93,12 +93,6 @@ export function ChatInput({
       <div className="shadow-md rounded-2xl border">
         <div className="flex items-center px-3 py-2">
           {children}
-          {isLoading && (
-            <LoaderCircle
-              strokeWidth={3}
-              className="h-4 w-4 animate-spin text-muted-foreground"
-            />
-          )}
         </div>
         <TextareaAutosize
           autoFocus={true}
