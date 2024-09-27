@@ -45,7 +45,7 @@ function AuthForm({ supabase, view = 'sign_in' }: { supabase: SupabaseClient, vi
           providerScopes={{
             github: 'email',
           }}
-          redirectTo='http://artifacts.e2b.dev'
+          redirectTo='https://artifacts.e2b.dev'
         />
       </div>
     </div>
