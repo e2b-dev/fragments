@@ -67,7 +67,7 @@ export function Preview({
       >
         <div className="w-full p-2 grid grid-cols-3 items-center border-b">
           <TooltipProvider>
-            <Tooltip>
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
@@ -107,7 +107,7 @@ export function Preview({
           {result && (
             <div className="flex items-center justify-end gap-2">
               <TooltipProvider>
-                <Tooltip>
+                <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
@@ -122,7 +122,7 @@ export function Preview({
                 </Tooltip>
               </TooltipProvider>
               <TooltipProvider>
-                <Tooltip>
+                <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"

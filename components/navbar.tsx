@@ -79,7 +79,7 @@ export function NavBar({
       </div>
       <div className="flex items-center gap-1 md:gap-4">
         <TooltipProvider>
-          <Tooltip>
+          <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
@@ -94,7 +94,7 @@ export function NavBar({
           </Tooltip>
         </TooltipProvider>
         <TooltipProvider>
-          <Tooltip>
+          <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" onClick={onNewChat}>
                 <Plus className="h-4 w-4 md:h-5 md:w-5" />
@@ -105,7 +105,7 @@ export function NavBar({
         </TooltipProvider>
         <DropdownMenu>
           <TooltipProvider>
-            <Tooltip>
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">

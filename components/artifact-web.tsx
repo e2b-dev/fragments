@@ -34,7 +34,7 @@ export function ArtifactWeb({ result }: { result: ExecutionResultWeb }) {
       <div className="p-2 border-t">
         <div className="flex items-center bg-muted dark:bg-white/10 rounded-2xl">
           <TooltipProvider>
-            <Tooltip>
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button
                   variant="link"
@@ -51,7 +51,7 @@ export function ArtifactWeb({ result }: { result: ExecutionResultWeb }) {
             {result.url}
           </span>
           <TooltipProvider>
-            <Tooltip>
+            <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <Button
                   variant="link"

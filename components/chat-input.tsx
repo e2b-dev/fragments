@@ -114,7 +114,7 @@ export function ChatInput({
           />
           <div className="flex items-center flex-1 gap-2">
             <TooltipProvider>
-              <Tooltip>
+              <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <Button
                     disabled={!isMultiModal}
@@ -138,7 +138,7 @@ export function ChatInput({
           <div>
             {!isLoading ? (
               <TooltipProvider>
-                <Tooltip>
+                <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Button
                       variant="default"
@@ -154,7 +154,7 @@ export function ChatInput({
               </TooltipProvider>
             ) : (
               <TooltipProvider>
-                <Tooltip>
+                <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Button
                       variant="secondary"
