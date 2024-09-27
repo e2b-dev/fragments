@@ -19,7 +19,8 @@ export function Preview({
   apiKey,
   selectedTab,
   onSelectedTabChange,
-  isLoading,
+  isChatLoading,
+  isPreviewLoading,
   artifact,
   result,
   onClose,
@@ -27,7 +28,8 @@ export function Preview({
   apiKey: string | undefined
   selectedTab: 'code' | 'artifact'
   onSelectedTabChange: Dispatch<SetStateAction<'code' | 'artifact'>>
-  isLoading: boolean
+  isChatLoading: boolean
+  isPreviewLoading: boolean
   artifact?: DeepPartial<ArtifactSchema>
   result?: ExecutionResult
   onClose: () => void
@@ -69,7 +71,7 @@ export function Preview({
                 className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
                 value="code"
               >
-                {isLoading && (
+                {isChatLoading && (
                   <LoaderCircle
                     strokeWidth={3}
                     className="h-3 w-3 animate-spin"
@@ -79,10 +81,16 @@ export function Preview({
               </TabsTrigger>
               <TabsTrigger
                 disabled={!result}
-                className="font-normal text-xs py-1 px-2"
+                className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
                 value="artifact"
               >
                 Preview
+                {isPreviewLoading && (
+                  <LoaderCircle
+                    strokeWidth={3}
+                    className="h-3 w-3 animate-spin"
+                  />
+                )}
               </TabsTrigger>
             </TabsList>
           </div>

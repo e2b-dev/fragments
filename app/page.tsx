@@ -64,6 +64,7 @@ export default function Home() {
       if (!error) {
         // send it to /api/sandbox
         console.log('artifact', artifact)
+        setIsPreviewLoading(true)
 
         const result = await createSandbox({
           artifact: artifact as ArtifactSchema,
@@ -159,7 +160,6 @@ export default function Home() {
     setChatInput('')
     setFiles([])
     setCurrentTab('code')
-    setIsPreviewLoading(true)
 
     posthog.capture('chat_submit', {
       template: selectedTemplate,
@@ -291,7 +291,8 @@ export default function Home() {
           apiKey={apiKey}
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}
-          isLoading={isPreviewLoading}
+          isChatLoading={isLoading}
+          isPreviewLoading={isPreviewLoading}
           artifact={artifact}
           result={result as ExecutionResult}
           onClose={() => setArtifact(undefined)}
