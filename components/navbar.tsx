@@ -318,14 +318,14 @@ export function NavBar({
                 Follow us on X
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {theme === 'light' && (
-                <DropdownMenuItem onClick={() => setTheme('dark')}>
+              {theme === 'dark' && (
+                <DropdownMenuItem onClick={() => setTheme('light')}>
                   <SunIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   Light theme
                 </DropdownMenuItem>
               )}
-              {theme === 'dark' && (
-                <DropdownMenuItem onClick={() => setTheme('light')}>
+              {theme === 'light' && (
+                <DropdownMenuItem onClick={() => setTheme('dark')}>
                   <MoonIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                   Dark theme
                 </DropdownMenuItem>
