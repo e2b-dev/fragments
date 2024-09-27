@@ -16,7 +16,7 @@ interface UserTeam {
 
 export async function getUserAPIKey (session: Session) {
   // If Supabase is not initialized will use E2B_API_KEY env var
-  if (!supabase) return undefined
+  if (!supabase || process.env.E2B_API_KEY) return process.env.E2B_API_KEY
 
   const { data: userTeams } = await supabase
     .from('users_teams')
