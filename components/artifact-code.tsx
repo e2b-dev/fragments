@@ -1,27 +1,17 @@
 import { CodeView } from './code-view'
 import { Button } from './ui/button'
+import { CopyButton } from './ui/copy-button'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { toast } from '@/components/ui/use-toast'
-import { Copy, Download, FileText } from 'lucide-react'
+import { Download, FileText } from 'lucide-react'
 import { useState } from 'react'
 
-export function ArtifactCode({
-  files,
-}: {
-  files: { name: string; content: string }[]
-}) {
-  const [currentFile, setCurrentFile] = useState(files[0])
-  function copy(content: string) {
-    navigator.clipboard.writeText(content)
-    toast({
-      description: 'File content copied to clipboard',
-    })
-  }
+export function ArtifactCode({ files }: { files: Record<string, string> }) {
+  const [currentFile, setCurrentFile] = useState(Object.keys(files)[0])
 
   function download(filename: string, content: string) {
     const blob = new Blob([content], { type: 'text/plain' })
@@ -40,16 +30,16 @@ export function ArtifactCode({
     <div className="flex flex-col h-full">
       <div className="flex items-center px-2 pt-1 gap-2">
         <div className="flex flex-1 gap-2 overflow-x-auto">
-          {files.map((file) => (
+          {Object.entries(files).map(([name, content]) => (
             <div
-              key={file.name}
+              key={name}
               className={`flex gap-2 select-none cursor-pointer items-center text-sm text-muted-foreground px-2 py-1 rounded-md hover:bg-muted border ${
-                file.name === currentFile.name ? 'bg-muted border-muted' : ''
+                name === currentFile ? 'bg-muted border-muted' : ''
               }`}
-              onClick={() => setCurrentFile(file)}
+              onClick={() => setCurrentFile(name)}
             >
               <FileText className="h-4 w-4" />
-              {file.name}
+              {name}
             </div>
           ))}
         </div>
@@ -57,14 +47,10 @@ export function ArtifactCode({
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
+                <CopyButton
+                  content={files[currentFile]}
                   className="text-muted-foreground"
-                  onClick={() => copy(currentFile.content)}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
+                />
               </TooltipTrigger>
               <TooltipContent side="bottom">Copy</TooltipContent>
             </Tooltip>
@@ -76,9 +62,7 @@ export function ArtifactCode({
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground"
-                  onClick={() =>
-                    download(currentFile.name, currentFile.content)
-                  }
+                  onClick={() => download(currentFile, files[currentFile])}
                 >
                   <Download className="h-4 w-4" />
                 </Button>
@@ -90,8 +74,8 @@ export function ArtifactCode({
       </div>
       <div className="flex flex-col flex-1 overflow-x-auto">
         <CodeView
-          code={currentFile.content}
-          lang={currentFile.name.split('.').pop() || ''}
+          code={files[currentFile]}
+          lang={currentFile.split('.').pop() || ''}
         />
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { CopyButton } from './ui/copy-button'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -5,9 +6,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { toast } from '@/components/ui/use-toast'
 import { ExecutionResultWeb } from '@/lib/types'
-import { Copy, RotateCw } from 'lucide-react'
+import { RotateCw } from 'lucide-react'
 import { useState } from 'react'
 
 export function ArtifactWeb({ result }: { result: ExecutionResultWeb }) {
@@ -16,13 +16,6 @@ export function ArtifactWeb({ result }: { result: ExecutionResultWeb }) {
 
   function refreshIframe() {
     setIframeKey((prevKey) => prevKey + 1)
-  }
-
-  async function copy(url: string) {
-    await navigator.clipboard.writeText(url)
-    toast({
-      description: 'URL copied to clipboard',
-    })
   }
 
   return (
@@ -56,13 +49,11 @@ export function ArtifactWeb({ result }: { result: ExecutionResultWeb }) {
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <Button
+                <CopyButton
                   variant="link"
+                  content={result.url}
                   className="text-muted-foreground"
-                  onClick={() => copy(result.url!)}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
+                />
               </TooltipTrigger>
               <TooltipContent>Share link</TooltipContent>
             </Tooltip>

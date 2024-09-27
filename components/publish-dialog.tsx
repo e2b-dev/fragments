@@ -1,5 +1,5 @@
 import Logo from './logo'
-import { toast } from './ui/use-toast'
+import { CopyButton } from './ui/copy-button'
 import { publish } from '@/app/actions/publish'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,7 +8,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { Copy } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 
@@ -33,13 +32,6 @@ export function PublishDialog({
     setPublishedURL(publishedURL)
     posthog.capture('publish_url', {
       url: publishedURL,
-    })
-  }
-
-  function copy(url: string) {
-    navigator.clipboard.writeText(url)
-    toast({
-      description: 'URL copied to clipboard',
     })
   }
 
@@ -73,13 +65,7 @@ export function PublishDialog({
           {publishedURL && (
             <div className="flex items-center gap-2">
               <Input value={publishedURL} readOnly />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => copy(publishedURL)}
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
+              <CopyButton content={publishedURL} />
             </div>
           )}
           <Button
