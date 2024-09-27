@@ -98,7 +98,12 @@ export function NavBar({
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={onClear} disabled={!canClear}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClear}
+                disabled={!canClear}
+              >
                 <Trash className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </TooltipTrigger>
@@ -288,17 +293,24 @@ export function NavBar({
         </DropdownMenu>
         {session ? (
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Avatar className="w-8 h-8">
-                <AvatarImage
-                  src={
-                    session.user.user_metadata?.avatar_url ||
-                    'https://avatar.vercel.sh/' + session.user.email
-                  }
-                  alt={session.user.email}
-                />
-              </Avatar>
-            </DropdownMenuTrigger>
+            <TooltipProvider>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage
+                        src={
+                          session.user.user_metadata?.avatar_url ||
+                          'https://avatar.vercel.sh/' + session.user.email
+                        }
+                        alt={session.user.email}
+                      />
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>My Account</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuLabel className="flex flex-col">
                 <span className="text-sm">My Account</span>
