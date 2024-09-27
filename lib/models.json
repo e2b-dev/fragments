@@ -134,32 +134,11 @@
       "multiModal": false
     },
     {
-      "id": "openai/gpt-3.5-turbo",
+      "id": "anthropic/claude-3.5-sonnet",
       "provider": "OpenRouter",
       "providerId": "openrouter",
-      "name": "GPT-3.5 Turbo",
-      "multiModal": false
-    },
-    {
-      "id": "anthropic/claude-3-sonnet",
-      "provider": "OpenRouter",
-      "providerId": "openrouter",
-      "name": "Claude 3 Sonnet",
+      "name": "Claude 3.5 Sonnet",
       "multiModal": true
-    },
-    {
-      "id": "anthropic/claude-3-opus",
-      "provider": "OpenRouter",
-      "providerId": "openrouter",
-      "name": "Claude 3 Opus",
-      "multiModal": true
-    },
-    {
-      "id": "meta-llama/llama-2-70b-chat",
-      "provider": "OpenRouter",
-      "providerId": "openrouter",
-      "name": "Llama 2 70B",
-      "multiModal": false
     }
   ]
 }
