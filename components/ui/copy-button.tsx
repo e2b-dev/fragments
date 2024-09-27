@@ -10,7 +10,7 @@ export const CopyButton = forwardRef<
     onCopy?: () => void
     className?: string
   }
->(({ variant = 'ghost', content, onCopy, className }, ref) => {
+>(({ variant = 'ghost', content, onCopy, className, ...props }, ref) => {
   const [copied, setCopied] = useState(false)
 
   function copy(content: string) {
@@ -27,6 +27,7 @@ export const CopyButton = forwardRef<
       size="icon"
       className={className}
       onClick={() => copy(content)}
+      {...props}
     >
       {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
     </Button>
