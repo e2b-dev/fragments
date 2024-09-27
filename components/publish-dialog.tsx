@@ -1,4 +1,5 @@
 import Logo from './logo'
+import { toast } from './ui/use-toast'
 import { publish } from '@/app/actions/publish'
 import { Button } from '@/components/ui/button'
 import {
@@ -35,9 +36,11 @@ export function PublishDialog({
     })
   }
 
-  function copy(content: string) {
-    navigator.clipboard.writeText(content)
-    alert('Copied to clipboard')
+  function copy(url: string) {
+    navigator.clipboard.writeText(url)
+    toast({
+      description: 'URL copied to clipboard',
+    })
   }
 
   return (

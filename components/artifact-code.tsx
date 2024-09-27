@@ -6,6 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { toast } from '@/components/ui/use-toast'
 import { Copy, Download, FileText } from 'lucide-react'
 import { useState } from 'react'
 
@@ -15,10 +16,11 @@ export function ArtifactCode({
   files: { name: string; content: string }[]
 }) {
   const [currentFile, setCurrentFile] = useState(files[0])
-
   function copy(content: string) {
     navigator.clipboard.writeText(content)
-    alert('Copied to clipboard')
+    toast({
+      description: 'File content copied to clipboard',
+    })
   }
 
   function download(filename: string, content: string) {
@@ -42,9 +44,7 @@ export function ArtifactCode({
             <div
               key={file.name}
               className={`flex gap-2 select-none cursor-pointer items-center text-sm text-muted-foreground px-2 py-1 rounded-md hover:bg-muted border ${
-                file.name === currentFile.name
-                  ? 'bg-muted border-muted'
-                  : ''
+                file.name === currentFile.name ? 'bg-muted border-muted' : ''
               }`}
               onClick={() => setCurrentFile(file)}
             >

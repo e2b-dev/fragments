@@ -1,5 +1,6 @@
 import './globals.css'
 import { PostHogProvider, ThemeProvider } from './providers'
+import { Toaster } from '@/components/ui/toaster'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
@@ -28,6 +29,7 @@ export default function RootLayout({
           >
             {children}
           </ThemeProvider>
+          <Toaster />
         </body>
       </PostHogProvider>
     </html>

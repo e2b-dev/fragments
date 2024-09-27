@@ -5,6 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { toast } from '@/components/ui/use-toast'
 import { ExecutionResultWeb } from '@/lib/types'
 import { Copy, RotateCw } from 'lucide-react'
 import { useState } from 'react'
@@ -19,7 +20,9 @@ export function ArtifactWeb({ result }: { result: ExecutionResultWeb }) {
 
   async function copy(url: string) {
     await navigator.clipboard.writeText(url)
-    alert('URL copied to clipboard')
+    toast({
+      description: 'URL copied to clipboard',
+    })
   }
 
   return (
