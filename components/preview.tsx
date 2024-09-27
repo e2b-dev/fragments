@@ -110,7 +110,14 @@ export function Preview({
           <div className="overflow-y-auto w-full h-full">
             <TabsContent value="code" className="h-full">
               {artifact.code && artifact.file_path && (
-                <ArtifactCode files={{ [artifact.file_path]: artifact.code }} />
+                <ArtifactCode
+                  files={[
+                    {
+                      name: artifact.file_path,
+                      content: artifact.code,
+                    },
+                  ]}
+                />
               )}
             </TabsContent>
             <TabsContent value="artifact" className="h-full">

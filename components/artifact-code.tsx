@@ -10,8 +10,15 @@ import {
 import { Download, FileText } from 'lucide-react'
 import { useState } from 'react'
 
-export function ArtifactCode({ files }: { files: Record<string, string> }) {
-  const [currentFile, setCurrentFile] = useState(Object.keys(files)[0])
+export function ArtifactCode({
+  files,
+}: {
+  files: { name: string; content: string }[]
+}) {
+  const [currentFile, setCurrentFile] = useState(files[0].name)
+  const currentFileContent = files.find(
+    (file) => file.name === currentFile,
+  )?.content
 
   function download(filename: string, content: string) {
     const blob = new Blob([content], { type: 'text/plain' })
@@ -30,16 +37,16 @@ export function ArtifactCode({ files }: { files: Record<string, string> }) {
     <div className="flex flex-col h-full">
       <div className="flex items-center px-2 pt-1 gap-2">
         <div className="flex flex-1 gap-2 overflow-x-auto">
-          {Object.entries(files).map(([name, content]) => (
+          {files.map((file) => (
             <div
-              key={name}
+              key={file.name}
               className={`flex gap-2 select-none cursor-pointer items-center text-sm text-muted-foreground px-2 py-1 rounded-md hover:bg-muted border ${
-                name === currentFile ? 'bg-muted border-muted' : ''
+                file.name === currentFile ? 'bg-muted border-muted' : ''
               }`}
-              onClick={() => setCurrentFile(name)}
+              onClick={() => setCurrentFile(file.name)}
             >
               <FileText className="h-4 w-4" />
-              {name}
+              {file.name}
             </div>
           ))}
         </div>
@@ -48,7 +55,7 @@ export function ArtifactCode({ files }: { files: Record<string, string> }) {
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <CopyButton
-                  content={files[currentFile]}
+                  content={currentFileContent || ''}
                   className="text-muted-foreground"
                 />
               </TooltipTrigger>
@@ -62,7 +69,9 @@ export function ArtifactCode({ files }: { files: Record<string, string> }) {
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground"
-                  onClick={() => download(currentFile, files[currentFile])}
+                  onClick={() =>
+                    download(currentFile, currentFileContent || '')
+                  }
                 >
                   <Download className="h-4 w-4" />
                 </Button>
@@ -74,7 +83,7 @@ export function ArtifactCode({ files }: { files: Record<string, string> }) {
       </div>
       <div className="flex flex-col flex-1 overflow-x-auto">
         <CodeView
-          code={files[currentFile]}
+          code={currentFileContent || ''}
           lang={currentFile.split('.').pop() || ''}
         />
       </div>
