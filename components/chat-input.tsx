@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
+import { ArrowUp, LoaderCircle, Paperclip, Square, X } from 'lucide-react'
 import { useMemo } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
@@ -91,7 +91,15 @@ export function ChatInput({
         </div>
       )}
       <div className="shadow-md rounded-2xl border">
-        <div className="px-3 py-2">{children}</div>
+        <div className="flex items-center px-3 py-2">
+          {children}
+          {isLoading && (
+            <LoaderCircle
+              strokeWidth={3}
+              className="h-4 w-4 animate-spin text-muted-foreground"
+            />
+          )}
+        </div>
         <TextareaAutosize
           autoFocus={true}
           minRows={1}
@@ -177,11 +185,7 @@ export function ChatInput({
       </div>
       <p className="text-xs text-muted-foreground mt-2 text-center">
         Artifacts is an open-source project made by{' '}
-        <a
-          href="https://e2b.dev"
-          target="_blank"
-          className="underline"
-        >
+        <a href="https://e2b.dev" target="_blank" className="underline">
           E2B
         </a>
         . Use with discretion.
