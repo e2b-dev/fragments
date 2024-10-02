@@ -41,7 +41,7 @@ export function ChatSettings({
           <TooltipContent>LLM settings</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="start">
         {apiKeyConfigurable && (
           <>
             <div className="flex flex-col gap-2 px-2 py-2">

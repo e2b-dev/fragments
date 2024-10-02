@@ -29,7 +29,7 @@ export function ChatPicker({
   onLanguageModelChange: (config: LLMModelConfig) => void
 }) {
   return (
-    <div className="flex flex-1 items-center space-x-2">
+    <div className="flex items-center space-x-2">
       <div className="flex flex-col">
         <Select
           name="template"
