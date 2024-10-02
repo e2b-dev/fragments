@@ -9,6 +9,7 @@ import { Templates, templatesToPrompt } from '@/lib/templates'
 import { getModelClient, getDefaultMode } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { artifactSchema as schema } from '@/lib/schema'
+import { toPrompt } from '@/lib/prompt'
 
 export const maxDuration = 60
 
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
   const stream = await streamObject({
     model: modelClient as LanguageModel,
     schema,
-    system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. You can install additional dependencies. You can use one of the following templates:\n${templatesToPrompt(template)}`,
+    system: toPrompt(template),
     messages,
     mode: getDefaultMode(model),
     ...modelParams,

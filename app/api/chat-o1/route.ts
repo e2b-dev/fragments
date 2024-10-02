@@ -11,6 +11,7 @@ import { getModelClient, getDefaultMode } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { artifactSchema as schema } from '@/lib/schema'
 import { openai } from '@ai-sdk/openai'
+import { toPrompt } from '@/lib/prompt'
 
 export const maxDuration = 60
 
@@ -39,11 +40,9 @@ export async function POST(req: Request) {
   const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
   const modelClient = getModelClient(model, config)
 
-  const systemPrompt = `You are a skilled software engineer. You do not make mistakes. Generate an artifact. You can install additional dependencies. You can use one of the following templates:\n${templatesToPrompt(template)}`
-
   messages.unshift({
     role: 'user',
-    content: systemPrompt,
+    content: toPrompt(template),
   })
 
   const { text } = await generateText({
