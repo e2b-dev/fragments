@@ -98,6 +98,24 @@ export function NavBar({
             <TooltipContent>Clear chat</TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              >
+                {theme === 'light' ? (
+                  <SunIcon className="h-4 w-4 md:h-5 md:w-5" />
+                ) : (
+                  <MoonIcon className="h-4 w-4 md:h-5 md:w-5" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Toggle theme</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         {session ? (
           <DropdownMenu>
             <TooltipProvider>
@@ -146,19 +164,6 @@ export function NavBar({
                 <TwitterLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 Follow us on X
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {theme === 'dark' && (
-                <DropdownMenuItem onClick={() => setTheme('light')}>
-                  <SunIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                  Light theme
-                </DropdownMenuItem>
-              )}
-              {theme === 'light' && (
-                <DropdownMenuItem onClick={() => setTheme('dark')}>
-                  <MoonIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                  Dark theme
-                </DropdownMenuItem>
-              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut}>
                 <LogOut className="mr-2 h-4 w-4 text-muted-foreground" />
