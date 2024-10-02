@@ -36,6 +36,14 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
     togetherai: () => createOpenAI({ apiKey: apiKey || process.env.TOGETHER_AI_API_KEY, baseURL: baseURL || 'https://api.together.xyz/v1' })(modelNameString),
     ollama: () => createOllama({ baseURL })(modelNameString),
     fireworks: () => createOpenAI({ apiKey: apiKey || process.env.FIREWORKS_API_KEY, baseURL: baseURL || 'https://api.fireworks.ai/inference/v1' })(modelNameString),
+    openrouter: () => createOpenAI({
+      apiKey: apiKey || process.env.OPENROUTER_API_KEY,
+      baseURL: baseURL || 'https://openrouter.ai/api/v1',
+      defaultHeaders: {
+        'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || '',
+        'X-Title': process.env.NEXT_PUBLIC_SITE_NAME || '',
+      },
+    })(modelNameString),
   }
 
   const createClient = providerConfigs[providerId as keyof typeof providerConfigs]

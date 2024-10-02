@@ -132,6 +132,13 @@
       "providerId": "ollama",
       "name": "Mistral Large",
       "multiModal": false
+    },
+    {
+      "id": "anthropic/claude-3.5-sonnet",
+      "provider": "OpenRouter",
+      "providerId": "openrouter",
+      "name": "Claude 3.5 Sonnet",
+      "multiModal": true
     }
   ]
 }
