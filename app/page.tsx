@@ -1,6 +1,5 @@
 'use client'
 
-import { createSandbox } from './actions/sandbox'
 import { AuthDialog } from '@/components/auth-dialog'
 import { Chat } from '@/components/chat'
 import { ChatInput } from '@/components/chat-input'
@@ -67,12 +66,16 @@ export default function Home() {
         console.log('artifact', artifact)
         setIsPreviewLoading(true)
 
-        const result = await createSandbox({
-          artifact: artifact as ArtifactSchema,
-          userID: session?.user?.id || 'none',
-          apiKey,
+        const response = await fetch('/api/sandbox', {
+          method: 'POST',
+          body: JSON.stringify({
+            artifact,
+            userID: session?.user?.id,
+            apiKey,
+          }),
         })
 
+        const result = await response.json()
         console.log('result', result)
 
         setResult(result)

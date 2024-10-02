@@ -1,18 +1,18 @@
-'use server'
-
 import { ArtifactSchema } from '@/lib/schema'
-import { ExecutionResult, ExecutionResultWeb } from '@/lib/types'
+import { ExecutionResultInterpreter, ExecutionResultWeb } from '@/lib/types'
 import { Sandbox, CodeInterpreter } from '@e2b/code-interpreter'
 
 const sandboxTimeout = 10 * 60 * 1000 // 10 minute in ms
 
-export async function createSandbox(options: {
-  artifact: ArtifactSchema
-  userID: string
-  apiKey?: string
-}): Promise<ExecutionResult> {
-  const { artifact, userID, apiKey } = options
+export const maxDuration = 60
 
+export async function POST(req: Request) {
+  const {
+    artifact,
+    userID,
+    apiKey,
+  }: { artifact: ArtifactSchema; userID: string; apiKey?: string } =
+    await req.json()
   console.log('artifact', artifact)
   console.log('userID', userID)
   console.log('apiKey', apiKey)
@@ -68,19 +68,23 @@ export async function createSandbox(options: {
       artifact.code || '',
     )
     await (sbx as CodeInterpreter).close()
-    return {
-      sbxId: sbx?.sandboxID,
-      template: artifact.template,
-      stdout: result.logs.stdout,
-      stderr: result.logs.stderr,
-      runtimeError: result.error,
-      cellResults: result.results,
-    }
+    return new Response(
+      JSON.stringify({
+        sbxId: sbx?.sandboxID,
+        template: artifact.template,
+        stdout: result.logs.stdout,
+        stderr: result.logs.stderr,
+        runtimeError: result.error,
+        cellResults: result.results,
+      } as ExecutionResultInterpreter),
+    )
   } else {
-    return {
-      sbxId: sbx?.sandboxID,
-      template: artifact.template as ExecutionResultWeb['template'],
-      url: `https://${sbx?.getHost(artifact.port || 80)}`,
-    }
+    return new Response(
+      JSON.stringify({
+        sbxId: sbx?.sandboxID,
+        template: artifact.template,
+        url: `https://${sbx?.getHost(artifact.port || 80)}`,
+      } as ExecutionResultWeb),
+    )
   }
 }
