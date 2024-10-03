@@ -13,11 +13,12 @@ export async function publish(
   duration: Duration,
   apiKey: string | undefined,
 ) {
+  const expiration = ms(duration)
+  await Sandbox.setTimeout(sbxId, expiration, { apiKey })
+
   if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
     const id = nanoid()
-    const expiration = ms(duration)
     await kv.set(`fragment:${id}`, url, { px: expiration })
-    await Sandbox.setTimeout(sbxId, expiration, { apiKey })
 
     return {
       url: process.env.NEXT_PUBLIC_SITE_URL

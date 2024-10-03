@@ -68,7 +68,7 @@ export function DeployDialog({
           link.
         </div>
         <div className="text-sm text-muted-foreground">
-          The fragment will be available for until the expiration date you choose
+          The fragment will be available up until the expiration date you choose
           and you&apos;ll be billed based on our{' '}
           <a
             href="https://e2b.dev/docs/pricing"
@@ -80,8 +80,15 @@ export function DeployDialog({
           .
         </div>
         <div className="text-sm text-muted-foreground">
-          All new accounts receive $100 worth of compute credits. Pro tier
-          customers have access to longer expiration.
+          All new accounts receive $100 worth of compute credits. Upgrade to{' '}
+          <a
+            href="https://e2b.dev/dashboard?tab=billing"
+            target="_blank"
+            className="underline"
+          >
+            Pro tier
+          </a>{' '}
+          for longer expiration.
         </div>
         <form className="flex flex-col gap-2" onSubmit={publishURL}>
           {publishedURL && (
@@ -93,11 +100,11 @@ export function DeployDialog({
           {!publishedURL && (
             <Select onValueChange={(value) => setDuration(value)} required>
               <SelectTrigger>
-                <SelectValue placeholder="Expires in" />
+                <SelectValue placeholder="Set expiration" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Expiration</SelectLabel>
+                  <SelectLabel>Expires in</SelectLabel>
                   <SelectItem value="30m">30 Minutes</SelectItem>
                   <SelectItem value="1h">1 Hour</SelectItem>
                   <SelectItem value="3h">3 Hours · Pro</SelectItem>
@@ -112,7 +119,7 @@ export function DeployDialog({
             variant="default"
             disabled={publishedURL !== null}
           >
-            {publishedURL ? 'Deployed' : 'Confirm and deploy'}
+            {publishedURL ? 'Deployed' : 'Accept and deploy'}
           </Button>
         </form>
       </DropdownMenuContent>
