@@ -43,6 +43,20 @@
       "multiModal": true
     },
     {
+      "id": "gemini-1.5-pro-002",
+      "provider": "Vertex AI",
+      "providerId": "vertex",
+      "name": "Gemini Pro",
+      "multiModal": true
+    },
+    {
+      "id": "gemini-1.5-flash-002",
+      "provider": "Vertex AI",
+      "providerId": "vertex",
+      "name": "Gemini Flash",
+      "multiModal": true
+    },
+    {
       "id": "models/gemini-1.5-pro-002",
       "provider": "Google AI",
       "providerId": "google",

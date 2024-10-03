@@ -3,6 +3,7 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createMistral } from '@ai-sdk/mistral'
 import { createOllama } from 'ollama-ai-provider'
+import { createVertex } from '@ai-sdk/google-vertex'
 
 export type LLMModel = {
   id: string
@@ -36,6 +37,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
     togetherai: () => createOpenAI({ apiKey: apiKey || process.env.TOGETHER_AI_API_KEY, baseURL: baseURL || 'https://api.together.xyz/v1' })(modelNameString),
     ollama: () => createOllama({ baseURL })(modelNameString),
     fireworks: () => createOpenAI({ apiKey: apiKey || process.env.FIREWORKS_API_KEY, baseURL: baseURL || 'https://api.fireworks.ai/inference/v1' })(modelNameString),
+    vertex: () => createVertex({ googleAuthOptions: { credentials: JSON.parse(process.env.VERTEX_CREDENTIALS || '{}') } })(modelNameString),
   }
 
   const createClient = providerConfigs[providerId as keyof typeof providerConfigs]
