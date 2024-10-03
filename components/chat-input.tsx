@@ -176,7 +176,7 @@ export function ChatInput({
         </div>
       </div>
       <p className="text-xs text-muted-foreground mt-2 text-center">
-        Artifacts is an open-source project made by{' '}
+        Fragments is an open-source project made by{' '}
         <a
           href="https://e2b.dev"
           target="_blank"

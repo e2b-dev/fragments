@@ -46,11 +46,11 @@ export function DeployDialog({
       <DropdownMenuContent className="p-4 w-80 flex flex-col gap-2">
         <div className="text-sm font-semibold">Deploy to E2B</div>
         <div className="text-sm text-muted-foreground">
-          Deploying the artifact will make it publicly accessible to others via
+          Deploying the fragment will make it publicly accessible to others via
           link for a limited time.
         </div>
         <div className="text-sm text-muted-foreground">
-          The artifact will be made available for up to 30 minutes.
+          The fragment will be made available for up to 30 minutes.
         </div>
         <div className="flex flex-col gap-2">
           {publishedURL && (
