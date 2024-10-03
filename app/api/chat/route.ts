@@ -2,17 +2,18 @@ import { getModelClient, getDefaultMode } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import ratelimit, { Duration } from '@/lib/ratelimit'
 import { artifactSchema as schema } from '@/lib/schema'
-import { Templates, templatesToPrompt } from '@/lib/templates'
+import { Templates } from '@/lib/templates'
 import { streamObject, LanguageModel, CoreMessage } from 'ai'
+import { toPrompt } from '@/lib/prompt'
 
 export const maxDuration = 60
 
 const rateLimitMaxRequests = process.env.RATE_LIMIT_MAX_REQUESTS
   ? parseInt(process.env.RATE_LIMIT_MAX_REQUESTS)
-  : 5
+  : 10
 const ratelimitWindow = process.env.RATE_LIMIT_WINDOW
   ? (process.env.RATE_LIMIT_WINDOW as Duration)
-  : '1m'
+  : '1d'
 
 export async function POST(req: Request) {
   const limit = await ratelimit(
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
   const stream = await streamObject({
     model: modelClient as LanguageModel,
     schema,
-    system: `You are a skilled software engineer. You do not make mistakes. Generate an artifact. You can install additional dependencies. You can use one of the following templates:\n${templatesToPrompt(template)}`,
+    system: toPrompt(template),
     messages,
     mode: getDefaultMode(model),
     ...modelParams,

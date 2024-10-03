@@ -43,15 +43,29 @@
       "multiModal": true
     },
     {
-      "id": "models/gemini-1.5-pro-latest",
-      "provider": "Google AI",
+      "id": "gemini-1.5-pro-002",
+      "provider": "Google Vertex AI",
+      "providerId": "vertex",
+      "name": "Gemini Pro",
+      "multiModal": true
+    },
+    {
+      "id": "gemini-1.5-flash-002",
+      "provider": "Google Vertex AI",
+      "providerId": "vertex",
+      "name": "Gemini Flash",
+      "multiModal": true
+    },
+    {
+      "id": "models/gemini-1.5-pro-002",
+      "provider": "Google Generative AI",
       "providerId": "google",
       "name": "Gemini Pro",
       "multiModal": true
     },
     {
-      "id": "models/gemini-1.5-flash-latest",
-      "provider": "Google AI",
+      "id": "models/gemini-1.5-flash-002",
+      "provider": "Google Generative AI",
       "providerId": "google",
       "name": "Gemini Flash",
       "multiModal": true
@@ -61,6 +75,13 @@
       "provider": "Mistral",
       "providerId": "mistral",
       "name": "Mistral Large",
+      "multiModal": false
+    },
+    {
+      "id": "mistral-small-latest",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Mistral Small",
       "multiModal": false
     },
     {

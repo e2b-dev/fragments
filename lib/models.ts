@@ -3,6 +3,7 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createMistral } from '@ai-sdk/mistral'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOllama } from 'ollama-ai-provider'
+import { createVertex } from '@ai-sdk/google-vertex'
 
 export type LLMModel = {
   id: string
@@ -49,6 +50,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
         apiKey: apiKey || process.env.FIREWORKS_API_KEY,
         baseURL: baseURL || 'https://api.fireworks.ai/inference/v1',
       })(modelNameString),
+    vertex: () => createVertex({ googleAuthOptions: { credentials: JSON.parse(process.env.GOOGLE_VERTEX_CREDENTIALS || '{}') } })(modelNameString),
   }
 
   const createClient =
