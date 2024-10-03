@@ -50,7 +50,12 @@ export function DeployDialog({
           link for a limited time.
         </div>
         <div className="text-sm text-muted-foreground">
-          The fragment will be made available for up to 30 minutes.
+          The fragment will be available for up to 30 minutes and you'll be
+          billed based on our{' '}
+          <a href="https://e2b.dev/docs/pricing" target="_blank">
+            Compute pricing
+          </a>
+          . All new accounts have $100 worth of compute credits.
         </div>
         <div className="flex flex-col gap-2">
           {publishedURL && (
