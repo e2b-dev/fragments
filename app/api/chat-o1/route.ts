@@ -1,19 +1,27 @@
 import { getModelClient } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
-import ratelimit from '@/lib/ratelimit'
+import { toPrompt } from '@/lib/prompt'
+import ratelimit, { Duration } from '@/lib/ratelimit'
 import { artifactSchema as schema } from '@/lib/schema'
 import { Templates, templatesToPrompt } from '@/lib/templates'
 import { openai } from '@ai-sdk/openai'
 import { streamObject, LanguageModel, CoreMessage, generateText } from 'ai'
-import { toPrompt } from '@/lib/prompt'
 
 export const maxDuration = 60
 
-const rateLimitMaxRequests = 10
-const ratelimitWindow = '1d'
+const rateLimitMaxRequests = process.env.RATE_LIMIT_MAX_REQUESTS
+  ? parseInt(process.env.RATE_LIMIT_MAX_REQUESTS)
+  : 10
+const ratelimitWindow = process.env.RATE_LIMIT_WINDOW
+  ? (process.env.RATE_LIMIT_WINDOW as Duration)
+  : '1d'
 
 export async function POST(req: Request) {
-  const limit = await ratelimit(req.headers.get('x-forwarded-for'), rateLimitMaxRequests, ratelimitWindow)
+  const limit = await ratelimit(
+    req.headers.get('x-forwarded-for'),
+    rateLimitMaxRequests,
+    ratelimitWindow,
+  )
   if (limit) {
     return new Response('You have reached your request limit for the day.', {
       status: 429,

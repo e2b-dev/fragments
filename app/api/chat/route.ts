@@ -1,10 +1,10 @@
 import { getModelClient, getDefaultMode } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
+import { toPrompt } from '@/lib/prompt'
 import ratelimit, { Duration } from '@/lib/ratelimit'
 import { artifactSchema as schema } from '@/lib/schema'
 import { Templates } from '@/lib/templates'
 import { streamObject, LanguageModel, CoreMessage } from 'ai'
-import { toPrompt } from '@/lib/prompt'
 
 export const maxDuration = 60
 
