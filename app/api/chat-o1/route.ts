@@ -15,11 +15,11 @@ import { toPrompt } from '@/lib/prompt'
 
 export const maxDuration = 60
 
-const rateLimitMaxRequests = 15
-const ratelimitWindow = '1m'
+const rateLimitMaxRequests = 10
+const ratelimitWindow = '1d'
 
 export async function POST(req: Request) {
-  const limit = await ratelimit('o1', rateLimitMaxRequests, ratelimitWindow)
+  const limit = await ratelimit(req.headers.get('x-forwarded-for'), rateLimitMaxRequests, ratelimitWindow)
   if (limit) {
     return new Response('You have reached your request limit for the day.', {
       status: 429,
