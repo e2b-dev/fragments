@@ -1,8 +1,6 @@
+import { Duration } from './duration'
 import { Ratelimit } from '@upstash/ratelimit'
 import { kv } from '@vercel/kv'
-
-export type Unit = 'ms' | 's' | 'm' | 'h' | 'd'
-export type Duration = `${number} ${Unit}` | `${number}${Unit}`
 
 export default async function ratelimit(
   key: string | null,
