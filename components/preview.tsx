@@ -1,6 +1,6 @@
 import { ArtifactCode } from './artifact-code'
 import { ArtifactPreview } from './artifact-preview'
-import { PublishDialog } from './publish-dialog'
+import { DeployDialog } from './deploy-dialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -97,7 +97,7 @@ export function Preview({
           {result && (
             <div className="flex items-center justify-end gap-2">
               {isLinkAvailable && (
-                <PublishDialog
+                <DeployDialog
                   url={result.url!}
                   sbxId={result.sbxId!}
                   apiKey={apiKey}

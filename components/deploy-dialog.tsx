@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 
-export function PublishDialog({
+export function DeployDialog({
   url,
   sbxId,
   apiKey,
@@ -40,26 +40,17 @@ export function PublishDialog({
       <DropdownMenuTrigger asChild>
         <Button variant="default">
           <Logo style="e2b" width={16} height={16} className="mr-2" />
-          Publish
+          Deploy to E2B
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-4 w-80 flex flex-col gap-2">
-        <div className="text-sm font-semibold">Publish to E2B</div>
+        <div className="text-sm font-semibold">Deploy to E2B</div>
         <div className="text-sm text-muted-foreground">
-          Publishing the artifact will make it publicly available to others via
-          link.
+          Deploying the artifact will make it publicly accessible to others via
+          link for a limited time.
         </div>
         <div className="text-sm text-muted-foreground">
-          The link will be available for up 1 hour or 3 hours depending on your
-          active{' '}
-          <a
-            href="https://e2b.dev/dashboard?tab=billing"
-            target="_blank"
-            className="underline"
-          >
-            Plan
-          </a>
-          .
+          The artifact will be made available for up to 30 minutes.
         </div>
         <div className="flex flex-col gap-2">
           {publishedURL && (
@@ -73,7 +64,7 @@ export function PublishDialog({
             onClick={publishURL}
             disabled={publishedURL !== null}
           >
-            {publishedURL ? 'Published' : 'Confirm and publish'}
+            {publishedURL ? 'Deployed' : 'Confirm and deploy'}
           </Button>
         </div>
       </DropdownMenuContent>
