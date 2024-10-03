@@ -14,12 +14,12 @@ export async function publish(
 ) {
   if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
     const id = nanoid()
-    await kv.set(`fragment:${id}`, url)
+    await kv.set(`fragment:${id}`, url, { px: sandboxTimeout })
     await Sandbox.setTimeout(sbxId, sandboxTimeout, { apiKey })
 
     return {
-      url: process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}/s/${id}`
+      url: process.env.NEXT_PUBLIC_SITE_URL
+        ? `https://${process.env.NEXT_PUBLIC_SITE_URL}/s/${id}`
         : `/s/${id}`,
     }
   }
