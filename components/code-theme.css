@@ -1,54 +1,37 @@
 /* Prism.js GitHub Dark Theme */
 
-code[class*="language-"],
-pre[class*="language-"] {
-	color: #e1e4e8; /* editor.foreground */
-	font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
-	text-align: left;
-	white-space: pre;
-	word-spacing: normal;
-	word-break: normal;
-	word-wrap: normal;
-	line-height: 1.5;
-
-	-moz-tab-size: 4;
-	-o-tab-size: 4;
-	tab-size: 4;
-
-	-webkit-hyphens: none;
-	-moz-hyphens: none;
-	-ms-hyphens: none;
-	hyphens: none;
+code[class*='language-'],
+pre[class*='language-'] {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono',
+    'Droid Sans Mono', 'Source Code Pro', monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  tab-size: 4;
+  hyphens: none;
 }
 
-/* Code blocks */
-pre[class*="language-"] {
-	padding: 1em;
-	margin: .5em 0;
-	overflow: auto;
-	border-radius: 0.3em;
-}
-
-/* Inline code */
-:not(pre) > code[class*="language-"] {
-	padding: .1em .3em;
-	border-radius: .3em;
-	white-space: normal;
+code[class*='language-'],
+pre[class*='language-'] {
+  color: #24292e;
 }
 
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-	color: #6a737d; /* comment */
+  color: #6a737d;
 }
 
 .token.punctuation {
-	color: #e1e4e8; /* editor.foreground */
+  color: #24292e;
 }
 
 .token.namespace {
-	opacity: .7;
+  opacity: 0.7;
 }
 
 .token.property,
@@ -56,18 +39,16 @@ pre[class*="language-"] {
 .token.boolean,
 .token.number,
 .token.constant,
-.token.symbol,
-.token.deleted {
-	color: #79b8ff; /* constant, entity.name.constant, variable.other.constant */
+.token.symbol {
+  color: #005cc5;
 }
 
 .token.selector,
 .token.attr-name,
 .token.string,
 .token.char,
-.token.builtin,
-.token.inserted {
-	color: #9ecbff; /* string */
+.token.builtin {
+  color: #032f62;
 }
 
 .token.operator,
@@ -75,35 +56,114 @@ pre[class*="language-"] {
 .token.url,
 .language-css .token.string,
 .style .token.string {
-	color: #e1e4e8; /* editor.foreground */
+  color: #d73a49;
+  background: transparent;
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-	color: #f97583; /* keyword */
+  color: #d73a49;
 }
 
 .token.function,
 .token.class-name {
-	color: #b392f0; /* entity, entity.name */
+  color: #6f42c1;
 }
 
 .token.regex,
 .token.important,
 .token.variable {
-	color: #ffab70; /* variable */
+  color: #e36209;
 }
 
 .token.important,
 .token.bold {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .token.italic {
-	font-style: italic;
+  font-style: italic;
 }
 
 .token.entity {
-	cursor: help;
+  cursor: help;
+}
+
+/* Dark */
+.dark code[class*='language-'],
+.dark pre[class*='language-'] {
+  color: #e1e4e8;
+}
+
+.dark .token.comment,
+.dark .token.prolog,
+.dark .token.doctype,
+.dark .token.cdata {
+  color: #6a737d; /* comment */
+}
+
+.dark .token.punctuation {
+  color: #e1e4e8; /* editor.foreground */
+}
+
+.dark .token.namespace {
+  opacity: 0.7;
+}
+
+.dark .token.property,
+.dark .token.tag,
+.dark .token.boolean,
+.dark .token.number,
+.dark .token.constant,
+.dark .token.symbol,
+.dark .token.deleted {
+  color: #79b8ff; /* constant, entity.name.constant, variable.other.constant */
+}
+
+.dark .token.selector,
+.dark .token.attr-name,
+.dark .token.string,
+.dark .token.char,
+.dark .token.builtin,
+.dark .token.inserted {
+  color: #9ecbff; /* string */
+}
+
+.dark .token.operator,
+.dark .token.entity,
+.dark .token.url,
+.dark .language-css .token.string,
+.dark .style .token.string {
+  color: #e1e4e8; /* editor.foreground */
+}
+
+.dark .token.atrule,
+.dark .token.attr-value,
+.dark .token.keyword {
+  color: #f97583; /* keyword */
+}
+
+.dark .token.function,
+.dark .token.class-name {
+  color: #b392f0; /* entity, entity.name */
+}
+
+.dark .token.regex,
+.dark .token.important,
+.dark .token.variable {
+  color: #ffab70; /* variable */
+}
+
+.dark .token.important,
+.dark .token.bold {
+  font-weight: bold;
+}
+
+.dark .token.italic {
+  font-style: italic;
+}
+
+.dark .token.entity {
+  cursor: help;
 }

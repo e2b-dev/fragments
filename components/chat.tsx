@@ -1,32 +1,21 @@
-import { ArrowUp, ImagePlus, Square, Terminal, X } from 'lucide-react'
-
-import { Input } from '@/components/ui/input'
-import { Message, MessageText } from '@/lib/messages'
-import { Button } from './ui/button'
-import { useEffect, useState } from 'react'
-
-// simulate simple monte carlo method with 1000 iterations. At each iteration, create a point and check if that point was inside the unit circle. If the point was inside, make it green. At the end show me visualization that shows all the points that you created in every iteration
+import { Message } from '@/lib/messages'
+import { ArtifactSchema } from '@/lib/schema'
+import { ExecutionResult } from '@/lib/types'
+import { DeepPartial } from 'ai'
+import { Loader2Icon, LoaderIcon, Terminal } from 'lucide-react'
+import { useEffect } from 'react'
 
 export function Chat({
-  isLoading,
-  stop,
   messages,
-  input,
-  handleInputChange,
-  handleSubmit,
-  isMultiModal,
-  files,
-  handleFileChange,
+  isLoading,
+  setCurrentPreview,
 }: {
-  isLoading: boolean,
-  stop: () => void,
-  messages: Message[],
-  input: string,
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
-  isMultiModal: boolean,
-  files: FileList | null,
-  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+  messages: Message[]
+  isLoading: boolean
+  setCurrentPreview: (preview: {
+    object: DeepPartial<ArtifactSchema> | undefined
+    result: ExecutionResult | undefined
+  }) => void
 }) {
   useEffect(() => {
     const chatContainer = document.getElementById('chat-container')
@@ -36,56 +25,61 @@ export function Chat({
   }, [JSON.stringify(messages)])
 
   return (
-    <div className="flex-1 flex flex-col py-4 gap-4 max-h-full max-w-[800px] mx-auto justify-between">
-      <div id="chat-container" className="flex flex-col gap-2 overflow-y-auto max-h-full px-4 rounded-lg">
-        {messages.map((message: Message, index: number) => (
-          <div className={`py-2 px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-white/5 border text-muted-foreground' : 'bg-white/20'} rounded-lg font-serif`} key={index}>
-            {message.content.map((content, id) => {
-              if (content.type === 'text') {
-                return <p key={content.text} className="flex-1">{content.text}</p>
-              }
-
-              if (content.type === 'image') {
-                return <img key={id} src={content.image} alt="artifact" className="mr-2 inline-block w-[50px] h-[50px] object-contain border border-[#FFE7CC] rounded-lg bg-white mt-2" />
-              }
-            })}
-            {message.meta &&
-              <div className="mt-4 flex justify-start items-start border rounded-md">
-                <div className="p-2 self-stretch border-r w-14 flex items-center justify-center">
-                  <Terminal strokeWidth={2} className="text-[#FF8800]"/>
-                </div>
-                <div className="p-2 flex flex-col space-y-1 justify-start items-start min-w-[100px]">
-                  <span className="font-bold font-sans text-sm text-primary">{message.meta.title}</span>
-                  <span className="font-sans text-sm">{message.meta.description}</span>
-                </div>
-              </div>
+    <div
+      id="chat-container"
+      className="flex flex-col pb-4 gap-2 overflow-y-auto max-h-full"
+    >
+      {messages.map((message: Message, index: number) => (
+        <div
+          className={`flex flex-col px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-accent dark:bg-white/5 border text-accent-foreground dark:text-muted-foreground py-4 rounded-2xl gap-4 w-full' : 'bg-gradient-to-b from-black/5 to-black/10 dark:from-black/30 dark:to-black/50 py-2 rounded-xl gap-2 w-fit'} font-serif`}
+          key={index}
+        >
+          {message.content.map((content, id) => {
+            if (content.type === 'text') {
+              return content.text
             }
-          </div>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <form onSubmit={handleSubmit} className="flex flex-row gap-2 items-center">
-          <div className="relative">
-            <input type="file" id="multimodal" name="multimodal" accept="image/*" multiple={true} className="hidden" onChange={handleFileChange} />
-            <Button disabled={!isMultiModal} type="button" variant="outline" size="icon" className="rounded-full h-10 w-10" onClick={(e) => { e.preventDefault(); document.getElementById('multimodal')?.click() }}>
-              <ImagePlus className="h-5 w-5" />
-            </Button>
-            { files && <div className="absolute top-[-3px] right-[-3px] bg-[#ff8800] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{files.length}</div> }
-          </div>
-          <Input className="ring-0 rounded-xl" required={true} placeholder="Describe your app..." value={input} onChange={handleInputChange}/>
-          { !isLoading ? (
-              <Button variant="secondary" size="icon" className='rounded-full h-10 w-11'>
-                <ArrowUp className="h-5 w-5" />
-              </Button>
-          ) : (
-              <Button variant="secondary" size="icon" className='rounded-full h-10 w-11' onClick={(e) => { e.preventDefault(); stop() }}>
-                <Square className="h-5 w-5" />
-              </Button>
-            )
-          }
-        </form>
-      </div>
+            if (content.type === 'image') {
+              return (
+                <img
+                  key={id}
+                  src={content.image}
+                  alt="artifact"
+                  className="mr-2 inline-block w-12 h-12 object-cover rounded-lg bg-white mb-2"
+                />
+              )
+            }
+          })}
+          {message.object && (
+            <div
+              onClick={() =>
+                setCurrentPreview({
+                  object: message.object,
+                  result: message.result,
+                })
+              }
+              className="py-2 pl-2 w-full md:w-max flex items-center border rounded-xl select-none hover:bg-white dark:hover:bg-white/5 hover:cursor-pointer"
+            >
+              <div className="rounded-[0.5rem] w-10 h-10 bg-black/5 dark:bg-white/5 self-stretch flex items-center justify-center">
+                <Terminal strokeWidth={2} className="text-[#FF8800]" />
+              </div>
+              <div className="pl-2 pr-4 flex flex-col">
+                <span className="font-bold font-sans text-sm text-primary">
+                  {message.object.title}
+                </span>
+                <span className="font-sans text-sm text-muted-foreground">
+                  Click to see artifact
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+      {isLoading && (
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <LoaderIcon strokeWidth={2} className="animate-spin w-4 h-4" />
+          <span>Generating...</span>
+        </div>
+      )}
     </div>
   )
 }

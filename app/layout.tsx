@@ -1,25 +1,35 @@
+import './globals.css'
+import { PostHogProvider, ThemeProvider } from './providers'
+import { Toaster } from '@/components/ui/toaster'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { PostHogProvider } from './providers'
-import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AI Artifacts by E2B',
-  description: 'About Hackable open-source version of Anthropic\'s AI Artifacts chat',
+  title: 'Artifacts by E2B',
+  description:
+    "About Hackable open-source version of Anthropic's AI Artifacts chat",
 }
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <PostHogProvider>
         <body className={inter.className}>
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+          <Toaster />
         </body>
       </PostHogProvider>
     </html>

@@ -1,6 +1,6 @@
 {
   "models": [
-     {
+    {
       "id": "o1-preview",
       "provider": "OpenAI",
       "providerId": "openai",
