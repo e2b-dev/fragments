@@ -12,7 +12,7 @@ import {
 import { ArtifactSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
-import { ChevronsRight, Copy, Download, LoaderCircle } from 'lucide-react'
+import { ChevronsRight, LoaderCircle } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
 
 export function Preview({

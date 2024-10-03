@@ -47,7 +47,7 @@ export function DeployDialog({
         <div className="text-sm font-semibold">Deploy to E2B</div>
         <div className="text-sm text-muted-foreground">
           Deploying the fragment will make it publicly accessible to others via
-          link for a limited time.
+          link.
         </div>
         <div className="text-sm text-muted-foreground">
           The fragment will be available for up to 30 minutes and you&apos;ll be
@@ -59,7 +59,10 @@ export function DeployDialog({
           >
             Compute pricing
           </a>
-          . All new accounts have $100 worth of compute credits.
+          .
+        </div>
+        <div className="text-sm text-muted-foreground">
+          All new accounts receive $100 worth of compute credits.
         </div>
         <div className="flex flex-col gap-2">
           {publishedURL && (
