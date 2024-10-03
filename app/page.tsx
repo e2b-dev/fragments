@@ -296,8 +296,8 @@ export default function Home() {
             <ChatSettings
               languageModel={languageModel}
               onLanguageModelChange={handleLanguageModelChange}
-              apiKeyConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
-              baseURLConfigurable={!process.env.NEXT_PUBLIC_USE_HOSTED_MODELS}
+              apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
+              baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
             />
           </ChatInput>
         </div>
