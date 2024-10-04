@@ -11,7 +11,7 @@ import { AuthViewType, useAuth } from '@/lib/auth'
 import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
-import { ArtifactSchema, artifactSchema as schema } from '@/lib/schema'
+import { FragmentSchema, fragmentSchema as schema } from '@/lib/schema'
 import { supabase } from '@/lib/supabase'
 import templates, { TemplateId } from '@/lib/templates'
 import { ExecutionResult } from '@/lib/types'
@@ -38,8 +38,8 @@ export default function Home() {
 
   const [result, setResult] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
-  const [artifact, setArtifact] = useState<DeepPartial<ArtifactSchema>>()
-  const [currentTab, setCurrentTab] = useState<'code' | 'artifact'>('code')
+  const [fragment, setFragment] = useState<DeepPartial<FragmentSchema>>()
+  const [currentTab, setCurrentTab] = useState<'code' | 'fragment'>('code')
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const [authView, setAuthView] = useState<AuthViewType>('sign_in')
@@ -60,19 +60,19 @@ export default function Home() {
         ? '/api/chat-o1'
         : '/api/chat',
     schema,
-    onFinish: async ({ object: artifact, error }) => {
+    onFinish: async ({ object: fragment, error }) => {
       if (!error) {
         // send it to /api/sandbox
-        console.log('artifact', artifact)
+        console.log('fragment', fragment)
         setIsPreviewLoading(true)
-        posthog.capture('artifact_generated', {
-          template: artifact?.template,
+        posthog.capture('fragment_generated', {
+          template: fragment?.template,
         })
 
         const response = await fetch('/api/sandbox', {
           method: 'POST',
           body: JSON.stringify({
-            artifact,
+            fragment,
             userID: session?.user?.id,
             apiKey,
           }),
@@ -83,9 +83,9 @@ export default function Home() {
         posthog.capture('sandbox_created', { url: result.url })
 
         setResult(result)
-        setCurrentPreview({ object: artifact, result })
+        setCurrentPreview({ fragment, result })
         setMessage({ result })
-        setCurrentTab('artifact')
+        setCurrentTab('fragment')
         setIsPreviewLoading(false)
       }
     },
@@ -93,7 +93,7 @@ export default function Home() {
 
   useEffect(() => {
     if (object) {
-      setArtifact(object)
+      setFragment(object)
       const content: Message['content'] = [
         { type: 'text', text: object.commentary || '' },
         { type: 'code', text: object.code || '' },
@@ -210,7 +210,7 @@ export default function Home() {
 
   function handleSocialClick(target: 'github' | 'x' | 'discord') {
     if (target === 'github') {
-      window.open('https://github.com/e2b-dev/ai-artifacts', '_blank')
+      window.open('https://github.com/e2b-dev/fragments', '_blank')
     } else if (target === 'x') {
       window.open('https://x.com/e2b_dev', '_blank')
     } else if (target === 'discord') {
@@ -225,23 +225,23 @@ export default function Home() {
     setChatInput('')
     setFiles([])
     setMessages([])
-    setArtifact(undefined)
+    setFragment(undefined)
     setResult(undefined)
     setCurrentTab('code')
     setIsPreviewLoading(false)
   }
 
   function setCurrentPreview(preview: {
-    object: DeepPartial<ArtifactSchema> | undefined
+    fragment: DeepPartial<FragmentSchema> | undefined
     result: ExecutionResult | undefined
   }) {
-    setArtifact(preview.object)
+    setFragment(preview.fragment)
     setResult(preview.result)
   }
 
   function handleUndo() {
     setMessages((previousMessages) => [...previousMessages.slice(0, -2)])
-    setCurrentPreview({ object: undefined, result: undefined })
+    setCurrentPreview({ fragment: undefined, result: undefined })
   }
 
   return (
@@ -256,7 +256,7 @@ export default function Home() {
       )}
       <div className="grid w-full md:grid-cols-2">
         <div
-          className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${artifact ? 'col-span-1' : 'col-span-2'}`}
+          className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
         >
           <NavBar
             session={session}
@@ -307,9 +307,9 @@ export default function Home() {
           onSelectedTabChange={setCurrentTab}
           isChatLoading={isLoading}
           isPreviewLoading={isPreviewLoading}
-          artifact={artifact}
+          fragment={fragment}
           result={result as ExecutionResult}
-          onClose={() => setArtifact(undefined)}
+          onClose={() => setFragment(undefined)}
         />
       </div>
     </main>

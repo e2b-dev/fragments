@@ -10,7 +10,7 @@ import {
 import { Download, FileText } from 'lucide-react'
 import { useState } from 'react'
 
-export function ArtifactCode({
+export function FragmentCode({
   files,
 }: {
   files: { name: string; content: string }[]

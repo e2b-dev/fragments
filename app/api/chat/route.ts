@@ -3,7 +3,7 @@ import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
 import { Duration } from '@/lib/duration'
-import { artifactSchema as schema } from '@/lib/schema'
+import { fragmentSchema as schema } from '@/lib/schema'
 import { Templates } from '@/lib/templates'
 import { streamObject, LanguageModel, CoreMessage } from 'ai'
 

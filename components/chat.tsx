@@ -1,5 +1,5 @@
 import { Message } from '@/lib/messages'
-import { ArtifactSchema } from '@/lib/schema'
+import { FragmentSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { Loader2Icon, LoaderIcon, Terminal } from 'lucide-react'
@@ -13,7 +13,7 @@ export function Chat({
   messages: Message[]
   isLoading: boolean
   setCurrentPreview: (preview: {
-    object: DeepPartial<ArtifactSchema> | undefined
+    fragment: DeepPartial<FragmentSchema> | undefined
     result: ExecutionResult | undefined
   }) => void
 }) {
@@ -43,7 +43,7 @@ export function Chat({
                 <img
                   key={id}
                   src={content.image}
-                  alt="artifact"
+                  alt="fragment"
                   className="mr-2 inline-block w-12 h-12 object-cover rounded-lg bg-white mb-2"
                 />
               )
@@ -53,7 +53,7 @@ export function Chat({
             <div
               onClick={() =>
                 setCurrentPreview({
-                  object: message.object,
+                  fragment: message.object,
                   result: message.result,
                 })
               }

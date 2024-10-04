@@ -1,5 +1,5 @@
-import { ArtifactCode } from './artifact-code'
-import { ArtifactPreview } from './artifact-preview'
+import { FragmentCode } from './fragment-code'
+import { FragmentPreview } from './fragment-preview'
 import { DeployDialog } from './deploy-dialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ArtifactSchema } from '@/lib/schema'
+import { FragmentSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { ChevronsRight, LoaderCircle } from 'lucide-react'
@@ -21,20 +21,20 @@ export function Preview({
   onSelectedTabChange,
   isChatLoading,
   isPreviewLoading,
-  artifact,
+  fragment,
   result,
   onClose,
 }: {
   apiKey: string | undefined
-  selectedTab: 'code' | 'artifact'
-  onSelectedTabChange: Dispatch<SetStateAction<'code' | 'artifact'>>
+  selectedTab: 'code' | 'fragment'
+  onSelectedTabChange: Dispatch<SetStateAction<'code' | 'fragment'>>
   isChatLoading: boolean
   isPreviewLoading: boolean
-  artifact?: DeepPartial<ArtifactSchema>
+  fragment?: DeepPartial<FragmentSchema>
   result?: ExecutionResult
   onClose: () => void
 }) {
-  if (!artifact) {
+  if (!fragment) {
     return null
   }
 
@@ -45,7 +45,7 @@ export function Preview({
       <Tabs
         value={selectedTab}
         onValueChange={(value) =>
-          onSelectedTabChange(value as 'code' | 'artifact')
+          onSelectedTabChange(value as 'code' | 'fragment')
         }
         className="h-full flex flex-col items-start justify-start"
       >
@@ -82,7 +82,7 @@ export function Preview({
               <TabsTrigger
                 disabled={!result}
                 className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
-                value="artifact"
+                value="fragment"
               >
                 Preview
                 {isPreviewLoading && (
@@ -106,22 +106,22 @@ export function Preview({
             </div>
           )}
         </div>
-        {artifact && (
+        {fragment && (
           <div className="overflow-y-auto w-full h-full">
             <TabsContent value="code" className="h-full">
-              {artifact.code && artifact.file_path && (
-                <ArtifactCode
+              {fragment.code && fragment.file_path && (
+                <FragmentCode
                   files={[
                     {
-                      name: artifact.file_path,
-                      content: artifact.code,
+                      name: fragment.file_path,
+                      content: fragment.code,
                     },
                   ]}
                 />
               )}
             </TabsContent>
-            <TabsContent value="artifact" className="h-full">
-              {result && <ArtifactPreview result={result as ExecutionResult} />}
+            <TabsContent value="fragment" className="h-full">
+              {result && <FragmentPreview result={result as ExecutionResult} />}
             </TabsContent>
           </div>
         )}

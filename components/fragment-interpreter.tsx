@@ -32,7 +32,7 @@ function LogsOutput({
   )
 }
 
-export function ArtifactInterpreter({
+export function FragmentInterpreter({
   result,
 }: {
   result: ExecutionResultInterpreter

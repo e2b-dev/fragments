@@ -10,7 +10,7 @@ import { ExecutionResultWeb } from '@/lib/types'
 import { RotateCw } from 'lucide-react'
 import { useState } from 'react'
 
-export function ArtifactWeb({ result }: { result: ExecutionResultWeb }) {
+export function FragmentWeb({ result }: { result: ExecutionResultWeb }) {
   const [iframeKey, setIframeKey] = useState(0)
   if (!result) return null
 
