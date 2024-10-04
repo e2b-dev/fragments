@@ -91,13 +91,12 @@ export function DeployDialog({
           for longer expiration.
         </div>
         <form className="flex flex-col gap-2" onSubmit={publishURL}>
-          {publishedURL && (
+          {publishedURL ? (
             <div className="flex items-center gap-2">
               <Input value={publishedURL} readOnly />
               <CopyButton content={publishedURL} />
             </div>
-          )}
-          {!publishedURL && (
+          ) : (
             <Select onValueChange={(value) => setDuration(value)} required>
               <SelectTrigger>
                 <SelectValue placeholder="Set expiration" />
