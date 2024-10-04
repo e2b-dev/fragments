@@ -83,6 +83,31 @@ FIREWORKS_API_KEY=
 TOGETHER_AI_API_KEY=
 GOOGLE_AI_API_KEY=
 MISTRAL_API_KEY=
+
+### Optional env vars
+
+# Domain of the site
+NEXT_PUBLIC_SITE_URL=
+
+# Disabling API key and base URL input in the chat
+NEXT_PUBLIC_NO_API_KEY_INPUT=
+NEXT_PUBLIC_NO_BASE_URL_INPUT=
+
+# Rate limit
+RATE_LIMIT_MAX_REQUESTS=
+RATE_LIMIT_WINDOW=
+
+# Vercel/Upstash KV (short URLs, rate limiting)
+KV_REST_API_URL=
+KV_REST_API_TOKEN=
+
+# Supabase (auth)
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+
+# PostHog (analytics)
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_POSTHOG_HOST=
 ```
 
 ### 4. Start the development server
