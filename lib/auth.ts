@@ -63,7 +63,10 @@ export function useAuth(
       setSession(session)
       if (session) {
         getUserAPIKey(session).then(setApiKey)
-        posthog.identify(session?.user.id, { email: session?.user.email })
+        posthog.identify(session?.user.id, {
+          email: session?.user.email,
+          supabase_id: session?.user.id,
+        })
         posthog.capture('sign_in')
       }
     })
@@ -86,7 +89,10 @@ export function useAuth(
       if (_event === 'SIGNED_IN' && !recovery) {
         setAuthDialog(false)
         getUserAPIKey(session as Session).then(setApiKey)
-        posthog.identify(session?.user.id, { email: session?.user.email })
+        posthog.identify(session?.user.id, {
+          email: session?.user.email,
+          supabase_id: session?.user.id,
+        })
         posthog.capture('sign_in')
       }
 
