@@ -65,7 +65,7 @@ export function ChatInput({
   }, [files])
 
   function onEnter(e: React.KeyboardEvent<HTMLFormElement>) {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault()
       if (e.currentTarget.checkValidity()) {
         handleSubmit(e)
