@@ -1,8 +1,8 @@
+import { Duration } from '@/lib/duration'
 import { getModelClient, getDefaultMode } from '@/lib/models'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
 import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
-import { Duration } from '@/lib/duration'
 import { fragmentSchema as schema } from '@/lib/schema'
 import { Templates } from '@/lib/templates'
 import { streamObject, LanguageModel, CoreMessage } from 'ai'
@@ -17,22 +17,6 @@ const ratelimitWindow = process.env.RATE_LIMIT_WINDOW
   : '1d'
 
 export async function POST(req: Request) {
-  const limit = await ratelimit(
-    req.headers.get('x-forwarded-for'),
-    rateLimitMaxRequests,
-    ratelimitWindow,
-  )
-  if (limit) {
-    return new Response('You have reached your request limit for the day.', {
-      status: 429,
-      headers: {
-        'X-RateLimit-Limit': limit.amount.toString(),
-        'X-RateLimit-Remaining': limit.remaining.toString(),
-        'X-RateLimit-Reset': limit.reset.toString(),
-      },
-    })
-  }
-
   const {
     messages,
     userID,
@@ -46,10 +30,30 @@ export async function POST(req: Request) {
     model: LLMModel
     config: LLMModelConfig
   } = await req.json()
+
+  const limit = !config.apiKey
+    ? await ratelimit(
+        req.headers.get('x-forwarded-for'),
+        rateLimitMaxRequests,
+        ratelimitWindow,
+      )
+    : false
+
+  if (limit) {
+    return new Response('You have reached your request limit for the day.', {
+      status: 429,
+      headers: {
+        'X-RateLimit-Limit': limit.amount.toString(),
+        'X-RateLimit-Remaining': limit.remaining.toString(),
+        'X-RateLimit-Reset': limit.reset.toString(),
+      },
+    })
+  }
+
   console.log('userID', userID)
   // console.log('template', template)
   console.log('model', model)
-  console.log('config', config)
+  // console.log('config', config)
 
   const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
   const modelClient = getModelClient(model, config)
