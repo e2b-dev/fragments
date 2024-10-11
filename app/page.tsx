@@ -33,6 +33,7 @@ export default function Home() {
       model: 'claude-3-5-sonnet-20240620',
     },
   )
+  const [chatWorkspace, setChatWorkspace] = useState<'default' | 'no-artifacts'>('default')
 
   const posthog = usePostHog()
 
@@ -56,7 +57,9 @@ export default function Home() {
 
   const { object, submit, isLoading, stop, error } = useObject({
     api:
-      currentModel?.id === 'o1-preview' || currentModel?.id === 'o1-mini'
+      chatWorkspace === 'no-artifacts'
+        ? '/api/chat-no-artifacts'
+        : currentModel?.id === 'o1-preview' || currentModel?.id === 'o1-mini'
         ? '/api/chat-o1'
         : '/api/chat',
     schema,
@@ -244,6 +247,22 @@ export default function Home() {
     setCurrentPreview({ fragment: undefined, result: undefined })
   }
 
+  function handleSaveChat() {
+    const chatHistory = messages.map((message) => ({
+      role: message.role,
+      content: message.content,
+    }))
+    const blob = new Blob([JSON.stringify(chatHistory, null, 2)], {
+      type: 'application/json',
+    })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'chat-history.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <main className="flex min-h-screen max-h-screen">
       {supabase && (
@@ -299,6 +318,25 @@ export default function Home() {
               apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
               baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
             />
+            <div className="flex items-center space-x-2">
+              <label htmlFor="chatWorkspace" className="text-sm">Workspace:</label>
+              <select
+                id="chatWorkspace"
+                value={chatWorkspace}
+                onChange={(e) => setChatWorkspace(e.target.value as 'default' | 'no-artifacts')}
+                className="text-sm border rounded-md p-1"
+              >
+                <option value="default">Default</option>
+                <option value="no-artifacts">No Artifacts</option>
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={handleSaveChat}
+              className="text-sm border rounded-md p-1"
+            >
+              Save Chat
+            </button>
           </ChatInput>
         </div>
         <Preview
