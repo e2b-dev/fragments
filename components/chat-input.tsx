@@ -13,6 +13,7 @@ export function ChatInput({
   error,
   retry,
   isLoading,
+  isRateLimited,
   stop,
   input,
   handleInputChange,
@@ -25,6 +26,7 @@ export function ChatInput({
   error: undefined | unknown
   retry: () => void
   isLoading: boolean
+  isRateLimited: boolean
   stop: () => void
   input: string
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
@@ -82,12 +84,21 @@ export function ChatInput({
       className="mb-2 flex flex-col mt-auto bg-background"
     >
       {error !== undefined && (
-        <div className="bg-red-400/10 text-red-400 px-3 py-2 text-sm font-medium mb-2 rounded-xl">
-          An unexpected error has occurred. Please{' '}
+        <div
+          className={`px-3 py-2 text-sm font-medium mb-2 rounded-xl ${
+            isRateLimited
+              ? 'bg-orange-400/10 text-orange-400'
+              : 'bg-red-400/10 text-red-400'
+          }`}
+        >
+          {isRateLimited
+            ? 'Rate limit exceeded.'
+            : 'An unexpected error has occurred.'}
+          {' Please '}
           <button className="underline" onClick={retry}>
             try again
           </button>
-          .
+          {' later.'}
         </div>
       )}
       <div className="shadow-md rounded-2xl border">
@@ -177,11 +188,7 @@ export function ChatInput({
       </div>
       <p className="text-xs text-muted-foreground mt-2 text-center">
         Fragments is an open-source project made by{' '}
-        <a
-          href="https://e2b.dev"
-          target="_blank"
-          className="text-[#ff8800]"
-        >
+        <a href="https://e2b.dev" target="_blank" className="text-[#ff8800]">
           ✶ E2B
         </a>
       </p>

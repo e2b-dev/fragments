@@ -43,6 +43,7 @@ export default function Home() {
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const [authView, setAuthView] = useState<AuthViewType>('sign_in')
+  const [isRateLimited, setIsRateLimited] = useState(false)
   const { session, apiKey } = useAuth(setAuthDialog, setAuthView)
 
   const currentModel = modelsList.models.find(
@@ -82,6 +83,9 @@ export default function Home() {
         console.log('result', result)
         posthog.capture('sandbox_created', { url: result.url })
 
+        if (response.status === 429) {
+          setIsRateLimited(true)
+        }
         setResult(result)
         setCurrentPreview({ fragment, result })
         setMessage({ result })
@@ -277,6 +281,7 @@ export default function Home() {
             error={error}
             retry={retry}
             isLoading={isLoading}
+            isRateLimited={isRateLimited}
             stop={stop}
             input={chatInput}
             handleInputChange={handleSaveInputChange}
