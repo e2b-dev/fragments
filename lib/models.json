@@ -5,14 +5,14 @@
       "provider": "OpenAI",
       "providerId": "openai",
       "name": "o1 (Preview)",
-      "multiModal": true
+      "multiModal": false
     },
     {
       "id": "o1-mini",
       "provider": "OpenAI",
       "providerId": "openai",
       "name": "o1 mini",
-      "multiModal": true
+      "multiModal": false
     },
     {
       "id": "gpt-4o",
