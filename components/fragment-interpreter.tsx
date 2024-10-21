@@ -41,7 +41,7 @@ export function FragmentInterpreter({
 
   // The AI-generated code experienced runtime error
   if (runtimeError) {
-    const { name, value, tracebackRaw } = runtimeError
+    const { name, value, traceback } = runtimeError
     return (
       <div className="p-4">
         <Alert variant="destructive">
@@ -50,7 +50,7 @@ export function FragmentInterpreter({
             {name}: {value}
           </AlertTitle>
           <AlertDescription className="font-mono whitespace-pre-wrap">
-            {tracebackRaw}
+            {traceback}
           </AlertDescription>
         </Alert>
       </div>
