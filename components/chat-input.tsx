@@ -10,8 +10,8 @@ import { useMemo } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
 export function ChatInput({
-  error,
   retry,
+  isErrored,
   isLoading,
   isRateLimited,
   stop,
@@ -23,8 +23,8 @@ export function ChatInput({
   handleFileChange,
   children,
 }: {
-  error: undefined | unknown
   retry: () => void
+  isErrored: boolean
   isLoading: boolean
   isRateLimited: boolean
   stop: () => void
@@ -83,22 +83,27 @@ export function ChatInput({
       onKeyDown={onEnter}
       className="mb-2 flex flex-col mt-auto bg-background"
     >
-      {error !== undefined && (
+      {isErrored && (
         <div
-          className={`px-3 py-2 text-sm font-medium mb-2 rounded-xl ${
+          className={`flex items-center p-1.5 text-sm font-medium mb-2 rounded-xl ${
             isRateLimited
               ? 'bg-orange-400/10 text-orange-400'
               : 'bg-red-400/10 text-red-400'
           }`}
         >
-          {isRateLimited
-            ? 'Rate limit exceeded.'
-            : 'An unexpected error has occurred.'}
-          {' Please '}
-          <button className="underline" onClick={retry}>
-            try again
+          <span className="flex-1 px-1.5">
+            {isRateLimited
+              ? 'You have reached your request limit for the day.'
+              : 'An unexpected error has occurred.'}
+          </span>
+          <button
+            className={`px-2 py-1 rounded-sm ${
+              isRateLimited ? 'bg-orange-400/20' : 'bg-red-400/20'
+            }`}
+            onClick={retry}
+          >
+            Try again
           </button>
-          {' later.'}
         </div>
       )}
       <div className="shadow-md rounded-2xl border">
@@ -110,6 +115,7 @@ export function ChatInput({
           className="text-normal px-3 resize-none ring-0 bg-inherit w-full m-0 outline-none"
           required={true}
           placeholder="Describe your app..."
+          disabled={isErrored}
           value={input}
           onChange={handleInputChange}
         />
@@ -128,7 +134,7 @@ export function ChatInput({
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <Button
-                    disabled={!isMultiModal}
+                    disabled={!isMultiModal || isErrored}
                     type="button"
                     variant="outline"
                     size="icon"
@@ -152,6 +158,7 @@ export function ChatInput({
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Button
+                      disabled={isErrored}
                       variant="default"
                       size="icon"
                       type="submit"

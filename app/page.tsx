@@ -61,6 +61,11 @@ export default function Home() {
         ? '/api/chat-o1'
         : '/api/chat',
     schema,
+    onError: (error) => {
+      if (error.message.includes('request limit')) {
+        setIsRateLimited(true)
+      }
+    },
     onFinish: async ({ object: fragment, error }) => {
       if (!error) {
         // send it to /api/sandbox
@@ -83,9 +88,6 @@ export default function Home() {
         console.log('result', result)
         posthog.capture('sandbox_created', { url: result.url })
 
-        if (response.status === 429) {
-          setIsRateLimited(true)
-        }
         setResult(result)
         setCurrentPreview({ fragment, result })
         setMessage({ result })
@@ -278,8 +280,8 @@ export default function Home() {
             setCurrentPreview={setCurrentPreview}
           />
           <ChatInput
-            error={error}
             retry={retry}
+            isErrored={error !== undefined}
             isLoading={isLoading}
             isRateLimited={isRateLimited}
             stop={stop}
