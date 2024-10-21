@@ -1,5 +1,5 @@
 {
-  "code-interpreter-multilang": {
+  "code-interpreter-v1": {
     "name": "Python data analyst",
     "lib": ["python", "jupyter", "numpy", "pandas", "matplotlib", "seaborn", "plotly"],
     "file": "script.py",

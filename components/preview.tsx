@@ -38,7 +38,7 @@ export function Preview({
     return null
   }
 
-  const isLinkAvailable = result?.template !== 'code-interpreter-multilang'
+  const isLinkAvailable = result?.template !== 'code-interpreter-v1'
 
   return (
     <div className="absolute md:relative top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover h-full w-full overflow-auto">
