@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
-import { useMemo } from 'react'
+import { SetStateAction, useMemo } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
 export function ChatInput({
@@ -33,16 +33,15 @@ export function ChatInput({
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
   isMultiModal: boolean
   files: File[]
-  handleFileChange: (files: File[]) => void
+  handleFileChange: (change: SetStateAction<File[]>) => void
   children: React.ReactNode
 }) {
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
-    handleFileChange(Array.from(e.target.files || []))
+    handleFileChange((prev) => [...prev, ...Array.from(e.target.files || [])])
   }
 
   function handleFileRemove(file: File) {
-    const newFiles = files ? Array.from(files).filter((f) => f !== file) : []
-    handleFileChange(newFiles)
+    handleFileChange((prev) => prev.filter((f) => f !== file))
   }
 
   const filePreview = useMemo(() => {
@@ -54,7 +53,7 @@ export function ChatInput({
             onClick={() => handleFileRemove(file)}
             className="absolute top-[-8] right-[-8] bg-muted rounded-full p-1"
           >
-            <X className="h-3 w-3" />
+            <X className="h-3 w-3 cursor-pointer" />
           </span>
           <img
             src={URL.createObjectURL(file)}

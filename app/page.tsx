@@ -18,7 +18,7 @@ import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
 import { usePostHog } from 'posthog-js/react'
-import { useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
 export default function Home() {
@@ -200,8 +200,8 @@ export default function Home() {
     setChatInput(e.target.value)
   }
 
-  function handleFileChange(files: File[]) {
-    setFiles(files)
+  function handleFileChange(change: SetStateAction<File[]>) {
+    setFiles(change)
   }
 
   function logout() {
