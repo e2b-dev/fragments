@@ -127,6 +127,13 @@
       "multiModal": false
     },
     {
+      "id": "grok-beta",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok (Beta)",
+      "multiModal": false
+    },
+    {
       "id": "llama3.1",
       "provider": "Ollama",
       "providerId": "ollama",

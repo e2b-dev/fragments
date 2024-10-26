@@ -1,9 +1,9 @@
 import { createAnthropic } from '@ai-sdk/anthropic'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { createVertex } from '@ai-sdk/google-vertex'
 import { createMistral } from '@ai-sdk/mistral'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOllama } from 'ollama-ai-provider'
-import { createVertex } from '@ai-sdk/google-vertex'
 
 export type LLMModel = {
   id: string
@@ -41,7 +41,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
       })(modelNameString),
     togetherai: () =>
       createOpenAI({
-        apiKey: apiKey || process.env.TOGETHER_AI_API_KEY,
+        apiKey: apiKey || process.env.TOGETHER_API_KEY,
         baseURL: baseURL || 'https://api.together.xyz/v1',
       })(modelNameString),
     ollama: () => createOllama({ baseURL })(modelNameString),
@@ -50,7 +50,19 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
         apiKey: apiKey || process.env.FIREWORKS_API_KEY,
         baseURL: baseURL || 'https://api.fireworks.ai/inference/v1',
       })(modelNameString),
-    vertex: () => createVertex({ googleAuthOptions: { credentials: JSON.parse(process.env.GOOGLE_VERTEX_CREDENTIALS || '{}') } })(modelNameString),
+    vertex: () =>
+      createVertex({
+        googleAuthOptions: {
+          credentials: JSON.parse(
+            process.env.GOOGLE_VERTEX_CREDENTIALS || '{}',
+          ),
+        },
+      })(modelNameString),
+    xai: () =>
+      createOpenAI({
+        apiKey: apiKey || process.env.XAI_API_KEY,
+        baseURL: baseURL || 'https://api.x.ai/v1',
+      })(modelNameString),
   }
 
   const createClient =
