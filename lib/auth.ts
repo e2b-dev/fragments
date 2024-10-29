@@ -63,6 +63,11 @@ export function useAuth(
       setSession(session)
       if (session) {
         getUserAPIKey(session).then(setApiKey)
+        if (!session.user.user_metadata.is_fragments_user) {
+          supabase?.auth.updateUser({
+            data: { is_fragments_user: true },
+          })
+        }
         posthog.identify(session?.user.id, {
           email: session?.user.email,
           supabase_id: session?.user.id,
