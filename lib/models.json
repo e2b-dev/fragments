@@ -43,6 +43,13 @@
       "multiModal": true
     },
     {
+      "id": "claude-3-5-haiku-latest",
+      "provider": "Anthropic",
+      "providerId": "anthropic",
+      "name": "Claude 3.5 Haiku",
+      "multiModal": false
+    },
+    {
       "id": "gemini-1.5-pro-002",
       "provider": "Google Vertex AI",
       "providerId": "vertex",
