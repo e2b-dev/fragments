@@ -30,6 +30,7 @@ import {
   Undo,
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 export function NavBar({
@@ -51,7 +52,18 @@ export function NavBar({
   onUndo: () => void
   canUndo: boolean
 }) {
+  const [mounted, setMounted] = useState(false)
   const { setTheme, theme } = useTheme()
+  
+  // useEffect only runs on the client, so now we can safely show the UI
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+  
   return (
     <nav className="w-full flex bg-background py-4">
       <div className="flex flex-1 items-center">
