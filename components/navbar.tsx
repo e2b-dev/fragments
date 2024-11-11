@@ -24,14 +24,11 @@ import { Session } from '@supabase/supabase-js'
 import {
   ArrowRight,
   LogOut,
-  MoonIcon,
-  SunIcon,
   Trash,
   Undo,
 } from 'lucide-react'
-import { useTheme } from 'next-themes'
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export function NavBar({
   session,
@@ -52,17 +49,6 @@ export function NavBar({
   onUndo: () => void
   canUndo: boolean
 }) {
-  const [mounted, setMounted] = useState(false)
-  const { setTheme, theme } = useTheme()
-  
-  // useEffect only runs on the client, so now we can safely show the UI
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return null
-  }
   
   return (
     <nav className="w-full flex bg-background py-4">
@@ -110,24 +96,7 @@ export function NavBar({
             <TooltipContent>Clear chat</TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip delayDuration={0}>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              >
-                {theme === 'light' ? (
-                  <SunIcon className="h-4 w-4 md:h-5 md:w-5" />
-                ) : (
-                  <MoonIcon className="h-4 w-4 md:h-5 md:w-5" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Toggle theme</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <ThemeToggle />
         {session ? (
           <DropdownMenu>
             <TooltipProvider>
