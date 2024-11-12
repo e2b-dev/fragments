@@ -1,10 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { MoonIcon, SunIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, forwardRef } from 'react'
 
-export function ThemeToggle() {
+export const ThemeToggle = forwardRef<
+  HTMLButtonElement,
+  {
+    className?: string
+  }
+>(({ className, ...props }, ref) => {
   const { setTheme, theme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -18,23 +22,21 @@ export function ThemeToggle() {
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip delayDuration={0}>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          >
-            {theme === 'light' ? (
-              <SunIcon className="h-4 w-4 md:h-5 md:w-5" />
-            ) : (
-              <MoonIcon className="h-4 w-4 md:h-5 md:w-5" />
-            )}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Toggle theme</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Button
+      {...props}
+      ref={ref}
+      variant="ghost"
+      size="icon"
+      className={className}
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+    >
+      {theme === 'light' ? (
+        <SunIcon className="h-4 w-4 md:h-5 md:w-5" />
+      ) : (
+        <MoonIcon className="h-4 w-4 md:h-5 md:w-5" />
+      )}
+    </Button>
   )
-}
+})
+
+ThemeToggle.displayName = 'ThemeToggle'

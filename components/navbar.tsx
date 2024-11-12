@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import {
   Tooltip,
   TooltipContent,
@@ -21,14 +22,8 @@ import {
   TwitterLogoIcon,
 } from '@radix-ui/react-icons'
 import { Session } from '@supabase/supabase-js'
-import {
-  ArrowRight,
-  LogOut,
-  Trash,
-  Undo,
-} from 'lucide-react'
+import { ArrowRight, LogOut, Trash, Undo } from 'lucide-react'
 import Link from 'next/link'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export function NavBar({
   session,
@@ -49,7 +44,6 @@ export function NavBar({
   onUndo: () => void
   canUndo: boolean
 }) {
-  
   return (
     <nav className="w-full flex bg-background py-4">
       <div className="flex flex-1 items-center">
@@ -96,7 +90,14 @@ export function NavBar({
             <TooltipContent>Clear chat</TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <ThemeToggle />
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <ThemeToggle />
+            </TooltipTrigger>
+            <TooltipContent>Toggle theme</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         {session ? (
           <DropdownMenu>
             <TooltipProvider>
