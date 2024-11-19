@@ -85,6 +85,13 @@
       "multiModal": false
     },
     {
+      "id": "pixtral-large-latest",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Pixtral Large",
+      "multiModal": true
+    },
+    {
       "id": "mistral-small-latest",
       "provider": "Mistral",
       "providerId": "mistral",
