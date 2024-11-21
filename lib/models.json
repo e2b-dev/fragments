@@ -78,6 +78,13 @@
       "multiModal": true
     },
     {
+      "id": "gemini-exp-1121",
+      "provider": "Google Generative AI",
+      "providerId": "google",
+      "name": "Gemini Experimental 1121",
+      "multiModal": true
+    },
+    {
       "id": "mistral-large-latest",
       "provider": "Mistral",
       "providerId": "mistral",
