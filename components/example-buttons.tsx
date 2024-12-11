@@ -13,13 +13,13 @@ export function ExampleButtons({
   onSelect: (text: string) => void
 }) {
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex flex-wrap justify-center gap-2 w-full">
       {EXAMPLES.map((example) => (
         <Button
           key={example}
           variant="outline"
           size="sm"
-          className="text-xs"
+          className="text-xs whitespace-normal text-center min-w-[120px] md:min-w-fit"
           onClick={() => onSelect(example)}
         >
           {example}
