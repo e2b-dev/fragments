@@ -2,9 +2,9 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 
 const EXAMPLES = [
-  'Make a Spotify clone',
-  'Make a movie browser',
-  'Create a Twitter feed',
+  'Create a REST API with authentication',
+  'Build a data visualization dashboard',
+  'Make an AI-powered chatbot',
 ]
 
 export function ExampleButtons({

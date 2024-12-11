@@ -280,6 +280,11 @@ export default function Home() {
             isLoading={isLoading}
             setCurrentPreview={setCurrentPreview}
           />
+          <ExampleButtons
+            onSelect={(text) => {
+              setChatInput(text)
+            }}
+          />
           <ChatInput
             retry={retry}
             isErrored={error !== undefined}
@@ -293,11 +298,6 @@ export default function Home() {
             files={files}
             handleFileChange={handleFileChange}
           >
-            <ExampleButtons
-              onSelect={(text) => {
-                setChatInput(text)
-              }}
-            />
             <ChatPicker
               templates={templates}
               selectedTemplate={selectedTemplate}
