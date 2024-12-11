@@ -5,6 +5,7 @@ import { Chat } from '@/components/chat'
 import { ChatInput } from '@/components/chat-input'
 import { ChatPicker } from '@/components/chat-picker'
 import { ChatSettings } from '@/components/chat-settings'
+import { ExampleButtons } from '@/components/example-buttons'
 import { NavBar } from '@/components/navbar'
 import { Preview } from '@/components/preview'
 import { AuthViewType, useAuth } from '@/lib/auth'
@@ -292,6 +293,11 @@ export default function Home() {
             files={files}
             handleFileChange={handleFileChange}
           >
+            <ExampleButtons
+              onSelect={(text) => {
+                setChatInput(text)
+              }}
+            />
             <ChatPicker
               templates={templates}
               selectedTemplate={selectedTemplate}
