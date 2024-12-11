@@ -53,28 +53,42 @@
       "id": "gemini-1.5-pro-002",
       "provider": "Google Vertex AI",
       "providerId": "vertex",
-      "name": "Gemini Pro",
+      "name": "Gemini 1.5 Pro",
+      "multiModal": true
+    },
+    {
+      "id": "gemini-2.0-flash-exp",
+      "provider": "Google Vertex AI",
+      "providerId": "vertex",
+      "name": "Gemini 2.0 Flash",
       "multiModal": true
     },
     {
       "id": "gemini-1.5-flash-002",
       "provider": "Google Vertex AI",
       "providerId": "vertex",
-      "name": "Gemini Flash",
+      "name": "Gemini 1.5 Flash",
       "multiModal": true
     },
     {
       "id": "models/gemini-1.5-pro-002",
       "provider": "Google Generative AI",
       "providerId": "google",
-      "name": "Gemini Pro",
+      "name": "Gemini 1.5 Pro",
+      "multiModal": true
+    },
+    {
+      "id": "models/gemini-2.0-flash-exp",
+      "provider": "Google Generative AI",
+      "providerId": "google",
+      "name": "Gemini 2.0 Flash",
       "multiModal": true
     },
     {
       "id": "models/gemini-1.5-flash-002",
       "provider": "Google Generative AI",
       "providerId": "google",
-      "name": "Gemini Flash",
+      "name": "Gemini 1.5 Flash",
       "multiModal": true
     },
     {
