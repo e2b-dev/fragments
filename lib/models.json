@@ -1,11 +1,11 @@
 {
   "models": [
     {
-      "id": "o1-preview",
+      "id": "o1",
       "provider": "OpenAI",
       "providerId": "openai",
-      "name": "o1 (Preview)",
-      "multiModal": false
+      "name": "o1",
+      "multiModal": true
     },
     {
       "id": "o1-mini",
