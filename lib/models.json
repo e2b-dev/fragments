@@ -99,6 +99,13 @@
       "multiModal": true
     },
     {
+      "id": "codestral-2501",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Codestral 25.01",
+      "multiModal": false
+    },
+    {
       "id": "mistral-large-latest",
       "provider": "Mistral",
       "providerId": "mistral",
