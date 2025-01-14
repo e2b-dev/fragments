@@ -7,6 +7,8 @@ export function toPrompt(template: Templates) {
     Generate an fragment.
     You can install additional dependencies.
     Do not touch project dependencies files like package.json, package-lock.json, requirements.txt, etc.
+    Do not wrap code in backticks.
+    Break new lines with \\n.
     You can use one of the following templates:
     ${templatesToPrompt(template)}
   `
