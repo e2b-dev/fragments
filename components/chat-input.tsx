@@ -193,7 +193,15 @@ export function ChatInput({
         </div>
       </div>
       <p className="text-xs text-muted-foreground mt-2 text-center">
-        Fragments is an open-source project made by{' '}
+        Fragments is an{' '}
+        <a
+          href="https://github.com/e2b-dev/fragments"
+          target="_blank"
+          className="underline decoration-dotted"
+        >
+          open-source project
+        </a>{' '}
+        made by{' '}
         <a href="https://e2b.dev" target="_blank" className="text-[#ff8800]">
           ✶ E2B
         </a>
