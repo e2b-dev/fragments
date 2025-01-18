@@ -2,10 +2,11 @@ import { GitHubIcon } from './icons'
 import { Separator } from './ui/separator'
 import { cn } from '@/lib/utils'
 import { StarFilledIcon } from '@radix-ui/react-icons'
+import { ArrowUpRightIcon } from 'lucide-react'
 
 const REPO_URL = 'https://github.com/e2b-dev/fragments'
 
-export function RepoBanner() {
+export function RepoBanner({ className }: { className?: string }) {
   return (
     <a
       href={REPO_URL}
@@ -13,10 +14,11 @@ export function RepoBanner() {
       rel="noopener noreferrer"
       aria-label={`View Fragments repository on GitHub`}
       className={cn(
-        'bg-background overflow-hidden hover:scale-[1.01] font-light px-3 py-1.5 rounded-2xl',
-        'gap-2 w-fit flex items-center shadow-md mt-4 mb-2 ml-2 border',
-        'transition-all duration-300 group relative',
-        'before:absolute before:w-full before:h-full before:bg-[radial-gradient(circle_at_50%_-50%,rgba(255,255,255,0.1),transparent_70%)] dark:before:bg-[radial-gradient(circle_at_50%_-100%,rgba(255,255,255,0.1),transparent_70%)] before:rounded-2xl before:pointer-events-none',
+        'bg-background overflow-hidden font-light px-3 py-1 rounded-t-2xl',
+        'gap-2 flex items-center border border-b-0',
+        'transform-y-1 group relative',
+        'before:absolute before:inset-0 dark:before:bg-[radial-gradient(circle_at_10%_-50%,rgba(255,255,255,0.1),transparent_10%)] before:rounded-t-2xl before:pointer-events-none',
+        className,
       )}
     >
       <GitHubIcon className="w-4 h-4" aria-hidden="true" />
@@ -34,7 +36,7 @@ export function RepoBanner() {
         aria-live="polite"
       >
         <StarFilledIcon
-          className="w-4 h-4 transition-transform group-hover:rotate-[90deg] duration-300 ease-in-out"
+          className="w-4 h-4 transition-transform group-hover:rotate-[90deg] duration-200 ease-in-out"
           aria-label="GitHub stars"
         />
       </div>
