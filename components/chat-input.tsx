@@ -107,8 +107,8 @@ export function ChatInput({
         </div>
       )}
       <div className="relative">
-        <RepoBanner className="absolute bottom-full inset-x-2" />
-        <div className="shadow-md rounded-2xl border relative">
+        <RepoBanner className="absolute bottom-full inset-x-2 translate-y-1 z-0 pb-2" />
+        <div className="shadow-md rounded-2xl border relative z-10 bg-background">
           <div className="flex items-center px-3 py-2 gap-1">{children}</div>
           <TextareaAutosize
             autoFocus={true}
