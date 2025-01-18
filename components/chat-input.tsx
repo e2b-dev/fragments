@@ -1,3 +1,4 @@
+import { RepoBanner } from './repo-banner'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -80,7 +81,7 @@ export function ChatInput({
     <form
       onSubmit={handleSubmit}
       onKeyDown={onEnter}
-      className="mb-2 flex flex-col bg-background"
+      className="mb-2 mt-auto flex flex-col bg-background"
     >
       {isErrored && (
         <div
@@ -105,6 +106,7 @@ export function ChatInput({
           </button>
         </div>
       )}
+      <RepoBanner />
       <div className="shadow-md rounded-2xl border">
         <div className="flex items-center px-3 py-2 gap-1">{children}</div>
         <TextareaAutosize
