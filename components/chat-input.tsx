@@ -80,7 +80,7 @@ export function ChatInput({
     <form
       onSubmit={handleSubmit}
       onKeyDown={onEnter}
-      className="mb-2 flex flex-col mt-auto bg-background"
+      className="mb-2 flex flex-col bg-background"
     >
       {isErrored && (
         <div
