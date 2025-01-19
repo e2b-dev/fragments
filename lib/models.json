@@ -190,6 +190,13 @@
       "multiModal": false
     },
     {
+      "id": "deepseek-chat",
+      "provider": "DeepSeek",
+      "providerId": "deepseek",
+      "name": "DeepSeek V3",
+      "multiModal": false
+    },
+    {
       "id": "llama3.1",
       "provider": "Ollama",
       "providerId": "ollama",
