@@ -1,3 +1,4 @@
+import { RepoBanner } from './repo-banner'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -80,7 +81,7 @@ export function ChatInput({
     <form
       onSubmit={handleSubmit}
       onKeyDown={onEnter}
-      className="mb-2 flex flex-col mt-auto bg-background"
+      className="mb-2 mt-auto flex flex-col bg-background"
     >
       {isErrored && (
         <div
@@ -105,90 +106,93 @@ export function ChatInput({
           </button>
         </div>
       )}
-      <div className="shadow-md rounded-2xl border">
-        <div className="flex items-center px-3 py-2 gap-1">{children}</div>
-        <TextareaAutosize
-          autoFocus={true}
-          minRows={1}
-          maxRows={5}
-          className="text-normal px-3 resize-none ring-0 bg-inherit w-full m-0 outline-none"
-          required={true}
-          placeholder="Describe your app..."
-          disabled={isErrored}
-          value={input}
-          onChange={handleInputChange}
-        />
-        <div className="flex p-3 gap-2 items-center">
-          <input
-            type="file"
-            id="multimodal"
-            name="multimodal"
-            accept="image/*"
-            multiple={true}
-            className="hidden"
-            onChange={handleFileInput}
+      <div className="relative">
+        <RepoBanner className="absolute bottom-full inset-x-2 translate-y-1 z-0 pb-2" />
+        <div className="shadow-md rounded-2xl border relative z-10 bg-background">
+          <div className="flex items-center px-3 py-2 gap-1">{children}</div>
+          <TextareaAutosize
+            autoFocus={true}
+            minRows={1}
+            maxRows={5}
+            className="text-normal px-3 resize-none ring-0 bg-inherit w-full m-0 outline-none"
+            required={true}
+            placeholder="Describe your app..."
+            disabled={isErrored}
+            value={input}
+            onChange={handleInputChange}
           />
-          <div className="flex items-center flex-1 gap-2">
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Button
-                    disabled={!isMultiModal || isErrored}
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="rounded-xl h-10 w-10"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      document.getElementById('multimodal')?.click()
-                    }}
-                  >
-                    <Paperclip className="h-5 w-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Add attachments</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            {files.length > 0 && filePreview}
-          </div>
-          <div>
-            {!isLoading ? (
+          <div className="flex p-3 gap-2 items-center">
+            <input
+              type="file"
+              id="multimodal"
+              name="multimodal"
+              accept="image/*"
+              multiple={true}
+              className="hidden"
+              onChange={handleFileInput}
+            />
+            <div className="flex items-center flex-1 gap-2">
               <TooltipProvider>
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
                     <Button
-                      disabled={isErrored}
-                      variant="default"
-                      size="icon"
-                      type="submit"
-                      className="rounded-xl h-10 w-10"
-                    >
-                      <ArrowUp className="h-5 w-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Send message</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              <TooltipProvider>
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="secondary"
+                      disabled={!isMultiModal || isErrored}
+                      type="button"
+                      variant="outline"
                       size="icon"
                       className="rounded-xl h-10 w-10"
                       onClick={(e) => {
                         e.preventDefault()
-                        stop()
+                        document.getElementById('multimodal')?.click()
                       }}
                     >
-                      <Square className="h-5 w-5" />
+                      <Paperclip className="h-5 w-5" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Stop generation</TooltipContent>
+                  <TooltipContent>Add attachments</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            )}
+              {files.length > 0 && filePreview}
+            </div>
+            <div>
+              {!isLoading ? (
+                <TooltipProvider>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <Button
+                        disabled={isErrored}
+                        variant="default"
+                        size="icon"
+                        type="submit"
+                        className="rounded-xl h-10 w-10"
+                      >
+                        <ArrowUp className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Send message</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <TooltipProvider>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="rounded-xl h-10 w-10"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          stop()
+                        }}
+                      >
+                        <Square className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Stop generation</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
           </div>
         </div>
       </div>
