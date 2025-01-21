@@ -136,7 +136,7 @@ export function NavBar({
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onSocialClick('github')}>
                 <GitHubLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                Star us on GitHub
+                Star on GitHub
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onSocialClick('discord')}>
                 <DiscordLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />

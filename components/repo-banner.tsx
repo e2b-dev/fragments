@@ -2,7 +2,6 @@ import { GitHubIcon } from './icons'
 import { Separator } from './ui/separator'
 import { cn } from '@/lib/utils'
 import { StarFilledIcon } from '@radix-ui/react-icons'
-import { ArrowUpRightIcon } from 'lucide-react'
 
 const REPO_URL = 'https://github.com/e2b-dev/fragments'
 
@@ -27,7 +26,7 @@ export function RepoBanner({ className }: { className?: string }) {
         className="h-6 bg-[hsl(var(--border))]"
         aria-hidden="true"
       />
-      <p className="text-sm text-foreground tracking-wide">
+      <p className="text-sm font-medium text-foreground tracking-wide">
         Star on GitHub
       </p>
       <div
@@ -36,7 +35,7 @@ export function RepoBanner({ className }: { className?: string }) {
         aria-live="polite"
       >
         <StarFilledIcon
-          className="w-4 h-4 transition-transform group-hover:rotate-[90deg] duration-200 ease-in-out"
+          className="w-4 h-4 transition-transform group-hover:text-[#e4b340] duration-200 ease-in-out"
           aria-label="GitHub stars"
         />
       </div>
