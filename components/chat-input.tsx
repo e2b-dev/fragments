@@ -6,6 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { isFileInArray } from '@/lib/utils'
 import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
 import { SetStateAction, useMemo } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
@@ -38,11 +39,37 @@ export function ChatInput({
   children: React.ReactNode
 }) {
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
-    handleFileChange((prev) => [...prev, ...Array.from(e.target.files || [])])
+    handleFileChange((prev) => {
+      const newFiles = Array.from(e.target.files || [])
+      const uniqueFiles = newFiles.filter(
+        (file) => !isFileInArray(file, prev),
+      )
+      return [...prev, ...uniqueFiles]
+    })
   }
 
   function handleFileRemove(file: File) {
     handleFileChange((prev) => prev.filter((f) => f !== file))
+  }
+
+  function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const items = Array.from(e.clipboardData.items);
+
+    for (const item of items) {
+      if (item.type.indexOf('image') !== -1) {
+        e.preventDefault();
+        
+        const file = item.getAsFile();
+        if (file) {
+          handleFileChange((prev) => {
+            if (!isFileInArray(file, prev)) {
+              return [...prev, file];
+            }
+            return prev;
+          });
+        }
+      }
+    }
   }
 
   const filePreview = useMemo(() => {
@@ -120,6 +147,7 @@ export function ChatInput({
             disabled={isErrored}
             value={input}
             onChange={handleInputChange}
+            onPaste={handlePaste}
           />
           <div className="flex p-3 gap-2 items-center">
             <input
