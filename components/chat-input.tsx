@@ -1,3 +1,5 @@
+"use client"
+
 import { RepoBanner } from './repo-banner'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,7 +10,7 @@ import {
 } from '@/components/ui/tooltip'
 import { isFileInArray } from '@/lib/utils'
 import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
-import { SetStateAction, useMemo } from 'react'
+import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
 export function ChatInput({
@@ -72,6 +74,35 @@ export function ChatInput({
     }
   }
 
+  const [dragActive, setDragActive] = useState(false);
+
+  function handleDrag(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const droppedFiles = Array.from(e.dataTransfer.files).filter(file => 
+      file.type.startsWith('image/')
+    );
+    
+    if (droppedFiles.length > 0) {
+      handleFileChange(prev => {
+        const uniqueFiles = droppedFiles.filter(file => !isFileInArray(file, prev));
+        return [...prev, ...uniqueFiles];
+      });
+    }
+  }
+
   const filePreview = useMemo(() => {
     if (files.length === 0) return null
     return Array.from(files).map((file) => {
@@ -104,11 +135,21 @@ export function ChatInput({
     }
   }
 
+  useEffect(() => {
+    if (!isMultiModal) {
+      handleFileChange([])
+    }
+  }, [isMultiModal])
+
   return (
     <form
       onSubmit={handleSubmit}
       onKeyDown={onEnter}
       className="mb-2 mt-auto flex flex-col bg-background"
+      onDragEnter={isMultiModal ? handleDrag : undefined}
+      onDragLeave={isMultiModal ? handleDrag : undefined}
+      onDragOver={isMultiModal ? handleDrag : undefined}
+      onDrop={isMultiModal ? handleDrop : undefined}
     >
       {isErrored && (
         <div
@@ -135,7 +176,11 @@ export function ChatInput({
       )}
       <div className="relative">
         <RepoBanner className="absolute bottom-full inset-x-2 translate-y-1 z-0 pb-2" />
-        <div className="shadow-md rounded-2xl border relative z-10 bg-background">
+        <div className={`shadow-md rounded-2xl relative z-10 bg-background border ${
+          dragActive 
+            ? 'before:absolute before:inset-0 before:rounded-2xl before:border-2 before:border-dashed before:border-primary' 
+            : ''
+        }`}>
           <div className="flex items-center px-3 py-2 gap-1">{children}</div>
           <TextareaAutosize
             autoFocus={true}
@@ -147,7 +192,7 @@ export function ChatInput({
             disabled={isErrored}
             value={input}
             onChange={handleInputChange}
-            onPaste={handlePaste}
+            onPaste={isMultiModal ? handlePaste : undefined}
           />
           <div className="flex p-3 gap-2 items-center">
             <input
