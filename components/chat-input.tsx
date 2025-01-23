@@ -1,3 +1,5 @@
+"use client"
+
 import { RepoBanner } from './repo-banner'
 import { Button } from '@/components/ui/button'
 import {
@@ -6,8 +8,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { isFileInArray } from '@/lib/utils'
 import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
-import { SetStateAction, useMemo } from 'react'
+import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
 export function ChatInput({
@@ -38,11 +41,66 @@ export function ChatInput({
   children: React.ReactNode
 }) {
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
-    handleFileChange((prev) => [...prev, ...Array.from(e.target.files || [])])
+    handleFileChange((prev) => {
+      const newFiles = Array.from(e.target.files || [])
+      const uniqueFiles = newFiles.filter(
+        (file) => !isFileInArray(file, prev),
+      )
+      return [...prev, ...uniqueFiles]
+    })
   }
 
   function handleFileRemove(file: File) {
     handleFileChange((prev) => prev.filter((f) => f !== file))
+  }
+
+  function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const items = Array.from(e.clipboardData.items);
+
+    for (const item of items) {
+      if (item.type.indexOf('image') !== -1) {
+        e.preventDefault();
+        
+        const file = item.getAsFile();
+        if (file) {
+          handleFileChange((prev) => {
+            if (!isFileInArray(file, prev)) {
+              return [...prev, file];
+            }
+            return prev;
+          });
+        }
+      }
+    }
+  }
+
+  const [dragActive, setDragActive] = useState(false);
+
+  function handleDrag(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const droppedFiles = Array.from(e.dataTransfer.files).filter(file => 
+      file.type.startsWith('image/')
+    );
+    
+    if (droppedFiles.length > 0) {
+      handleFileChange(prev => {
+        const uniqueFiles = droppedFiles.filter(file => !isFileInArray(file, prev));
+        return [...prev, ...uniqueFiles];
+      });
+    }
   }
 
   const filePreview = useMemo(() => {
@@ -77,11 +135,21 @@ export function ChatInput({
     }
   }
 
+  useEffect(() => {
+    if (!isMultiModal) {
+      handleFileChange([])
+    }
+  }, [isMultiModal])
+
   return (
     <form
       onSubmit={handleSubmit}
       onKeyDown={onEnter}
       className="mb-2 mt-auto flex flex-col bg-background"
+      onDragEnter={isMultiModal ? handleDrag : undefined}
+      onDragLeave={isMultiModal ? handleDrag : undefined}
+      onDragOver={isMultiModal ? handleDrag : undefined}
+      onDrop={isMultiModal ? handleDrop : undefined}
     >
       {isErrored && (
         <div
@@ -108,7 +176,11 @@ export function ChatInput({
       )}
       <div className="relative">
         <RepoBanner className="absolute bottom-full inset-x-2 translate-y-1 z-0 pb-2" />
-        <div className="shadow-md rounded-2xl border relative z-10 bg-background">
+        <div className={`shadow-md rounded-2xl relative z-10 bg-background border ${
+          dragActive 
+            ? 'before:absolute before:inset-0 before:rounded-2xl before:border-2 before:border-dashed before:border-primary' 
+            : ''
+        }`}>
           <div className="flex items-center px-3 py-2 gap-1">{children}</div>
           <TextareaAutosize
             autoFocus={true}
@@ -120,6 +192,7 @@ export function ChatInput({
             disabled={isErrored}
             value={input}
             onChange={handleInputChange}
+            onPaste={isMultiModal ? handlePaste : undefined}
           />
           <div className="flex p-3 gap-2 items-center">
             <input
