@@ -2,7 +2,7 @@ import { Message } from '@/lib/messages'
 import { FragmentSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
-import { Loader2Icon, LoaderIcon, Terminal } from 'lucide-react'
+import { LoaderIcon, Terminal } from 'lucide-react'
 import { useEffect } from 'react'
 
 export function Chat({

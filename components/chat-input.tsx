@@ -85,7 +85,7 @@ export function ChatInput({
     >
       {isErrored && (
         <div
-          className={`flex items-center p-1.5 text-sm font-medium mb-2 rounded-xl ${
+          className={`flex items-center p-1.5 text-sm font-medium mx-4 mb-10 rounded-xl ${
             isRateLimited
               ? 'bg-orange-400/10 text-orange-400'
               : 'bg-red-400/10 text-red-400'
