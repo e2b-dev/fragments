@@ -21,6 +21,8 @@ import { experimental_useObject as useObject } from 'ai/react'
 import { usePostHog } from 'posthog-js/react'
 import { SetStateAction, useEffect, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
+import GenerationHistory from './components/GenerationHistory'
+import { HistoryItem } from './types/history'
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
@@ -56,6 +58,16 @@ export default function Home() {
       : { [selectedTemplate]: templates[selectedTemplate] }
   const lastMessage = messages[messages.length - 1]
 
+  const [history, setHistory] = useState<HistoryItem[]>([])
+
+  // Load history on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('generationHistory')
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory))
+    }
+  }, [])
+
   const { object, submit, isLoading, stop, error } = useObject({
     api: '/api/chat',
     schema,
@@ -86,9 +98,50 @@ export default function Home() {
         console.log('result', result)
         posthog.capture('sandbox_created', { url: result.url })
 
+        // Create the new message content
+        const content: Message['content'] = [
+          { type: 'text', text: fragment.commentary || '' },
+          { type: 'code', text: fragment.code || '' },
+        ]
+
+        // Create new message
+        const newMessage = {
+          role: 'assistant' as const,
+          content,
+          object: fragment,
+        }
+
+        // Update messages array
+        const updatedMessages = [...messages]
+        if (lastMessage && lastMessage.role === 'assistant') {
+          updatedMessages[updatedMessages.length - 1] = newMessage
+        } else {
+          updatedMessages.push(newMessage)
+        }
+
+        // Store in history for first message in chat
+        if (updatedMessages.length <= 2) {
+          const historyItem = {
+            prompt: Array.isArray(updatedMessages[0]?.content) 
+              ? updatedMessages[0].content[0]?.text || ''
+              : typeof updatedMessages[0]?.content === 'string'
+                ? updatedMessages[0].content
+                : '',
+            response: fragment?.code || '',
+            timestamp: new Date(),
+            fragment,
+            result,
+            messages: updatedMessages,
+          }
+          
+          addToHistory(historyItem)
+        }
+
+        // Update all state at once
+        setMessages(updatedMessages)
+        setFragment(fragment)
         setResult(result)
         setCurrentPreview({ fragment, result })
-        setMessage({ result })
         setCurrentTab('fragment')
         setIsPreviewLoading(false)
       }
@@ -248,75 +301,119 @@ export default function Home() {
     setCurrentPreview({ fragment: undefined, result: undefined })
   }
 
+  function handleHistoryItemClick(item: HistoryItem) {
+    if (item.messages) {
+      setMessages(item.messages);
+    }
+    if (item.fragment) {
+      setFragment(item.fragment);
+      setResult(item.result);
+      setCurrentPreview({ fragment: item.fragment, result: item.result });
+      setCurrentTab('fragment');
+    }
+  }
+
+  function handleNewChat() {
+    handleClearChat();
+  }
+
+  const addToHistory = (historyItem: HistoryItem) => {
+    const newHistory = [historyItem, ...history];
+    setHistory(newHistory);
+    localStorage.setItem('generationHistory', JSON.stringify(newHistory.slice(0, 50)));
+  };
+
+  const handleDeleteHistory = (index: number) => {
+    const newHistory = history.filter((_, i) => i !== index);
+    setHistory(newHistory);
+    localStorage.setItem('generationHistory', JSON.stringify(newHistory));
+  };
+
+  const handleEditHistory = (index: number, newPrompt: string) => {
+    const newHistory = [...history];
+    newHistory[index] = { ...newHistory[index], prompt: newPrompt };
+    setHistory(newHistory);
+    localStorage.setItem('generationHistory', JSON.stringify(newHistory));
+  };
+
   return (
-    <main className="flex min-h-screen max-h-screen">
-      {supabase && (
-        <AuthDialog
-          open={isAuthDialogOpen}
-          setOpen={setAuthDialog}
-          view={authView}
-          supabase={supabase}
-        />
-      )}
-      <div className="grid w-full md:grid-cols-2">
-        <div
-          className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
-        >
-          <NavBar
-            session={session}
-            showLogin={() => setAuthDialog(true)}
-            signOut={logout}
-            onSocialClick={handleSocialClick}
-            onClear={handleClearChat}
-            canClear={messages.length > 0}
-            canUndo={messages.length > 1 && !isLoading}
-            onUndo={handleUndo}
+    <div className="flex h-screen">
+      <GenerationHistory 
+        history={history}
+        onHistoryItemClick={handleHistoryItemClick}
+        onNewChat={handleNewChat}
+        onDeleteHistory={handleDeleteHistory}
+        onEditHistory={handleEditHistory}
+      />
+      <main className="flex-1 flex min-h-screen max-h-screen">
+        {supabase && (
+          <AuthDialog
+            open={isAuthDialogOpen}
+            setOpen={setAuthDialog}
+            view={authView}
+            supabase={supabase}
           />
-          <Chat
-            messages={messages}
-            isLoading={isLoading}
-            setCurrentPreview={setCurrentPreview}
-          />
-          <ChatInput
-            retry={retry}
-            isErrored={error !== undefined}
-            isLoading={isLoading}
-            isRateLimited={isRateLimited}
-            stop={stop}
-            input={chatInput}
-            handleInputChange={handleSaveInputChange}
-            handleSubmit={handleSubmitAuth}
-            isMultiModal={currentModel?.multiModal || false}
-            files={files}
-            handleFileChange={handleFileChange}
+        )}
+        <div className="grid w-full md:grid-cols-2">
+          <div
+            className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
           >
-            <ChatPicker
-              templates={templates}
-              selectedTemplate={selectedTemplate}
-              onSelectedTemplateChange={setSelectedTemplate}
-              models={modelsList.models}
-              languageModel={languageModel}
-              onLanguageModelChange={handleLanguageModelChange}
+            <NavBar
+              session={session}
+              showLogin={() => setAuthDialog(true)}
+              signOut={logout}
+              onSocialClick={handleSocialClick}
+              onClear={handleClearChat}
+              canClear={messages.length > 0}
+              canUndo={messages.length > 1 && !isLoading}
+              onUndo={handleUndo}
             />
-            <ChatSettings
-              languageModel={languageModel}
-              onLanguageModelChange={handleLanguageModelChange}
-              apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
-              baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
+            <Chat
+              messages={messages}
+              isLoading={isLoading}
+              setCurrentPreview={setCurrentPreview}
             />
-          </ChatInput>
+            <ChatInput
+              retry={retry}
+              isErrored={error !== undefined}
+              isLoading={isLoading}
+              isRateLimited={isRateLimited}
+              stop={stop}
+              input={chatInput}
+              handleInputChange={handleSaveInputChange}
+              handleSubmit={handleSubmitAuth}
+              isMultiModal={currentModel?.multiModal || false}
+              files={files}
+              handleFileChange={handleFileChange}
+            >
+              <ChatPicker
+                templates={templates}
+                selectedTemplate={selectedTemplate}
+                onSelectedTemplateChange={setSelectedTemplate}
+                models={modelsList.models}
+                languageModel={languageModel}
+                onLanguageModelChange={handleLanguageModelChange}
+              />
+              <ChatSettings
+                languageModel={languageModel}
+                onLanguageModelChange={handleLanguageModelChange}
+                apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
+                baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
+              />
+            </ChatInput>
+          </div>
+          <Preview
+            apiKey={apiKey}
+            selectedTab={currentTab}
+            onSelectedTabChange={setCurrentTab}
+            isChatLoading={isLoading}
+            isPreviewLoading={isPreviewLoading}
+            fragment={fragment}
+            result={result as ExecutionResult}
+            onClose={() => setFragment(undefined)}
+          />
         </div>
-        <Preview
-          apiKey={apiKey}
-          selectedTab={currentTab}
-          onSelectedTabChange={setCurrentTab}
-          isChatLoading={isLoading}
-          isPreviewLoading={isPreviewLoading}
-          fragment={fragment}
-          result={result as ExecutionResult}
-          onClose={() => setFragment(undefined)}
-        />
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }

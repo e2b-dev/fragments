@@ -67,5 +67,16 @@ export async function POST(req: Request) {
     ...modelParams,
   })
 
-  return stream.toTextStreamResponse()
+  // Create history item
+  const historyItem = {
+    prompt: messages[messages.length - 1].content,
+    response: '', // This will be populated by the client from the stream
+    timestamp: new Date(),
+  }
+
+  // Modify the stream response to include history
+  const response = new Response(stream.toTextStreamResponse().body)
+  response.headers.set('X-History-Item', JSON.stringify(historyItem))
+  
+  return response
 }
