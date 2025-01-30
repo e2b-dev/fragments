@@ -9,7 +9,7 @@ import { NavBar } from '@/components/navbar'
 import { Preview } from '@/components/preview'
 import { RepoBanner } from '@/components/repo-banner'
 import { AuthViewType, useAuth } from '@/lib/auth'
-import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
+import { Message, MessageText, MessageCode, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 import { FragmentSchema, fragmentSchema as schema } from '@/lib/schema'
@@ -100,8 +100,8 @@ export default function Home() {
 
         // Create the new message content
         const content: Message['content'] = [
-          { type: 'text', text: fragment.commentary || '' },
-          { type: 'code', text: fragment.code || '' },
+          { type: 'text' as const, text: fragment?.commentary ?? '' },
+          { type: 'code' as const, text: fragment?.code ?? '' },
         ]
 
         // Create new message
@@ -123,7 +123,9 @@ export default function Home() {
         if (updatedMessages.length <= 2) {
           const historyItem = {
             prompt: Array.isArray(updatedMessages[0]?.content) 
-              ? updatedMessages[0].content[0]?.text || ''
+              ? (updatedMessages[0].content[0]?.type === 'text' || updatedMessages[0].content[0]?.type === 'code')
+                ? updatedMessages[0].content[0].text || ''
+                : ''
               : typeof updatedMessages[0]?.content === 'string'
                 ? updatedMessages[0].content
                 : '',
@@ -152,8 +154,8 @@ export default function Home() {
     if (object) {
       setFragment(object)
       const content: Message['content'] = [
-        { type: 'text', text: object.commentary || '' },
-        { type: 'code', text: object.code || '' },
+        { type: 'text' as const, text: object.commentary || '' },
+        { type: 'code' as const, text: object.code || '' },
       ]
 
       if (!lastMessage || lastMessage.role !== 'assistant') {
@@ -200,7 +202,7 @@ export default function Home() {
       stop()
     }
 
-    const content: Message['content'] = [{ type: 'text', text: chatInput }]
+    const content: Message['content'] = [{ type: 'text' as const, text: chatInput }]
     const images = await toMessageImage(files)
 
     if (images.length > 0) {
