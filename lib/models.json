@@ -15,6 +15,13 @@
       "multiModal": false
     },
     {
+      "id": "o3-mini",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "o3 mini",
+      "multiModal": false
+    },
+    {
       "id": "gpt-4o",
       "provider": "OpenAI",
       "providerId": "openai",
