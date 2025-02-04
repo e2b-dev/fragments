@@ -141,17 +141,10 @@
       "multiModal": false
     },
     {
-      "id": "llama-3.1-70b-versatile",
+      "id": "llama-3.3-70b-versatile",
       "provider": "Groq",
       "providerId": "groq",
-      "name": "Llama 3.1 70B (Preview)",
-      "multiModal": false
-    },
-    {
-      "id": "llama3-groq-70b-8192-tool-use-preview",
-      "provider": "Groq",
-      "providerId": "groq",
-      "name": "Llama 3 Groq 70B Tool Use (Preview)",
+      "name": "Llama 3.3 70B (Preview)",
       "multiModal": false
     },
     {
