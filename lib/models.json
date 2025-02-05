@@ -113,13 +113,6 @@
       "multiModal": true
     },
     {
-      "id": "gemini-2.0-flash-thinking-exp-01-21",
-      "provider": "Google Generative AI",
-      "providerId": "google",
-      "name": "Gemini 2.0 Flash Thinking",
-      "multiModal": true
-    },
-    {
       "id": "models/gemini-1.5-pro-002",
       "provider": "Google Generative AI",
       "providerId": "google",
