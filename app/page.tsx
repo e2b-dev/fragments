@@ -47,7 +47,14 @@ export default function Home() {
   const [isRateLimited, setIsRateLimited] = useState(false)
   const { session, apiKey } = useAuth(setAuthDialog, setAuthView)
 
-  const currentModel = modelsList.models.find(
+  const filteredModels = modelsList.models.filter((model) => {
+    if (process.env.NEXT_PUBLIC_HIDE_LOCAL_MODELS) {
+      return model.providerId !== 'ollama'
+    }
+    return true
+  })
+
+  const currentModel = filteredModels.find(
     (model) => model.id === languageModel.model,
   )
   const currentTemplate =
@@ -294,7 +301,7 @@ export default function Home() {
               templates={templates}
               selectedTemplate={selectedTemplate}
               onSelectedTemplateChange={setSelectedTemplate}
-              models={modelsList.models}
+              models={filteredModels}
               languageModel={languageModel}
               onLanguageModelChange={handleLanguageModelChange}
             />
