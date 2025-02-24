@@ -61,7 +61,7 @@
       "provider": "Anthropic",
       "providerId": "anthropic",
       "name": "Claude 3.5 Haiku",
-      "multiModal": false
+      "multiModal": true
     },
     {
       "id": "gemini-1.5-pro-002",
