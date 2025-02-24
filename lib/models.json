@@ -43,6 +43,13 @@
       "multiModal": true
     },
     {
+      "id": "claude-3-7-sonnet-latest",
+      "provider": "Anthropic",
+      "providerId": "anthropic",
+      "name": "Claude 3.7 Sonnet",
+      "multiModal": true
+    },
+    {
       "id": "claude-3-5-sonnet-latest",
       "provider": "Anthropic",
       "providerId": "anthropic",
@@ -54,7 +61,7 @@
       "provider": "Anthropic",
       "providerId": "anthropic",
       "name": "Claude 3.5 Haiku",
-      "multiModal": false
+      "multiModal": true
     },
     {
       "id": "gemini-1.5-pro-002",
