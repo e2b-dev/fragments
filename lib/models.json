@@ -22,6 +22,13 @@
       "multiModal": false
     },
     {
+      "id": "gpt-4.5-preview",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-4.5",
+      "multiModal": true
+    },
+    {
       "id": "gpt-4o",
       "provider": "OpenAI",
       "providerId": "openai",
