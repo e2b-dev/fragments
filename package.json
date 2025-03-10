@@ -41,7 +41,7 @@
     "next-themes": "^0.3.0",
     "ollama-ai-provider": "^1.2.0",
     "posthog-js": "^1.158.3",
-    "prismjs": "^1.29.0",
+    "prismjs": "^1.30.0",
     "react": "^18",
     "react-dom": "^18",
     "react-textarea-autosize": "^8.5.3",
