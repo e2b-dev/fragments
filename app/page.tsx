@@ -21,6 +21,7 @@ import { experimental_useObject as useObject } from 'ai/react'
 import { usePostHog } from 'posthog-js/react'
 import { SetStateAction, useEffect, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
+import { FragmentCode } from '@/components/fragment-code'
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
