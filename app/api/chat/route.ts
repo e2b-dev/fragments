@@ -32,11 +32,7 @@ export async function POST(req: Request) {
   } = await req.json()
 
   const limit = !config.apiKey
-    ? await ratelimit(
-        userID,
-        rateLimitMaxRequests,
-        ratelimitWindow,
-      )
+    ? await ratelimit(userID, rateLimitMaxRequests, ratelimitWindow)
     : false
 
   if (limit) {
@@ -58,14 +54,56 @@ export async function POST(req: Request) {
   const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
   const modelClient = getModelClient(model, config)
 
-  const stream = await streamObject({
-    model: modelClient as LanguageModel,
-    schema,
-    system: toPrompt(template),
-    messages,
-    mode: getDefaultMode(model),
-    ...modelParams,
-  })
+  try {
+    const stream = await streamObject({
+      model: modelClient as LanguageModel,
+      schema,
+      system: toPrompt(template),
+      messages,
+      mode: getDefaultMode(model),
+      ...modelParams,
+    })
 
-  return stream.toTextStreamResponse()
+    return stream.toTextStreamResponse()
+  } catch (error: any) {
+    const isRateLimitError = error && error.statusCode === 429
+    const isOverloadedError =
+      error && (error.statusCode === 529 || error.statusCode === 503)
+    const isAccessDeniedError =
+      error && (error.statusCode === 403 || error.statusCode === 401)
+
+    if (isRateLimitError) {
+      return new Response(
+        'The provider is currently unavailable. Try using your own API key.',
+        {
+          status: 429,
+        },
+      )
+    }
+
+    if (isOverloadedError) {
+      return new Response(
+        'The provider is currently unavailable. Please try again later.',
+        {
+          status: 529,
+        },
+      )
+    }
+
+    if (isAccessDeniedError) {
+      return new Response(
+        'Access denied. Please make sure your API key is valid.',
+        {
+          status: 403,
+        },
+      )
+    }
+
+    return new Response(
+      'An unexpected error has occurred. Please try again later.',
+      {
+        status: 500,
+      },
+    )
+  }
 }
