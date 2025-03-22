@@ -61,6 +61,7 @@ export async function POST(req: Request) {
       system: toPrompt(template),
       messages,
       mode: getDefaultMode(model),
+      maxRetries: 0, // do not retry on errors
       ...modelParams,
     })
 
@@ -74,7 +75,7 @@ export async function POST(req: Request) {
 
     if (isRateLimitError) {
       return new Response(
-        'The provider is currently unavailable. Try using your own API key.',
+        'The provider is currently unavailable due to request limit. Try using your own API key.',
         {
           status: 429,
         },
