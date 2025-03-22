@@ -7,7 +7,6 @@ import { ChatPicker } from '@/components/chat-picker'
 import { ChatSettings } from '@/components/chat-settings'
 import { NavBar } from '@/components/navbar'
 import { Preview } from '@/components/preview'
-import { RepoBanner } from '@/components/repo-banner'
 import { AuthViewType, useAuth } from '@/lib/auth'
 import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import { LLMModelConfig } from '@/lib/models'
@@ -45,6 +44,7 @@ export default function Home() {
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
   const [authView, setAuthView] = useState<AuthViewType>('sign_in')
   const [isRateLimited, setIsRateLimited] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const { session, apiKey } = useAuth(setAuthDialog, setAuthView)
 
   const filteredModels = modelsList.models.filter((model) => {
@@ -67,9 +67,12 @@ export default function Home() {
     api: '/api/chat',
     schema,
     onError: (error) => {
+      console.error('Error submitting request:', error)
       if (error.message.includes('request limit')) {
         setIsRateLimited(true)
       }
+
+      setErrorMessage(error.message)
     },
     onFinish: async ({ object: fragment, error }) => {
       if (!error) {
@@ -287,6 +290,7 @@ export default function Home() {
           <ChatInput
             retry={retry}
             isErrored={error !== undefined}
+            errorMessage={errorMessage}
             isLoading={isLoading}
             isRateLimited={isRateLimited}
             stop={stop}

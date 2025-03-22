@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { RepoBanner } from './repo-banner'
 import { Button } from '@/components/ui/button'
@@ -16,6 +16,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 export function ChatInput({
   retry,
   isErrored,
+  errorMessage,
   isLoading,
   isRateLimited,
   stop,
@@ -29,6 +30,7 @@ export function ChatInput({
 }: {
   retry: () => void
   isErrored: boolean
+  errorMessage: string
   isLoading: boolean
   isRateLimited: boolean
   stop: () => void
@@ -43,9 +45,7 @@ export function ChatInput({
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
     handleFileChange((prev) => {
       const newFiles = Array.from(e.target.files || [])
-      const uniqueFiles = newFiles.filter(
-        (file) => !isFileInArray(file, prev),
-      )
+      const uniqueFiles = newFiles.filter((file) => !isFileInArray(file, prev))
       return [...prev, ...uniqueFiles]
     })
   }
@@ -55,51 +55,53 @@ export function ChatInput({
   }
 
   function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
-    const items = Array.from(e.clipboardData.items);
+    const items = Array.from(e.clipboardData.items)
 
     for (const item of items) {
       if (item.type.indexOf('image') !== -1) {
-        e.preventDefault();
-        
-        const file = item.getAsFile();
+        e.preventDefault()
+
+        const file = item.getAsFile()
         if (file) {
           handleFileChange((prev) => {
             if (!isFileInArray(file, prev)) {
-              return [...prev, file];
+              return [...prev, file]
             }
-            return prev;
-          });
+            return prev
+          })
         }
       }
     }
   }
 
-  const [dragActive, setDragActive] = useState(false);
+  const [dragActive, setDragActive] = useState(false)
 
   function handleDrag(e: React.DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true)
+    } else if (e.type === 'dragleave') {
+      setDragActive(false)
     }
   }
 
   function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
 
-    const droppedFiles = Array.from(e.dataTransfer.files).filter(file => 
-      file.type.startsWith('image/')
-    );
-    
+    const droppedFiles = Array.from(e.dataTransfer.files).filter((file) =>
+      file.type.startsWith('image/'),
+    )
+
     if (droppedFiles.length > 0) {
-      handleFileChange(prev => {
-        const uniqueFiles = droppedFiles.filter(file => !isFileInArray(file, prev));
-        return [...prev, ...uniqueFiles];
-      });
+      handleFileChange((prev) => {
+        const uniqueFiles = droppedFiles.filter(
+          (file) => !isFileInArray(file, prev),
+        )
+        return [...prev, ...uniqueFiles]
+      })
     }
   }
 
@@ -159,11 +161,7 @@ export function ChatInput({
               : 'bg-red-400/10 text-red-400'
           }`}
         >
-          <span className="flex-1 px-1.5">
-            {isRateLimited
-              ? 'You have reached your request limit for the day.'
-              : 'An unexpected error has occurred.'}
-          </span>
+          <span className="flex-1 px-1.5">{errorMessage}</span>
           <button
             className={`px-2 py-1 rounded-sm ${
               isRateLimited ? 'bg-orange-400/20' : 'bg-red-400/20'
@@ -176,11 +174,13 @@ export function ChatInput({
       )}
       <div className="relative">
         <RepoBanner className="absolute bottom-full inset-x-2 translate-y-1 z-0 pb-2" />
-        <div className={`shadow-md rounded-2xl relative z-10 bg-background border ${
-          dragActive 
-            ? 'before:absolute before:inset-0 before:rounded-2xl before:border-2 before:border-dashed before:border-primary' 
-            : ''
-        }`}>
+        <div
+          className={`shadow-md rounded-2xl relative z-10 bg-background border ${
+            dragActive
+              ? 'before:absolute before:inset-0 before:rounded-2xl before:border-2 before:border-dashed before:border-primary'
+              : ''
+          }`}
+        >
           <div className="flex items-center px-3 py-2 gap-1">{children}</div>
           <TextareaAutosize
             autoFocus={true}
