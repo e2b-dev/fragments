@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       system: toPrompt(template),
       messages,
       mode: getDefaultMode(model),
-      maxRetries: 0, // do not retry on rate limit error
+      maxRetries: 0, // do not retry on errors
       ...modelParams,
     })
 
