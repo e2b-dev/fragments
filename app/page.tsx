@@ -68,7 +68,7 @@ export default function Home() {
     schema,
     onError: (error) => {
       console.error('Error submitting request:', error)
-      if (error.message.includes('request limit')) {
+      if (error.message.includes('limit')) {
         setIsRateLimited(true)
       }
 
