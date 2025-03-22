@@ -1,10 +1,11 @@
+![E2B Fragments Preview Light](/readme-assets/fragments-light.png#gh-light-mode-only)
+![E2B Fragments Preview Dark](/readme-assets/fragments-dark.png#gh-dark-mode-only)
+
 # Fragments by E2B
 
 This is an open-source version of apps like [Anthropic's Claude Artifacts](https://www.anthropic.com/news/claude-3-5-sonnet), Vercel [v0](https://v0.dev), or [GPT Engineer](https://gptengineer.app).
 
 Powered by the [E2B SDK](https://github.com/e2b-dev/code-interpreter).
-
-![Preview](preview.png)
 
 [→ Try on fragments.e2b.dev](https://fragments.e2b.dev)
 
