@@ -134,7 +134,7 @@ npm run build
 
 ### Adding custom personas
 
-1. Make sure [E2B CLI](https://e2b.dev/docs/cli/installation) is installed and you're logged in.
+1. Make sure [E2B CLI](https://e2b.dev/docs/cli) is installed and you're logged in.
 
 2. Add a new folder under [sandbox-templates/](sandbox-templates/)
 
