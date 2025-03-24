@@ -67,7 +67,8 @@ export async function POST(req: Request) {
 
     return stream.toTextStreamResponse()
   } catch (error: any) {
-    const isRateLimitError = error && error.statusCode === 429
+    const isRateLimitError =
+      error && (error.statusCode === 429 || error.message.includes('limit'))
     const isOverloadedError =
       error && (error.statusCode === 529 || error.statusCode === 503)
     const isAccessDeniedError =
