@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.1.6",
-    "@ai-sdk/google": "^1.1.9",
-    "@ai-sdk/google-vertex": "^2.1.9",
+    "@ai-sdk/google": "^1.2.3",
+    "@ai-sdk/google-vertex": "^2.2.3",
     "@ai-sdk/mistral": "^1.0.1",
     "@ai-sdk/openai": "^1.1.0",
     "@e2b/code-interpreter": "^1.0.2",

@@ -101,6 +101,8 @@ export async function POST(req: Request) {
       )
     }
 
+    console.error('Error:', error)
+
     return new Response(
       'An unexpected error has occurred. Please try again later.',
       {
