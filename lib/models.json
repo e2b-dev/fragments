@@ -71,17 +71,24 @@
       "multiModal": true
     },
     {
+      "id": "gemini-2.0-flash-001",
+      "provider": "Google Vertex AI",
+      "providerId": "vertex",
+      "name": "Gemini 2.0 Flash",
+      "multiModal": true
+    },
+    {
+      "id": "gemini-2.0-flash-lite-001",
+      "provider": "Google Vertex AI",
+      "providerId": "vertex",
+      "name": "Gemini 2.0 Flash Lite",
+      "multiModal": true
+    },
+    {
       "id": "gemini-1.5-pro-002",
       "provider": "Google Vertex AI",
       "providerId": "vertex",
       "name": "Gemini 1.5 Pro",
-      "multiModal": true
-    },
-    {
-      "id": "gemini-2.0-flash-exp",
-      "provider": "Google Vertex AI",
-      "providerId": "vertex",
-      "name": "Gemini 2.0 Flash",
       "multiModal": true
     },
     {
@@ -92,6 +99,34 @@
       "multiModal": true
     },
     {
+      "id": "gemini-2.5-pro-exp-03-25",
+      "provider": "Google Generative AI",
+      "providerId": "google",
+      "name": "Gemini 2.5 Pro Experimental 03-25",
+      "multiModal": true
+    },
+    {
+      "id": "models/gemini-2.0-flash",
+      "provider": "Google Generative AI",
+      "providerId": "google",
+      "name": "Gemini 2.0 Flash",
+      "multiModal": true
+    },
+    {
+      "id": "models/gemini-2.0-flash-lite",
+      "provider": "Google Generative AI",
+      "providerId": "google",
+      "name": "Gemini 2.0 Flash Lite",
+      "multiModal": true
+    },
+    {
+      "id": "models/gemini-2.0-flash-thinking-exp-01-21",
+      "provider": "Google Generative AI",
+      "providerId": "google",
+      "name": "Gemini 2.0 Flash Thinking Experimental 01-21",
+      "multiModal": true
+    },
+    {
       "id": "models/gemini-1.5-pro-002",
       "provider": "Google Generative AI",
       "providerId": "google",
@@ -99,24 +134,10 @@
       "multiModal": true
     },
     {
-      "id": "models/gemini-2.0-flash-exp",
-      "provider": "Google Generative AI",
-      "providerId": "google",
-      "name": "Gemini 2.0 Flash",
-      "multiModal": true
-    },
-    {
       "id": "models/gemini-1.5-flash-002",
       "provider": "Google Generative AI",
       "providerId": "google",
       "name": "Gemini 1.5 Flash",
-      "multiModal": true
-    },
-    {
-      "id": "gemini-exp-1121",
-      "provider": "Google Generative AI",
-      "providerId": "google",
-      "name": "Gemini Experimental 1121",
       "multiModal": true
     },
     {
