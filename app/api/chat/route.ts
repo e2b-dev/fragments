@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   } = await req.json()
 
   const limit = !config.apiKey
-    ? await ratelimit(userID, rateLimitMaxRequests, ratelimitWindow)
+    ? await ratelimit(req.headers.get("x-forwarded-for"), rateLimitMaxRequests, ratelimitWindow)
     : false
 
   if (limit) {
