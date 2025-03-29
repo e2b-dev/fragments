@@ -45,7 +45,7 @@ export default function Home() {
   const [authView, setAuthView] = useState<AuthViewType>('sign_in')
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const { session, apiKey } = useAuth(setAuthDialog, setAuthView)
+  const { session } = useAuth(setAuthDialog, setAuthView)
 
   const filteredModels = modelsList.models.filter((model) => {
     if (process.env.NEXT_PUBLIC_HIDE_LOCAL_MODELS) {
@@ -88,7 +88,7 @@ export default function Home() {
           body: JSON.stringify({
             fragment,
             userID: session?.user?.id,
-            apiKey,
+            apiKey: session?.access_token,
           }),
         })
 
@@ -318,7 +318,7 @@ export default function Home() {
           </ChatInput>
         </div>
         <Preview
-          apiKey={apiKey}
+          session={session}
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}
           isChatLoading={isLoading}

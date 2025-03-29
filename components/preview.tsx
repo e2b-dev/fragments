@@ -11,12 +11,13 @@ import {
 } from '@/components/ui/tooltip'
 import { FragmentSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/lib/types'
+import { Session } from '@supabase/supabase-js'
 import { DeepPartial } from 'ai'
 import { ChevronsRight, LoaderCircle } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
 
 export function Preview({
-  apiKey,
+  session,
   selectedTab,
   onSelectedTabChange,
   isChatLoading,
@@ -25,7 +26,7 @@ export function Preview({
   result,
   onClose,
 }: {
-  apiKey: string | undefined
+  session: Session | null
   selectedTab: 'code' | 'fragment'
   onSelectedTabChange: Dispatch<SetStateAction<'code' | 'fragment'>>
   isChatLoading: boolean
@@ -100,7 +101,7 @@ export function Preview({
                 <DeployDialog
                   url={result.url!}
                   sbxId={result.sbxId!}
-                  apiKey={apiKey}
+                  session={session}
                 />
               )}
             </div>
