@@ -20,15 +20,16 @@ import { Input } from '@/components/ui/input'
 import { Duration } from '@/lib/duration'
 import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
+import { Session } from '@supabase/supabase-js'
 
 export function DeployDialog({
   url,
   sbxId,
-  apiKey,
+  session,
 }: {
   url: string
   sbxId: string
-  apiKey: string | undefined
+  session: Session | null
 }) {
   const posthog = usePostHog()
 
@@ -45,7 +46,7 @@ export function DeployDialog({
       url,
       sbxId,
       duration as Duration,
-      apiKey,
+      session?.access_token,
     )
     setPublishedURL(publishedURL)
     posthog.capture('publish_url', {

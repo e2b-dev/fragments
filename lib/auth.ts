@@ -11,46 +11,11 @@ export type AuthViewType =
   | 'update_password'
   | 'verify_otp'
 
-interface UserTeam {
-  id: string
-  name: string
-  is_default: boolean
-  tier: string
-  email: string
-  team_api_keys: { api_key: string }[]
-}
-
-export async function getUserAPIKey(session: Session) {
-  // If Supabase is not initialized will use E2B_API_KEY env var
-  if (!supabase || process.env.E2B_API_KEY) return process.env.E2B_API_KEY
-
-  const { data: userTeams } = await supabase
-    .from('users_teams')
-    .select(
-      'is_default, teams (id, name, tier, email, team_api_keys (api_key))',
-    )
-    .eq('user_id', session?.user.id)
-
-  const teams = userTeams?.map((userTeam: any) => {
-    return {
-      ...userTeam.teams,
-      is_default: userTeam.is_default,
-      apiKeys: userTeam.teams.team_api_keys.map(
-        (apiKey: any) => apiKey.api_key,
-      ),
-    }
-  })
-
-  const defaultTeam = teams?.find((team) => team.is_default)
-  return defaultTeam?.apiKeys[0]
-}
-
 export function useAuth(
   setAuthDialog: (value: boolean) => void,
   setAuthView: (value: AuthViewType) => void,
 ) {
   const [session, setSession] = useState<Session | null>(null)
-  const [apiKey, setApiKey] = useState<string | undefined>(undefined)
   const posthog = usePostHog()
   let recovery = false
 
@@ -63,7 +28,6 @@ export function useAuth(
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       if (session) {
-        getUserAPIKey(session).then(setApiKey)
         if (!session.user.user_metadata.is_fragments_user) {
           supabase?.auth.updateUser({
             data: { is_fragments_user: true },
@@ -94,7 +58,6 @@ export function useAuth(
 
       if (_event === 'SIGNED_IN' && !recovery) {
         setAuthDialog(false)
-        getUserAPIKey(session as Session).then(setApiKey)
         if (!session?.user.user_metadata.is_fragments_user) {
           supabase?.auth.updateUser({
             data: { is_fragments_user: true },
@@ -108,7 +71,6 @@ export function useAuth(
       }
 
       if (_event === 'SIGNED_OUT') {
-        setApiKey(undefined)
         setAuthView('sign_in')
         posthog.capture('sign_out')
         posthog.reset()
@@ -120,6 +82,5 @@ export function useAuth(
 
   return {
     session,
-    apiKey,
   }
 }
