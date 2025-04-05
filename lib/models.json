@@ -183,6 +183,20 @@
       "multiModal": false
     },
     {
+      "id": "accounts/fireworks/models/llama4-maverick-instruct-basic",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Llama 4 Maverick Instruct",
+      "multiModal": false
+    },
+    {
+      "id": "accounts/fireworks/models/llama4-scout-instruct-basic",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Llama 4 Scout Instruct",
+      "multiModal": false
+    },
+    {
       "id": "accounts/fireworks/models/llama-v3p1-405b-instruct",
       "provider": "Fireworks",
       "providerId": "fireworks",
