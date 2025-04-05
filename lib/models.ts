@@ -4,6 +4,7 @@ import { createVertex } from '@ai-sdk/google-vertex'
 import { createMistral } from '@ai-sdk/mistral'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOllama } from 'ollama-ai-provider'
+import { createFireworks } from '@ai-sdk/fireworks'
 
 export type LLMModel = {
   id: string
@@ -46,7 +47,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
       })(modelNameString),
     ollama: () => createOllama({ baseURL })(modelNameString),
     fireworks: () =>
-      createOpenAI({
+      createFireworks({
         apiKey: apiKey || process.env.FIREWORKS_API_KEY,
         baseURL: baseURL || 'https://api.fireworks.ai/inference/v1',
       })(modelNameString),
@@ -78,15 +79,4 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
   }
 
   return createClient()
-}
-
-export function getDefaultMode(model: LLMModel) {
-  const { id: modelNameString, providerId } = model
-
-  // monkey patch fireworks
-  if (providerId === 'fireworks') {
-    return 'json'
-  }
-
-  return 'auto'
 }
