@@ -20,19 +20,25 @@ export async function POST(req: Request) {
   const {
     messages,
     userID,
+    teamID,
     template,
     model,
     config,
   }: {
     messages: CoreMessage[]
-    userID: string
+    userID: string | undefined
+    teamID: string | undefined
     template: Templates
     model: LLMModel
     config: LLMModelConfig
   } = await req.json()
 
   const limit = !config.apiKey
-    ? await ratelimit(req.headers.get("x-forwarded-for"), rateLimitMaxRequests, ratelimitWindow)
+    ? await ratelimit(
+        req.headers.get('x-forwarded-for'),
+        rateLimitMaxRequests,
+        ratelimitWindow,
+      )
     : false
 
   if (limit) {
@@ -47,6 +53,7 @@ export async function POST(req: Request) {
   }
 
   console.log('userID', userID)
+  console.log('teamID', teamID)
   // console.log('template', template)
   console.log('model', model)
   // console.log('config', config)

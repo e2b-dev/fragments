@@ -10,18 +10,35 @@ export async function POST(req: Request) {
   const {
     fragment,
     userID,
+    teamID,
     apiKey,
-  }: { fragment: FragmentSchema; userID: string; apiKey?: string } =
-    await req.json()
+  }: {
+    fragment: FragmentSchema
+    userID: string | undefined
+    teamID: string | undefined
+    apiKey: string | undefined
+  } = await req.json()
   console.log('fragment', fragment)
   console.log('userID', userID)
   // console.log('apiKey', apiKey)
 
-  // Create a interpreter or a sandbox
+  // Create an interpreter or a sandbox
   const sbx = await Sandbox.create(fragment.template, {
-    metadata: { template: fragment.template, userID: userID },
+    metadata: {
+      template: fragment.template,
+      userID: userID ?? '',
+      teamID: teamID ?? '',
+    },
     timeoutMs: sandboxTimeout,
     apiKey,
+    ...(teamID
+      ? {
+          headers: {
+            'X-Supabase-Team': teamID,
+            'X-Supabase-Token': apiKey ?? '',
+          },
+        }
+      : {}),
   })
 
   // Install packages

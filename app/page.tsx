@@ -45,7 +45,7 @@ export default function Home() {
   const [authView, setAuthView] = useState<AuthViewType>('sign_in')
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const { session, userTeamID } = useAuth(setAuthDialog, setAuthView)
+  const { session, userTeam } = useAuth(setAuthDialog, setAuthView)
 
   const filteredModels = modelsList.models.filter((model) => {
     if (process.env.NEXT_PUBLIC_HIDE_LOCAL_MODELS) {
@@ -88,6 +88,7 @@ export default function Home() {
           body: JSON.stringify({
             fragment,
             userID: session?.user?.id,
+            teamID: userTeam?.id,
             apiKey: session?.access_token,
           }),
         })
@@ -173,6 +174,7 @@ export default function Home() {
 
     submit({
       userID: session?.user?.id,
+      teamID: userTeam?.id,
       messages: toAISDKMessages(updatedMessages),
       template: currentTemplate,
       model: currentModel,
@@ -192,6 +194,7 @@ export default function Home() {
   function retry() {
     submit({
       userID: session?.user?.id,
+      teamID: userTeam?.id,
       messages: toAISDKMessages(messages),
       template: currentTemplate,
       model: currentModel,

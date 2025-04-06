@@ -12,23 +12,23 @@ export type AuthViewType =
   | 'verify_otp'
 
 type UserTeam = {
-  is_default: boolean
-  teams: {
-    id: string
-  }
+  email: string
+  id: string
+  name: string
+  tier: string
 }
 
-export async function getUserTeamID(session: Session) {
-  // If Supabase is not initialized will use E2B_API_KEY env var
-  if (!supabase || process.env.E2B_API_KEY) return process.env.E2B_API_KEY
-
-  const { data: userTeams } = await supabase
+export async function getUserTeam(
+  session: Session,
+): Promise<UserTeam | undefined> {
+  const { data: defaultTeam } = await supabase!
     .from('users_teams')
-    .select('is_default, teams (id, name, tier, email)')
+    .select('teams (id, name, tier, email)')
     .eq('user_id', session?.user.id)
+    .eq('is_default', true)
+    .single()
 
-  const defaultTeam = userTeams?.find((team) => team.is_default)
-  return (defaultTeam as unknown as UserTeam).teams.id
+  return defaultTeam?.teams as unknown as UserTeam
 }
 
 export function useAuth(
@@ -36,7 +36,7 @@ export function useAuth(
   setAuthView: (value: AuthViewType) => void,
 ) {
   const [session, setSession] = useState<Session | null>(null)
-  const [userTeamID, setUserTeamID] = useState<string | undefined>(undefined)
+  const [userTeam, setUserTeam] = useState<UserTeam | undefined>(undefined)
   const posthog = usePostHog()
   let recovery = false
 
@@ -49,7 +49,7 @@ export function useAuth(
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       if (session) {
-        getUserTeamID(session).then(setUserTeamID)
+        getUserTeam(session).then(setUserTeam)
         if (!session.user.user_metadata.is_fragments_user) {
           supabase?.auth.updateUser({
             data: { is_fragments_user: true },
@@ -79,7 +79,7 @@ export function useAuth(
       }
 
       if (_event === 'SIGNED_IN' && !recovery) {
-        getUserTeamID(session as Session).then(setUserTeamID)
+        getUserTeam(session as Session).then(setUserTeam)
         setAuthDialog(false)
         if (!session?.user.user_metadata.is_fragments_user) {
           supabase?.auth.updateUser({
@@ -105,6 +105,6 @@ export function useAuth(
 
   return {
     session,
-    userTeamID,
+    userTeam,
   }
 }
