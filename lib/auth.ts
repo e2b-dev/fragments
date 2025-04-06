@@ -65,7 +65,7 @@ export function useAuth(
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
 
       if (_event === 'PASSWORD_RECOVERY') {
