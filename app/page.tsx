@@ -321,7 +321,8 @@ export default function Home() {
           </ChatInput>
         </div>
         <Preview
-          session={session}
+          teamID={userTeam?.id}
+          apiKey={session?.access_token}
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}
           isChatLoading={isLoading}
