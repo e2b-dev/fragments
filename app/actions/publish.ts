@@ -11,10 +11,20 @@ export async function publish(
   url: string,
   sbxId: string,
   duration: Duration,
-  apiKey: string | undefined,
+  teamID: string | undefined,
+  accessToken: string | undefined,
 ) {
   const expiration = ms(duration)
-  await Sandbox.setTimeout(sbxId, expiration, { apiKey })
+  await Sandbox.setTimeout(sbxId, expiration, {
+    ...(teamID && accessToken
+      ? {
+          headers: {
+            'X-Supabase-Team': teamID,
+            'X-Supabase-Token': accessToken,
+          },
+        }
+      : {}),
+  })
 
   if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
     const id = nanoid()
