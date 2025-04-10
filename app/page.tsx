@@ -89,7 +89,7 @@ export default function Home() {
             fragment,
             userID: session?.user?.id,
             teamID: userTeam?.id,
-            apiKey: session?.access_token,
+            accessToken: session?.access_token,
           }),
         })
 
@@ -322,7 +322,7 @@ export default function Home() {
         </div>
         <Preview
           teamID={userTeam?.id}
-          apiKey={session?.access_token}
+          accessToken={session?.access_token}
           selectedTab={currentTab}
           onSelectedTabChange={setCurrentTab}
           isChatLoading={isLoading}

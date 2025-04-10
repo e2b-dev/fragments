@@ -17,7 +17,7 @@ import { Dispatch, SetStateAction } from 'react'
 
 export function Preview({
   teamID,
-  apiKey,
+  accessToken,
   selectedTab,
   onSelectedTabChange,
   isChatLoading,
@@ -27,7 +27,7 @@ export function Preview({
   onClose,
 }: {
   teamID: string | undefined
-  apiKey: string | undefined
+  accessToken: string | undefined
   selectedTab: 'code' | 'fragment'
   onSelectedTabChange: Dispatch<SetStateAction<'code' | 'fragment'>>
   isChatLoading: boolean
@@ -103,7 +103,7 @@ export function Preview({
                   url={result.url!}
                   sbxId={result.sbxId!}
                   teamID={teamID}
-                  apiKey={apiKey}
+                  accessToken={accessToken}
                 />
               )}
             </div>

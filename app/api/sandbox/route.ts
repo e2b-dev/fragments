@@ -11,12 +11,12 @@ export async function POST(req: Request) {
     fragment,
     userID,
     teamID,
-    apiKey,
+    accessToken,
   }: {
     fragment: FragmentSchema
     userID: string | undefined
     teamID: string | undefined
-    apiKey: string | undefined
+    accessToken: string | undefined
   } = await req.json()
   console.log('fragment', fragment)
   console.log('userID', userID)
@@ -30,12 +30,11 @@ export async function POST(req: Request) {
       teamID: teamID ?? '',
     },
     timeoutMs: sandboxTimeout,
-    apiKey,
-    ...(teamID
+    ...(teamID && accessToken
       ? {
           headers: {
             'X-Supabase-Team': teamID,
-            'X-Supabase-Token': apiKey ?? '',
+            'X-Supabase-Token': accessToken,
           },
         }
       : {}),

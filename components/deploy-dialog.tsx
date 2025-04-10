@@ -25,12 +25,12 @@ export function DeployDialog({
   url,
   sbxId,
   teamID,
-  apiKey,
+  accessToken,
 }: {
   url: string
   sbxId: string
   teamID: string | undefined
-  apiKey: string | undefined
+  accessToken: string | undefined
 }) {
   const posthog = usePostHog()
 
@@ -48,7 +48,7 @@ export function DeployDialog({
       sbxId,
       duration as Duration,
       teamID,
-      apiKey,
+      accessToken,
     )
     setPublishedURL(publishedURL)
     posthog.capture('publish_url', {

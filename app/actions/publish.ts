@@ -12,16 +12,15 @@ export async function publish(
   sbxId: string,
   duration: Duration,
   teamID: string | undefined,
-  apiKey: string | undefined,
+  accessToken: string | undefined,
 ) {
   const expiration = ms(duration)
   await Sandbox.setTimeout(sbxId, expiration, {
-    apiKey,
-    ...(teamID
+    ...(teamID && accessToken
       ? {
           headers: {
             'X-Supabase-Team': teamID,
-            'X-Supabase-Token': apiKey ?? '',
+            'X-Supabase-Token': accessToken,
           },
         }
       : {}),
