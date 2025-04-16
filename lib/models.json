@@ -1,6 +1,27 @@
 {
   "models": [
     {
+      "id": "o3",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "o3",
+      "multiModal": true
+    },
+    {
+      "id": "o3-mini",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "o3-mini",
+      "multiModal": false
+    },
+    {
+      "id": "o4-mini",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "o4-mini",
+      "multiModal": true
+    },
+    {
       "id": "gpt-4.1",
       "provider": "OpenAI",
       "providerId": "openai",
@@ -22,6 +43,13 @@
       "multiModal": true
     },
     {
+      "id": "gpt-4.5-preview",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-4.5 (preview)",
+      "multiModal": true
+    },
+    {
       "id": "gpt-4o",
       "provider": "OpenAI",
       "providerId": "openai",
@@ -29,10 +57,10 @@
       "multiModal": true
     },
     {
-      "id": "gpt-4.5-preview",
+      "id": "gpt-4o-mini",
       "provider": "OpenAI",
       "providerId": "openai",
-      "name": "GPT-4.5 (preview)",
+      "name": "GPT-4o mini",
       "multiModal": true
     },
     {
@@ -43,25 +71,11 @@
       "multiModal": true
     },
     {
-      "id": "o3-mini",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "o3 mini",
-      "multiModal": false
-    },
-    {
       "id": "o1-mini",
       "provider": "OpenAI",
       "providerId": "openai",
-      "name": "o1 mini",
+      "name": "o1-mini",
       "multiModal": false
-    },
-    {
-      "id": "gpt-4o-mini",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "GPT-4o mini",
-      "multiModal": true
     },
     {
       "id": "gpt-4-turbo",
