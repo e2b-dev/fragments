@@ -1,15 +1,8 @@
+import { ViewType } from '@/components/auth'
 import { supabase } from './supabase'
 import { Session } from '@supabase/supabase-js'
 import { usePostHog } from 'posthog-js/react'
 import { useState, useEffect } from 'react'
-
-export type AuthViewType =
-  | 'sign_in'
-  | 'sign_up'
-  | 'magic_link'
-  | 'forgotten_password'
-  | 'update_password'
-  | 'verify_otp'
 
 type UserTeam = {
   email: string
@@ -33,7 +26,7 @@ export async function getUserTeam(
 
 export function useAuth(
   setAuthDialog: (value: boolean) => void,
-  setAuthView: (value: AuthViewType) => void,
+  setAuthView: (value: ViewType) => void,
 ) {
   const [session, setSession] = useState<Session | null>(null)
   const [userTeam, setUserTeam] = useState<UserTeam | undefined>(undefined)

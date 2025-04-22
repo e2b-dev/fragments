@@ -11,7 +11,7 @@ function AuthForm({
 }) {
   return (
     <div className="flex justify-center items-center flex-col">
-      <h1 className="flex items-center gap-4 text-xl font-bold mb-2 w-full">
+      <h1 className="flex items-center gap-4 text-xl font-bold mb-6 w-full">
         <div className="flex items-center justify-center rounded-md shadow-md bg-black p-2">
           <Logo className="text-white w-6 h-6" />
         </div>
@@ -21,8 +21,8 @@ function AuthForm({
         <Auth
           supabaseClient={supabase}
           view={view}
-          theme="default"
           providers={['github', 'google']}
+          socialLayout="horizontal"
         />
       </div>
     </div>

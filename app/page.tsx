@@ -1,5 +1,6 @@
 'use client'
 
+import { ViewType } from '@/components/auth'
 import { AuthDialog } from '@/components/auth-dialog'
 import { Chat } from '@/components/chat'
 import { ChatInput } from '@/components/chat-input'
@@ -7,7 +8,7 @@ import { ChatPicker } from '@/components/chat-picker'
 import { ChatSettings } from '@/components/chat-settings'
 import { NavBar } from '@/components/navbar'
 import { Preview } from '@/components/preview'
-import { AuthViewType, useAuth } from '@/lib/auth'
+import { useAuth } from '@/lib/auth'
 import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
@@ -42,7 +43,7 @@ export default function Home() {
   const [currentTab, setCurrentTab] = useState<'code' | 'fragment'>('code')
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
-  const [authView, setAuthView] = useState<AuthViewType>('sign_in')
+  const [authView, setAuthView] = useState<ViewType>('sign_in')
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const { session, userTeam } = useAuth(setAuthDialog, setAuthView)

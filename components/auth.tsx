@@ -411,7 +411,7 @@ function EmailAuth({
             variant="link"
             type="button"
             onClick={() => setAuthView(VIEWS.FORGOTTEN_PASSWORD)}
-            className="p-0 h-auto font-normal"
+            className="p-0 h-auto font-normal text-muted-foreground"
           >
             Forgot your password?
           </Button>
@@ -435,7 +435,7 @@ function EmailAuth({
           </Button>
         )}
         {view === VIEWS.SIGN_IN ? (
-          <p>
+          <p className="text-muted-foreground">
             Don't have an account?{' '}
             <Button
               variant="link"
@@ -447,7 +447,7 @@ function EmailAuth({
             </Button>
           </p>
         ) : (
-          <p>
+          <p className="text-muted-foreground">
             Already have an account?{' '}
             <Button
               variant="link"
@@ -590,7 +590,7 @@ function ForgottenPassword({
           variant="link"
           type="button"
           onClick={() => setAuthView(VIEWS.SIGN_IN)}
-          className="p-0 h-auto font-normal underline"
+          className="p-0 h-auto underline"
         >
           Back to Sign In
         </Button>
