@@ -1,6 +1,6 @@
 import AuthForm from './auth-form'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import { AuthViewType } from '@/lib/auth'
+import { ViewType } from '@/components/auth'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { SupabaseClient } from '@supabase/supabase-js'
 
@@ -13,7 +13,7 @@ export function AuthDialog({
   open: boolean
   setOpen: (open: boolean) => void
   supabase: SupabaseClient
-  view: AuthViewType
+  view: ViewType
 }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>

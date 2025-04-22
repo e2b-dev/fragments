@@ -9,13 +9,12 @@ import { SupabaseClient, Provider } from '@supabase/supabase-js'
 import {
   Mail,
   KeyRound,
-  Github,
-  Gitlab,
   AlertCircle,
   CheckCircle2,
   Loader2,
 } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
+import * as SimpleIcons from 'simple-icons'
 
 const VIEWS = {
   SIGN_IN: 'sign_in',
@@ -32,35 +31,46 @@ type RedirectTo = undefined | string
 const ProviderIcons: {
   [key in Provider]?: React.ComponentType<{ className?: string }>
 } = {
-  github: Github,
-  gitlab: Gitlab,
-  // TODO: Add Google icon here if needed, e.g., import { GoogleIcon } from 'some-icon-library'; google: GoogleIcon
+  github: ({ className }) => (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      className={className}
+      fill="currentColor"
+      dangerouslySetInnerHTML={{ __html: SimpleIcons.siGithub.svg }}
+    />
+  ),
+  google: ({ className }) => (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      className={className}
+      fill="currentColor"
+      dangerouslySetInnerHTML={{ __html: SimpleIcons.siGoogle.svg }}
+    />
+  ),
 }
 
 export interface AuthProps {
   supabaseClient: SupabaseClient
-  className?: string
-  style?: React.CSSProperties
   socialLayout?: 'horizontal' | 'vertical'
   providers?: Provider[]
   view?: ViewType
   redirectTo?: RedirectTo
   onlyThirdPartyProviders?: boolean
   magicLink?: boolean
-  theme?: 'light' | 'dark' | string
+  onSignInValidate?: (email: string, password: string) => Promise<void> | void
 }
 
 function Auth({
   supabaseClient,
-  className,
-  style,
   socialLayout = 'vertical',
   providers,
   view = VIEWS.SIGN_IN,
   redirectTo,
   onlyThirdPartyProviders = false,
   magicLink = false,
-  theme = 'light',
+  onSignInValidate,
 }: AuthProps): JSX.Element | null {
   const [authView, setAuthView] = useState<ViewType>(view)
   const [error, setError] = useState<string | null>(null)
@@ -134,14 +144,7 @@ function Auth({
   }
 
   const Container = ({ children }: { children: React.ReactNode }) => (
-    <div
-      className={cn(
-        'w-full max-w-md mx-auto p-6 space-y-6 rounded-md',
-        theme === 'dark' ? 'bg-card text-card-foreground' : 'bg-white',
-        className,
-      )}
-      style={style}
-    >
+    <>
       {providers && providers.length > 0 && (
         <SocialAuth
           supabaseClient={supabaseClient}
@@ -167,7 +170,7 @@ function Auth({
         </div>
       )}
       {!onlyThirdPartyProviders && children}
-    </div>
+    </>
   )
 
   switch (authView) {
@@ -178,6 +181,7 @@ function Auth({
             {...commonProps}
             view={VIEWS.SIGN_IN}
             magicLink={magicLink}
+            onSignInValidate={onSignInValidate}
           />
         </Container>
       )
@@ -286,6 +290,7 @@ function SocialAuth({
 interface EmailAuthProps extends SubComponentProps {
   view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
   magicLink?: boolean
+  onSignInValidate?: (email: string, password: string) => Promise<void> | void
 }
 
 function EmailAuth({
@@ -300,6 +305,7 @@ function EmailAuth({
   redirectTo,
   magicLink,
   renderFeedback,
+  onSignInValidate,
 }: Omit<EmailAuthProps, 'email' | 'setEmail' | 'password' | 'setPassword'> & {
   view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
   magicLink?: boolean
@@ -314,6 +320,9 @@ function EmailAuth({
 
     try {
       if (view === VIEWS.SIGN_IN) {
+        if (onSignInValidate) {
+          await onSignInValidate(email, password)
+        }
         const { error } = await supabaseClient.auth.signInWithPassword({
           email,
           password,
@@ -345,9 +354,9 @@ function EmailAuth({
   }
 
   useEffect(() => {
-    setEmail('');
-    setPassword('');
-  }, [view]);
+    setEmail('')
+    setPassword('')
+  }, [view])
 
   return (
     <form
@@ -432,7 +441,7 @@ function EmailAuth({
               variant="link"
               type="button"
               onClick={() => setAuthView(VIEWS.SIGN_UP)}
-              className="p-0 h-auto"
+              className="p-0 h-auto underline"
             >
               Sign up
             </Button>
@@ -444,7 +453,7 @@ function EmailAuth({
               variant="link"
               type="button"
               onClick={() => setAuthView(VIEWS.SIGN_IN)}
-              className="p-0 h-auto"
+              className="p-0 h-auto underline"
             >
               Sign in
             </Button>
@@ -581,7 +590,7 @@ function ForgottenPassword({
           variant="link"
           type="button"
           onClick={() => setAuthView(VIEWS.SIGN_IN)}
-          className="p-0 h-auto font-normal"
+          className="p-0 h-auto font-normal underline"
         >
           Back to Sign In
         </Button>
