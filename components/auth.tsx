@@ -436,7 +436,7 @@ function EmailAuth({
         )}
         {view === VIEWS.SIGN_IN ? (
           <p className="text-muted-foreground">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Button
               variant="link"
               type="button"
