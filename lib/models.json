@@ -134,13 +134,6 @@
       "multiModal": true
     },
     {
-      "id": "gemini-2.5-flash-preview-04-17",
-      "provider": "Google Vertex AI",
-      "providerId": "vertex",
-      "name": "Gemini 2.5 Flash Preview",
-      "multiModal": true
-    },
-    {
       "id": "models/gemini-2.5-flash-preview-04-17",
       "provider": "Google Generative AI",
       "providerId": "google",
