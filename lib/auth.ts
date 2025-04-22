@@ -30,8 +30,8 @@ export function useAuth(
 ) {
   const [session, setSession] = useState<Session | null>(null)
   const [userTeam, setUserTeam] = useState<UserTeam | undefined>(undefined)
+  const [recovery, setRecovery] = useState(false)
   const posthog = usePostHog()
-  let recovery = false
 
   useEffect(() => {
     if (!supabase) {
@@ -62,13 +62,13 @@ export function useAuth(
       setSession(session)
 
       if (_event === 'PASSWORD_RECOVERY') {
-        recovery = true
+        setRecovery(true)
         setAuthView('update_password')
         setAuthDialog(true)
       }
 
       if (_event === 'USER_UPDATED' && recovery) {
-        recovery = false
+        setRecovery(false)
       }
 
       if (_event === 'SIGNED_IN' && !recovery) {
@@ -90,11 +90,12 @@ export function useAuth(
         setAuthView('sign_in')
         posthog.capture('sign_out')
         posthog.reset()
+        setRecovery(false)
       }
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [recovery, setAuthDialog, setAuthView, posthog])
 
   return {
     session,

@@ -674,11 +674,7 @@ function Auth({
         </Container>
       )
     case VIEWS.UPDATE_PASSWORD:
-      return (
-        <Container>
-          <UpdatePassword {...commonProps} />
-        </Container>
-      )
+      return <UpdatePassword {...commonProps} />
     default:
       return null
   }
