@@ -1,5 +1,5 @@
-import { ViewType } from '@/components/auth'
 import { supabase } from './supabase'
+import { ViewType } from '@/components/auth'
 import { Session } from '@supabase/supabase-js'
 import { usePostHog } from 'posthog-js/react'
 import { useState, useEffect } from 'react'

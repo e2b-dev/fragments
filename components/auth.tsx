@@ -59,7 +59,7 @@ export interface AuthProps {
   redirectTo?: RedirectTo
   onlyThirdPartyProviders?: boolean
   magicLink?: boolean
-  onSignInValidate?: (email: string, password: string) => Promise<void> | void
+  onSignUpValidate?: (email: string, password: string) => Promise<void> | void
 }
 
 function Auth({
@@ -70,7 +70,7 @@ function Auth({
   redirectTo,
   onlyThirdPartyProviders = false,
   magicLink = false,
-  onSignInValidate,
+  onSignUpValidate,
 }: AuthProps): JSX.Element | null {
   const [authView, setAuthView] = useState<ViewType>(view)
   const [error, setError] = useState<string | null>(null)
@@ -181,14 +181,18 @@ function Auth({
             {...commonProps}
             view={VIEWS.SIGN_IN}
             magicLink={magicLink}
-            onSignInValidate={onSignInValidate}
           />
         </Container>
       )
     case VIEWS.SIGN_UP:
       return (
         <Container>
-          <EmailAuth {...commonProps} view={VIEWS.SIGN_UP} magicLink={false} />
+          <EmailAuth
+            {...commonProps}
+            view={VIEWS.SIGN_UP}
+            magicLink={false}
+            onSignUpValidate={onSignUpValidate}
+          />
         </Container>
       )
     case VIEWS.FORGOTTEN_PASSWORD:
@@ -290,7 +294,7 @@ function SocialAuth({
 interface EmailAuthProps extends SubComponentProps {
   view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
   magicLink?: boolean
-  onSignInValidate?: (email: string, password: string) => Promise<void> | void
+  onSignUpValidate?: (email: string, password: string) => Promise<void> | void
 }
 
 function EmailAuth({
@@ -305,7 +309,7 @@ function EmailAuth({
   redirectTo,
   magicLink,
   renderFeedback,
-  onSignInValidate,
+  onSignUpValidate,
 }: Omit<EmailAuthProps, 'email' | 'setEmail' | 'password' | 'setPassword'> & {
   view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
   magicLink?: boolean
@@ -320,15 +324,15 @@ function EmailAuth({
 
     try {
       if (view === VIEWS.SIGN_IN) {
-        if (onSignInValidate) {
-          await onSignInValidate(email, password)
-        }
         const { error } = await supabaseClient.auth.signInWithPassword({
           email,
           password,
         })
         if (error) throw error
       } else if (view === VIEWS.SIGN_UP) {
+        if (onSignUpValidate) {
+          await onSignUpValidate(email, password)
+        }
         const { data, error } = await supabaseClient.auth.signUp({
           email,
           password,

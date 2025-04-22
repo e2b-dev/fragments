@@ -1,6 +1,7 @@
 import Auth, { ViewType } from './auth'
+import { validateEmail } from '@/app/actions/validate-email'
 import Logo from './logo'
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { SupabaseClient } from '@supabase/supabase-js'
 
@@ -19,7 +20,8 @@ export function AuthDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <VisuallyHidden>
-          <DialogTitle>Sign in to E2B</DialogTitle>
+          <DialogTitle>Sign in to Fragments</DialogTitle>
+          <DialogDescription>Sign in or create an account to access Fragments</DialogDescription>
         </VisuallyHidden>
         <div className="flex justify-center items-center flex-col">
           <h1 className="flex items-center gap-4 text-xl font-bold mb-6 w-full">
@@ -34,12 +36,7 @@ export function AuthDialog({
               view={view}
               providers={['github', 'google']}
               socialLayout="horizontal"
-              onSignInValidate={async (email, password) => {
-                if (email.endsWith('@e2b.dev')) {
-                  return
-                }
-                throw new Error('Invalid email domain')
-              }}
+              onSignUpValidate={validateEmail}
             />
           </div>
         </div>
