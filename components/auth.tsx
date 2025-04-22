@@ -36,6 +36,7 @@ export interface AuthProps {
   onlyThirdPartyProviders?: boolean
   magicLink?: boolean
   onSignUpValidate?: (email: string, password: string) => Promise<void> | void
+  metadata?: Record<string, any>
 }
 
 interface SubComponentProps {
@@ -65,6 +66,7 @@ interface EmailAuthProps extends SubComponentProps {
   view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
   magicLink?: boolean
   onSignUpValidate?: (email: string, password: string) => Promise<void> | void
+  metadata?: Record<string, any>
 }
 
 interface UseAuthFormReturn {
@@ -214,9 +216,11 @@ function EmailAuth({
   magicLink,
   renderFeedback,
   onSignUpValidate,
+  metadata,
 }: Omit<EmailAuthProps, 'email' | 'setEmail' | 'password' | 'setPassword'> & {
   view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
   magicLink?: boolean
+  metadata?: Record<string, any>
 }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -240,7 +244,10 @@ function EmailAuth({
         const { data, error } = await supabaseClient.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: redirectTo },
+          options: {
+            emailRedirectTo: redirectTo,
+            data: metadata,
+          },
         })
         if (error) throw error
         if (data.user && !data.session) {
@@ -561,6 +568,7 @@ function Auth({
   onlyThirdPartyProviders = false,
   magicLink = false,
   onSignUpValidate,
+  metadata,
 }: AuthProps): JSX.Element | null {
   const [authView, setAuthView] = useState<ViewType>(view)
   const {
@@ -659,6 +667,7 @@ function Auth({
             view={VIEWS.SIGN_UP}
             magicLink={false}
             onSignUpValidate={onSignUpValidate}
+            metadata={metadata}
           />
         </Container>
       )
