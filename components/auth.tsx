@@ -35,7 +35,7 @@ export interface AuthProps {
   redirectTo?: RedirectTo
   onlyThirdPartyProviders?: boolean
   magicLink?: boolean
-  onSignUpValidate?: (email: string, password: string) => Promise<void> | void
+  onSignUpValidate?: (email: string, password: string) => Promise<boolean>
   metadata?: Record<string, any>
 }
 
@@ -65,7 +65,7 @@ interface SocialAuthProps {
 interface EmailAuthProps extends SubComponentProps {
   view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
   magicLink?: boolean
-  onSignUpValidate?: (email: string, password: string) => Promise<void> | void
+  onSignUpValidate?: (email: string, password: string) => Promise<boolean>
   metadata?: Record<string, any>
 }
 
@@ -239,7 +239,12 @@ function EmailAuth({
         if (error) throw error
       } else if (view === VIEWS.SIGN_UP) {
         if (onSignUpValidate) {
-          await onSignUpValidate(email, password)
+          const isValid = await onSignUpValidate(email, password)
+          if (!isValid) {
+            throw new Error(
+              'Invalid email address. Please use a different email.',
+            )
+          }
         }
         const { data, error } = await supabaseClient.auth.signUp({
           email,

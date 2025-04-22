@@ -23,37 +23,34 @@ export type EmailValidationResponse = {
   processed_at: string
 }
 
-export async function validateEmail(email: string): Promise<void> {
+export async function validateEmail(email: string): Promise<boolean> {
   if (!process.env.ZEROBOUNCE_API_KEY) {
-    return
+    return true
   }
 
-  try {
-    const response = await fetch(
-      `https://api.zerobounce.net/v2/validate?api_key=${process.env.ZEROBOUNCE_API_KEY}&email=${email}&ip_address=`,
-    )
+  const response = await fetch(
+    `https://api.zerobounce.net/v2/validate?api_key=${process.env.ZEROBOUNCE_API_KEY}&email=${email}&ip_address=`,
+  )
 
-    const responseData = await response.json()
+  const responseData = await response.json()
 
-    const data = {
-      ...responseData,
-      mx_found:
-        responseData.mx_found === 'true'
-          ? true
-          : responseData.mx_found === 'false'
-            ? false
-            : responseData.mx_found,
-    } as EmailValidationResponse
+  const data = {
+    ...responseData,
+    mx_found:
+      responseData.mx_found === 'true'
+        ? true
+        : responseData.mx_found === 'false'
+          ? false
+          : responseData.mx_found,
+  } as EmailValidationResponse
 
-    switch (data.status) {
-      case 'invalid':
-      case 'spamtrap':
-      case 'abuse':
-      case 'do_not_mail':
-        throw new Error('Invalid email address, please use a different email')
-    }
-  } catch (error) {
-    console.error(error)
-    throw error
+  switch (data.status) {
+    case 'invalid':
+    case 'spamtrap':
+    case 'abuse':
+    case 'do_not_mail':
+      return false
   }
+
+  return true
 }
