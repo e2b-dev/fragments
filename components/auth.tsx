@@ -1,19 +1,18 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import { SupabaseClient, Provider } from '@supabase/supabase-js'
+import { Provider, SupabaseClient } from '@supabase/supabase-js'
 import {
-  Mail,
-  KeyRound,
   AlertCircle,
   CheckCircle2,
+  KeyRound,
   Loader2,
+  Mail,
 } from 'lucide-react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import * as SimpleIcons from 'simple-icons'
 
 const VIEWS = {
@@ -27,6 +26,56 @@ const VIEWS = {
 export type ViewType = (typeof VIEWS)[keyof typeof VIEWS]
 
 type RedirectTo = undefined | string
+
+export interface AuthProps {
+  supabaseClient: SupabaseClient
+  socialLayout?: 'horizontal' | 'vertical'
+  providers?: Provider[]
+  view?: ViewType
+  redirectTo?: RedirectTo
+  onlyThirdPartyProviders?: boolean
+  magicLink?: boolean
+  onSignUpValidate?: (email: string, password: string) => Promise<void> | void
+}
+
+interface SubComponentProps {
+  supabaseClient: SupabaseClient
+  setAuthView: (view: ViewType) => void
+  setLoading: (loading: boolean) => void
+  setError: (error: string | null) => void
+  setMessage: (message: string | null) => void
+  clearMessages: () => void
+  loading: boolean
+  redirectTo?: RedirectTo
+  renderFeedback: () => React.ReactNode
+}
+
+interface SocialAuthProps {
+  supabaseClient: SupabaseClient
+  providers: Provider[]
+  layout?: 'horizontal' | 'vertical'
+  redirectTo?: RedirectTo
+  setLoading: (loading: boolean) => void
+  setError: (error: string) => void
+  clearMessages: () => void
+  loading: boolean
+}
+
+interface EmailAuthProps extends SubComponentProps {
+  view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
+  magicLink?: boolean
+  onSignUpValidate?: (email: string, password: string) => Promise<void> | void
+}
+
+interface UseAuthFormReturn {
+  loading: boolean
+  error: string | null
+  message: string | null
+  setLoading: (loading: boolean) => void
+  setError: (error: string | null) => void
+  setMessage: (message: string | null) => void
+  clearMessages: () => void
+}
 
 const ProviderIcons: {
   [key in Provider]?: React.ComponentType<{ className?: string }>
@@ -51,32 +100,10 @@ const ProviderIcons: {
   ),
 }
 
-export interface AuthProps {
-  supabaseClient: SupabaseClient
-  socialLayout?: 'horizontal' | 'vertical'
-  providers?: Provider[]
-  view?: ViewType
-  redirectTo?: RedirectTo
-  onlyThirdPartyProviders?: boolean
-  magicLink?: boolean
-  onSignUpValidate?: (email: string, password: string) => Promise<void> | void
-}
-
-function Auth({
-  supabaseClient,
-  socialLayout = 'vertical',
-  providers,
-  view = VIEWS.SIGN_IN,
-  redirectTo,
-  onlyThirdPartyProviders = false,
-  magicLink = false,
-  onSignUpValidate,
-}: AuthProps): JSX.Element | null {
-  const [authView, setAuthView] = useState<ViewType>(view)
-  const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
+function useAuthForm(): UseAuthFormReturn {
   const [loading, setLoading] = useState(false)
-
+  const [error, setErrorState] = useState<string | null>(null)
+  const [message, setMessageState] = useState<string | null>(null)
   const isMounted = useRef(true)
 
   useEffect(() => {
@@ -86,159 +113,42 @@ function Auth({
     }
   }, [])
 
-  useEffect(() => {
-    setAuthView(view)
-    setError(null)
-    setMessage(null)
-  }, [view])
-
-  const handleAuthError = (err: Error | null, defaultMessage: string) => {
+  const setError = useCallback((errorMsg: string | null) => {
     if (isMounted.current) {
-      setError(err?.message || defaultMessage)
-      setLoading(false)
+      setErrorState(errorMsg)
+      if (errorMsg) setMessageState(null) // Clear message when error occurs
     }
-  }
+  }, [])
 
-  const handleAuthSuccess = (successMessage: string | null) => {
+  const setMessage = useCallback((msg: string | null) => {
     if (isMounted.current) {
-      setMessage(successMessage)
-      setError(null)
-      setLoading(false)
+      setMessageState(msg)
+      if (msg) setErrorState(null) // Clear error when message occurs
     }
-  }
+  }, [])
 
-  const clearMessages = () => {
-    setError(null)
-    setMessage(null)
-  }
+  const clearMessages = useCallback(() => {
+    if (isMounted.current) {
+      setErrorState(null)
+      setMessageState(null)
+    }
+  }, [])
 
-  const renderFeedback = () => (
-    <>
-      {error && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      {message && (
-        <Alert variant="default" className="mt-4">
-          <CheckCircle2 className="h-4 w-4" />
-          <AlertTitle>Success</AlertTitle>
-          <AlertDescription>{message}</AlertDescription>
-        </Alert>
-      )}
-    </>
-  )
+  const safeSetLoading = useCallback((isLoading: boolean) => {
+    if (isMounted.current) {
+      setLoading(isLoading)
+    }
+  }, [])
 
-  const commonProps = {
-    supabaseClient,
-    setAuthView,
-    setLoading,
-    setError: (msg: string) => handleAuthError(new Error(msg), msg),
-    setMessage: handleAuthSuccess,
-    clearMessages,
+  return {
     loading,
-    redirectTo,
-    renderFeedback,
+    error,
+    message,
+    setLoading: safeSetLoading,
+    setError,
+    setMessage,
+    clearMessages,
   }
-
-  const Container = ({ children }: { children: React.ReactNode }) => (
-    <>
-      {providers && providers.length > 0 && (
-        <SocialAuth
-          supabaseClient={supabaseClient}
-          providers={providers}
-          layout={socialLayout}
-          redirectTo={redirectTo}
-          setLoading={setLoading}
-          setError={(msg) => handleAuthError(new Error(msg), msg)}
-          clearMessages={clearMessages}
-          loading={loading}
-        />
-      )}
-      {providers && providers.length > 0 && !onlyThirdPartyProviders && (
-        <div className="relative my-4">
-          <div className="absolute inset-0 flex items-center">
-            <Separator />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-      )}
-      {!onlyThirdPartyProviders && children}
-    </>
-  )
-
-  switch (authView) {
-    case VIEWS.SIGN_IN:
-      return (
-        <Container>
-          <EmailAuth
-            {...commonProps}
-            view={VIEWS.SIGN_IN}
-            magicLink={magicLink}
-          />
-        </Container>
-      )
-    case VIEWS.SIGN_UP:
-      return (
-        <Container>
-          <EmailAuth
-            {...commonProps}
-            view={VIEWS.SIGN_UP}
-            magicLink={false}
-            onSignUpValidate={onSignUpValidate}
-          />
-        </Container>
-      )
-    case VIEWS.FORGOTTEN_PASSWORD:
-      return (
-        <Container>
-          <ForgottenPassword {...commonProps} />
-        </Container>
-      )
-    case VIEWS.MAGIC_LINK:
-      return (
-        <Container>
-          <MagicLink {...commonProps} />
-        </Container>
-      )
-    case VIEWS.UPDATE_PASSWORD:
-      return (
-        <Container>
-          <UpdatePassword {...commonProps} />
-        </Container>
-      )
-    default:
-      return null
-  }
-}
-
-interface SubComponentProps {
-  supabaseClient: SupabaseClient
-  setAuthView: (view: ViewType) => void
-  setLoading: (loading: boolean) => void
-  setError: (error: string) => void
-  setMessage: (message: string | null) => void
-  clearMessages: () => void
-  loading: boolean
-  redirectTo?: RedirectTo
-  renderFeedback: () => React.ReactNode
-}
-
-interface SocialAuthProps {
-  supabaseClient: SupabaseClient
-  providers: Provider[]
-  layout?: 'horizontal' | 'vertical'
-  redirectTo?: RedirectTo
-  setLoading: (loading: boolean) => void
-  setError: (error: string) => void
-  clearMessages: () => void
-  loading: boolean
 }
 
 function SocialAuth({
@@ -291,12 +201,6 @@ function SocialAuth({
   )
 }
 
-interface EmailAuthProps extends SubComponentProps {
-  view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
-  magicLink?: boolean
-  onSignUpValidate?: (email: string, password: string) => Promise<void> | void
-}
-
 function EmailAuth({
   supabaseClient,
   view,
@@ -341,19 +245,12 @@ function EmailAuth({
         if (error) throw error
         if (data.user && !data.session) {
           setMessage('Check your email for the confirmation link.')
-        } else {
         }
       }
     } catch (error: any) {
       setError(error.message || 'An unexpected error occurred.')
     } finally {
-      if (
-        document.getElementById(
-          view === VIEWS.SIGN_IN ? 'auth-sign-in' : 'auth-sign-up',
-        )
-      ) {
-        setLoading(false)
-      }
+      setLoading(false)
     }
   }
 
@@ -385,7 +282,19 @@ function EmailAuth({
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Password</Label>
+          {view === VIEWS.SIGN_IN && (
+            <Button
+              variant="link"
+              type="button"
+              onClick={() => setAuthView(VIEWS.FORGOTTEN_PASSWORD)}
+              className="p-0 h-auto font-normal text-muted-foreground text-sm"
+            >
+              Forgot your password?
+            </Button>
+          )}
+        </div>
         <div className="relative">
           <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -402,25 +311,6 @@ function EmailAuth({
           />
         </div>
       </div>
-
-      {view === VIEWS.SIGN_IN && (
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center space-x-2">
-            <Checkbox id="remember-me" />
-            <Label htmlFor="remember-me" className="font-normal">
-              Remember me
-            </Label>
-          </div>
-          <Button
-            variant="link"
-            type="button"
-            onClick={() => setAuthView(VIEWS.FORGOTTEN_PASSWORD)}
-            className="p-0 h-auto font-normal text-muted-foreground"
-          >
-            Forgot your password?
-          </Button>
-        </div>
-      )}
 
       <Button type="submit" className="w-full" disabled={loading}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -659,6 +549,139 @@ function UpdatePassword({
       {renderFeedback()}
     </form>
   )
+}
+
+function Auth({
+  supabaseClient,
+  socialLayout = 'vertical',
+  providers,
+  view = VIEWS.SIGN_IN,
+  redirectTo,
+  onlyThirdPartyProviders = false,
+  magicLink = false,
+  onSignUpValidate,
+}: AuthProps): JSX.Element | null {
+  const [authView, setAuthView] = useState<ViewType>(view)
+  const {
+    loading,
+    error,
+    message,
+    setLoading,
+    setError,
+    setMessage,
+    clearMessages,
+  } = useAuthForm()
+
+  useEffect(() => {
+    setAuthView(view)
+    setError(null)
+    setMessage(null)
+  }, [view, setError, setMessage])
+
+  const renderFeedback = () => (
+    <>
+      {error && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {message && (
+        <Alert variant="default" className="mt-4">
+          <CheckCircle2 className="h-4 w-4" />
+          <AlertTitle>Success</AlertTitle>
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
+      )}
+    </>
+  )
+
+  const commonProps = {
+    supabaseClient,
+    setAuthView,
+    setLoading,
+    setError,
+    setMessage,
+    clearMessages,
+    loading,
+    redirectTo,
+    renderFeedback,
+  }
+
+  const Container = ({ children }: { children: React.ReactNode }) => (
+    <>
+      {providers && providers.length > 0 && (
+        <SocialAuth
+          supabaseClient={supabaseClient}
+          providers={providers}
+          layout={socialLayout}
+          redirectTo={redirectTo}
+          setLoading={setLoading}
+          setError={setError}
+          clearMessages={clearMessages}
+          loading={loading}
+        />
+      )}
+      {providers && providers.length > 0 && !onlyThirdPartyProviders && (
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <Separator />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              Or continue with
+            </span>
+          </div>
+        </div>
+      )}
+      {!onlyThirdPartyProviders && children}
+    </>
+  )
+
+  switch (authView) {
+    case VIEWS.SIGN_IN:
+      return (
+        <Container>
+          <EmailAuth
+            {...commonProps}
+            view={VIEWS.SIGN_IN}
+            magicLink={magicLink}
+          />
+        </Container>
+      )
+    case VIEWS.SIGN_UP:
+      return (
+        <Container>
+          <EmailAuth
+            {...commonProps}
+            view={VIEWS.SIGN_UP}
+            magicLink={false}
+            onSignUpValidate={onSignUpValidate}
+          />
+        </Container>
+      )
+    case VIEWS.FORGOTTEN_PASSWORD:
+      return (
+        <Container>
+          <ForgottenPassword {...commonProps} />
+        </Container>
+      )
+    case VIEWS.MAGIC_LINK:
+      return (
+        <Container>
+          <MagicLink {...commonProps} />
+        </Container>
+      )
+    case VIEWS.UPDATE_PASSWORD:
+      return (
+        <Container>
+          <UpdatePassword {...commonProps} />
+        </Container>
+      )
+    default:
+      return null
+  }
 }
 
 export default Auth
