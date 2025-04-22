@@ -284,16 +284,17 @@ function EmailAuth({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Password</Label>
-          {view === VIEWS.SIGN_IN && (
-            <Button
-              variant="link"
-              type="button"
-              onClick={() => setAuthView(VIEWS.FORGOTTEN_PASSWORD)}
-              className="p-0 h-auto font-normal text-muted-foreground text-sm"
-            >
-              Forgot your password?
-            </Button>
-          )}
+          <Button
+            variant="link"
+            type="button"
+            onClick={() => setAuthView(VIEWS.FORGOTTEN_PASSWORD)}
+            className={cn(
+              'p-0 h-auto font-normal text-muted-foreground text-sm',
+              view === VIEWS.SIGN_UP && 'invisible',
+            )}
+          >
+            Forgot your password?
+          </Button>
         </div>
         <div className="relative">
           <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
