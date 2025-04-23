@@ -1,15 +1,8 @@
 import { supabase } from './supabase'
+import { ViewType } from '@/components/auth'
 import { Session } from '@supabase/supabase-js'
 import { usePostHog } from 'posthog-js/react'
 import { useState, useEffect } from 'react'
-
-export type AuthViewType =
-  | 'sign_in'
-  | 'sign_up'
-  | 'magic_link'
-  | 'forgotten_password'
-  | 'update_password'
-  | 'verify_otp'
 
 type UserTeam = {
   email: string
@@ -33,12 +26,12 @@ export async function getUserTeam(
 
 export function useAuth(
   setAuthDialog: (value: boolean) => void,
-  setAuthView: (value: AuthViewType) => void,
+  setAuthView: (value: ViewType) => void,
 ) {
   const [session, setSession] = useState<Session | null>(null)
   const [userTeam, setUserTeam] = useState<UserTeam | undefined>(undefined)
+  const [recovery, setRecovery] = useState(false)
   const posthog = usePostHog()
-  let recovery = false
 
   useEffect(() => {
     if (!supabase) {
@@ -69,13 +62,13 @@ export function useAuth(
       setSession(session)
 
       if (_event === 'PASSWORD_RECOVERY') {
-        recovery = true
+        setRecovery(true)
         setAuthView('update_password')
         setAuthDialog(true)
       }
 
       if (_event === 'USER_UPDATED' && recovery) {
-        recovery = false
+        setRecovery(false)
       }
 
       if (_event === 'SIGNED_IN' && !recovery) {
@@ -97,11 +90,12 @@ export function useAuth(
         setAuthView('sign_in')
         posthog.capture('sign_out')
         posthog.reset()
+        setRecovery(false)
       }
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [recovery, setAuthDialog, setAuthView, posthog])
 
   return {
     session,
