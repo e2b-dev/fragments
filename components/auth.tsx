@@ -609,56 +609,6 @@ function UpdatePassword({
   )
 }
 
-interface AuthLayoutContainerProps extends SocialAuthProps {
-  children: React.ReactNode
-  onlyThirdPartyProviders: boolean
-  showSeparator: boolean
-}
-
-function AuthLayoutContainer({
-  children,
-  onlyThirdPartyProviders,
-  showSeparator,
-  supabaseClient,
-  providers,
-  layout,
-  redirectTo,
-  setLoading,
-  setError,
-  clearMessages,
-  loading,
-}: AuthLayoutContainerProps) {
-  return (
-    <>
-      {providers && providers.length > 0 && (
-        <SocialAuth
-          supabaseClient={supabaseClient}
-          providers={providers}
-          layout={layout || 'vertical'}
-          redirectTo={redirectTo}
-          setLoading={setLoading}
-          setError={setError}
-          clearMessages={clearMessages}
-          loading={loading}
-        />
-      )}
-      {showSeparator && (
-        <div className="relative my-4">
-          <div className="absolute inset-0 flex items-center">
-            <Separator />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-      )}
-      {!onlyThirdPartyProviders && children}
-    </>
-  )
-}
-
 function Auth({
   supabaseClient,
   socialLayout = 'vertical',
@@ -743,20 +693,33 @@ function Auth({
       {authView === VIEWS.UPDATE_PASSWORD ? (
         viewComponent
       ) : (
-        <AuthLayoutContainer
-          supabaseClient={supabaseClient}
-          providers={providers || []}
-          layout={socialLayout}
-          redirectTo={redirectTo}
-          setLoading={setLoading}
-          setError={setError}
-          clearMessages={clearMessages}
-          loading={loading}
-          onlyThirdPartyProviders={onlyThirdPartyProviders}
-          showSeparator={showSeparator || false}
-        >
-          {viewComponent}
-        </AuthLayoutContainer>
+        <>
+          {showSocialAuth && (
+            <SocialAuth
+              supabaseClient={supabaseClient}
+              providers={providers || []}
+              layout={socialLayout}
+              redirectTo={redirectTo}
+              setLoading={setLoading}
+              setError={setError}
+              clearMessages={clearMessages}
+              loading={loading}
+            />
+          )}
+          {showSeparator && (
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <Separator />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+          )}
+          {!onlyThirdPartyProviders && viewComponent}
+        </>
       )}
 
       <div className="mt-4 space-y-2">
