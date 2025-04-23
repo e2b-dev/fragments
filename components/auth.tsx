@@ -12,7 +12,7 @@ import {
   Loader2,
   Mail,
 } from 'lucide-react'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import * as SimpleIcons from 'simple-icons'
 
 const VIEWS = {
@@ -48,7 +48,6 @@ interface SubComponentProps {
   clearMessages: () => void
   loading: boolean
   redirectTo?: RedirectTo
-  renderFeedback: () => React.ReactNode
 }
 
 interface SocialAuthProps {
@@ -106,47 +105,27 @@ function useAuthForm(): UseAuthFormReturn {
   const [loading, setLoading] = useState(false)
   const [error, setErrorState] = useState<string | null>(null)
   const [message, setMessageState] = useState<string | null>(null)
-  const isMounted = useRef(true)
-
-  useEffect(() => {
-    isMounted.current = true
-    return () => {
-      isMounted.current = false
-    }
-  }, [])
 
   const setError = useCallback((errorMsg: string | null) => {
-    if (isMounted.current) {
-      setErrorState(errorMsg)
-      if (errorMsg) setMessageState(null) // Clear message when error occurs
-    }
+    setErrorState(errorMsg)
+    if (errorMsg) setMessageState(null)
   }, [])
 
   const setMessage = useCallback((msg: string | null) => {
-    if (isMounted.current) {
-      setMessageState(msg)
-      if (msg) setErrorState(null) // Clear error when message occurs
-    }
+    setMessageState(msg)
+    if (msg) setErrorState(null)
   }, [])
 
   const clearMessages = useCallback(() => {
-    if (isMounted.current) {
-      setErrorState(null)
-      setMessageState(null)
-    }
-  }, [])
-
-  const safeSetLoading = useCallback((isLoading: boolean) => {
-    if (isMounted.current) {
-      setLoading(isLoading)
-    }
+    setErrorState(null)
+    setMessageState(null)
   }, [])
 
   return {
     loading,
     error,
     message,
-    setLoading: safeSetLoading,
+    setLoading,
     setError,
     setMessage,
     clearMessages,
@@ -214,7 +193,6 @@ function EmailAuth({
   loading,
   redirectTo,
   magicLink,
-  renderFeedback,
   onSignUpValidate,
   metadata,
 }: Omit<EmailAuthProps, 'email' | 'setEmail' | 'password' | 'setPassword'> & {
@@ -367,7 +345,6 @@ function EmailAuth({
           </p>
         )}
       </div>
-      {renderFeedback()}
     </form>
   )
 }
@@ -381,7 +358,6 @@ function MagicLink({
   clearMessages,
   loading,
   redirectTo,
-  renderFeedback,
 }: SubComponentProps) {
   const [email, setEmail] = useState('')
 
@@ -436,7 +412,6 @@ function MagicLink({
           Sign in with password instead
         </Button>
       </div>
-      {renderFeedback()}
     </form>
   )
 }
@@ -450,7 +425,6 @@ function ForgottenPassword({
   clearMessages,
   loading,
   redirectTo,
-  renderFeedback,
 }: Omit<SubComponentProps, 'email' | 'setEmail'>) {
   const [email, setEmail] = useState('')
 
@@ -502,7 +476,6 @@ function ForgottenPassword({
           Back to Sign In
         </Button>
       </div>
-      {renderFeedback()}
     </form>
   )
 }
@@ -514,7 +487,6 @@ function UpdatePassword({
   setMessage,
   clearMessages,
   loading,
-  renderFeedback,
 }: Omit<
   SubComponentProps,
   'setAuthView' | 'redirectTo' | 'email' | 'setEmail'
@@ -559,7 +531,6 @@ function UpdatePassword({
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Update Password
       </Button>
-      {renderFeedback()}
     </form>
   )
 }
@@ -592,25 +563,6 @@ function Auth({
     setMessage(null)
   }, [view, setError, setMessage])
 
-  const renderFeedback = () => (
-    <>
-      {error && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      {message && (
-        <Alert variant="default" className="mt-4">
-          <CheckCircle2 className="h-4 w-4" />
-          <AlertTitle>Success</AlertTitle>
-          <AlertDescription>{message}</AlertDescription>
-        </Alert>
-      )}
-    </>
-  )
-
   const commonProps = {
     supabaseClient,
     setAuthView,
@@ -620,7 +572,6 @@ function Auth({
     clearMessages,
     loading,
     redirectTo,
-    renderFeedback,
   }
 
   const Container = ({ children }: { children: React.ReactNode }) => (
@@ -653,46 +604,68 @@ function Auth({
     </>
   )
 
+  let viewComponent: React.ReactNode = null
+
   switch (authView) {
     case VIEWS.SIGN_IN:
-      return (
-        <Container>
-          <EmailAuth
-            {...commonProps}
-            view={VIEWS.SIGN_IN}
-            magicLink={magicLink}
-          />
-        </Container>
+      viewComponent = (
+        <EmailAuth
+          {...commonProps}
+          view={VIEWS.SIGN_IN}
+          magicLink={magicLink}
+        />
       )
+      break
     case VIEWS.SIGN_UP:
-      return (
-        <Container>
-          <EmailAuth
-            {...commonProps}
-            view={VIEWS.SIGN_UP}
-            magicLink={false}
-            onSignUpValidate={onSignUpValidate}
-            metadata={metadata}
-          />
-        </Container>
+      viewComponent = (
+        <EmailAuth
+          {...commonProps}
+          view={VIEWS.SIGN_UP}
+          magicLink={false}
+          onSignUpValidate={onSignUpValidate}
+          metadata={metadata}
+        />
       )
+      break
     case VIEWS.FORGOTTEN_PASSWORD:
-      return (
-        <Container>
-          <ForgottenPassword {...commonProps} />
-        </Container>
-      )
+      viewComponent = <ForgottenPassword {...commonProps} />
+      break
     case VIEWS.MAGIC_LINK:
-      return (
-        <Container>
-          <MagicLink {...commonProps} />
-        </Container>
-      )
+      viewComponent = <MagicLink {...commonProps} />
+      break
     case VIEWS.UPDATE_PASSWORD:
-      return <UpdatePassword {...commonProps} />
+      viewComponent = <UpdatePassword {...commonProps} />
+      break
     default:
-      return null
+      viewComponent = null
   }
+
+  return (
+    <div className="w-full space-y-4">
+      {authView === VIEWS.UPDATE_PASSWORD ? (
+        viewComponent
+      ) : (
+        <Container>{viewComponent}</Container>
+      )}
+
+      <div className="mt-4 space-y-2">
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        {message && (
+          <Alert variant="default">
+            <CheckCircle2 className="h-4 w-4" />
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription>{message}</AlertDescription>
+          </Alert>
+        )}
+      </div>
+    </div>
+  )
 }
 
 export default Auth
