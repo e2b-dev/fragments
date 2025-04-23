@@ -182,65 +182,33 @@ function SocialAuth({
   )
 }
 
-function EmailAuth({
+interface SignInFormProps extends SubComponentProps {
+  magicLink?: boolean
+}
+
+function SignInForm({
   supabaseClient,
-  view,
   setAuthView,
   setLoading,
   setError,
-  setMessage,
   clearMessages,
   loading,
-  redirectTo,
   magicLink,
-  onSignUpValidate,
-  metadata,
-}: Omit<EmailAuthProps, 'email' | 'setEmail' | 'password' | 'setPassword'> & {
-  view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
-  magicLink?: boolean
-  metadata?: Record<string, any>
-}) {
+}: SignInFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     clearMessages()
     setLoading(true)
 
     try {
-      if (view === VIEWS.SIGN_IN) {
-        const { error } = await supabaseClient.auth.signInWithPassword({
-          email,
-          password,
-        })
-        if (error) throw error
-      } else if (view === VIEWS.SIGN_UP) {
-        if (password !== confirmPassword) {
-          throw new Error('Passwords do not match')
-        }
-        if (onSignUpValidate) {
-          const isValid = await onSignUpValidate(email, password)
-          if (!isValid) {
-            throw new Error(
-              'Invalid email address. Please use a different email.',
-            )
-          }
-        }
-        const { data, error } = await supabaseClient.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: redirectTo,
-            data: metadata,
-          },
-        })
-        if (error) throw error
-        if (data.user && !data.session) {
-          setMessage('Check your email for the confirmation link.')
-        }
-      }
+      const { error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (error) throw error
     } catch (error: any) {
       setError(error.message || 'An unexpected error occurred.')
     } finally {
@@ -249,11 +217,7 @@ function EmailAuth({
   }
 
   return (
-    <form
-      id={view === VIEWS.SIGN_IN ? 'auth-sign-in' : 'auth-sign-up'}
-      onSubmit={handleSubmit}
-      className="space-y-4"
-    >
+    <form id="auth-sign-in" onSubmit={handleSignIn} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email address</Label>
         <div className="relative">
@@ -277,10 +241,7 @@ function EmailAuth({
             variant="link"
             type="button"
             onClick={() => setAuthView(VIEWS.FORGOTTEN_PASSWORD)}
-            className={cn(
-              'p-0 h-auto font-normal text-muted-foreground text-sm',
-              view === VIEWS.SIGN_UP && 'invisible',
-            )}
+            className="p-0 h-auto font-normal text-muted-foreground text-sm"
           >
             Forgot your password?
           </Button>
@@ -295,38 +256,18 @@ function EmailAuth({
             onChange={(e) => setPassword(e.target.value)}
             required
             className="pl-10"
-            autoComplete={
-              view === VIEWS.SIGN_IN ? 'current-password' : 'new-password'
-            }
+            autoComplete="current-password"
           />
         </div>
       </div>
-      {view === VIEWS.SIGN_UP && (
-        <div className="space-y-2">
-          <Label htmlFor="confirm-password">Confirm Password</Label>
-          <div className="relative">
-            <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              id="confirm-password"
-              type="password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className="pl-10"
-              autoComplete="new-password"
-            />
-          </div>
-        </div>
-      )}
 
       <Button type="submit" className="w-full" disabled={loading}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {view === VIEWS.SIGN_IN ? 'Sign In' : 'Sign Up'}
+        Sign In
       </Button>
 
       <div className="text-center text-sm space-y-2">
-        {view === VIEWS.SIGN_IN && magicLink && (
+        {magicLink && (
           <Button
             variant="link"
             type="button"
@@ -336,31 +277,147 @@ function EmailAuth({
             Sign in with magic link
           </Button>
         )}
-        {view === VIEWS.SIGN_IN ? (
-          <p className="text-muted-foreground">
-            Don&apos;t have an account?{' '}
-            <Button
-              variant="link"
-              type="button"
-              onClick={() => setAuthView(VIEWS.SIGN_UP)}
-              className="p-0 h-auto underline"
-            >
-              Sign up
-            </Button>
-          </p>
-        ) : (
-          <p className="text-muted-foreground">
-            Already have an account?{' '}
-            <Button
-              variant="link"
-              type="button"
-              onClick={() => setAuthView(VIEWS.SIGN_IN)}
-              className="p-0 h-auto underline"
-            >
-              Sign in
-            </Button>
-          </p>
-        )}
+        <p className="text-muted-foreground">
+          Don&apos;t have an account?{' '}
+          <Button
+            variant="link"
+            type="button"
+            onClick={() => setAuthView(VIEWS.SIGN_UP)}
+            className="p-0 h-auto underline"
+          >
+            Sign up
+          </Button>
+        </p>
+      </div>
+    </form>
+  )
+}
+
+interface SignUpFormProps extends SubComponentProps {
+  onSignUpValidate?: (email: string, password: string) => Promise<boolean>
+  metadata?: Record<string, any>
+}
+
+function SignUpForm({
+  supabaseClient,
+  setAuthView,
+  setLoading,
+  setError,
+  setMessage,
+  clearMessages,
+  loading,
+  redirectTo,
+  onSignUpValidate,
+  metadata,
+}: SignUpFormProps) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    clearMessages()
+    setLoading(true)
+
+    try {
+      if (password !== confirmPassword) {
+        throw new Error('Passwords do not match')
+      }
+      if (onSignUpValidate) {
+        const isValid = await onSignUpValidate(email, password)
+        if (!isValid) {
+          throw new Error(
+            'Invalid email address. Please use a different email.',
+          )
+        }
+      }
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectTo,
+          data: metadata,
+        },
+      })
+      if (error) throw error
+      if (data.user && !data.session) {
+        setMessage('Check your email for the confirmation link.')
+      }
+    } catch (error: any) {
+      setError(error.message || 'An unexpected error occurred.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <form id="auth-sign-up" onSubmit={handleSignUp} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="email">Email address</Label>
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="pl-10"
+            autoComplete="email"
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <div className="relative">
+          <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="pl-10"
+            autoComplete="new-password"
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="confirm-password">Confirm Password</Label>
+        <div className="relative">
+          <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            id="confirm-password"
+            type="password"
+            placeholder="••••••••"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            className="pl-10"
+            autoComplete="new-password"
+          />
+        </div>
+      </div>
+
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        Sign Up
+      </Button>
+
+      <div className="text-center text-sm">
+        <p className="text-muted-foreground">
+          Already have an account?{' '}
+          <Button
+            variant="link"
+            type="button"
+            onClick={() => setAuthView(VIEWS.SIGN_IN)}
+            className="p-0 h-auto underline"
+          >
+            Sign in
+          </Button>
+        </p>
       </div>
     </form>
   )
@@ -625,20 +682,12 @@ function Auth({
 
   switch (authView) {
     case VIEWS.SIGN_IN:
-      viewComponent = (
-        <EmailAuth
-          {...commonProps}
-          view={VIEWS.SIGN_IN}
-          magicLink={magicLink}
-        />
-      )
+      viewComponent = <SignInForm {...commonProps} magicLink={magicLink} />
       break
     case VIEWS.SIGN_UP:
       viewComponent = (
-        <EmailAuth
+        <SignUpForm
           {...commonProps}
-          view={VIEWS.SIGN_UP}
-          magicLink={false}
           onSignUpValidate={onSignUpValidate}
           metadata={metadata}
         />
