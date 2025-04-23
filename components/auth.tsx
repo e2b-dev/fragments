@@ -193,7 +193,6 @@ function SignInForm({
   setError,
   clearMessages,
   loading,
-  magicLink,
 }: SignInFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -265,30 +264,6 @@ function SignInForm({
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Sign In
       </Button>
-
-      <div className="text-center text-sm space-y-2">
-        {magicLink && (
-          <Button
-            variant="link"
-            type="button"
-            onClick={() => setAuthView(VIEWS.MAGIC_LINK)}
-            className="p-0 h-auto font-normal"
-          >
-            Sign in with magic link
-          </Button>
-        )}
-        <p className="text-muted-foreground">
-          Don&apos;t have an account?{' '}
-          <Button
-            variant="link"
-            type="button"
-            onClick={() => setAuthView(VIEWS.SIGN_UP)}
-            className="p-0 h-auto underline"
-          >
-            Sign up
-          </Button>
-        </p>
-      </div>
     </form>
   )
 }
@@ -405,20 +380,6 @@ function SignUpForm({
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Sign Up
       </Button>
-
-      <div className="text-center text-sm">
-        <p className="text-muted-foreground">
-          Already have an account?{' '}
-          <Button
-            variant="link"
-            type="button"
-            onClick={() => setAuthView(VIEWS.SIGN_IN)}
-            className="p-0 h-auto underline"
-          >
-            Sign in
-          </Button>
-        </p>
-      </div>
     </form>
   )
 }
@@ -476,23 +437,12 @@ function MagicLink({
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Send Magic Link
       </Button>
-      <div className="text-center text-sm">
-        <Button
-          variant="link"
-          type="button"
-          onClick={() => setAuthView(VIEWS.SIGN_IN)}
-          className="p-0 h-auto font-normal"
-        >
-          Sign in with password instead
-        </Button>
-      </div>
     </form>
   )
 }
 
 function ForgottenPassword({
   supabaseClient,
-  setAuthView,
   setLoading,
   setError,
   setMessage,
@@ -540,16 +490,6 @@ function ForgottenPassword({
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Send Reset Instructions
       </Button>
-      <div className="text-center text-sm">
-        <Button
-          variant="link"
-          type="button"
-          onClick={() => setAuthView(VIEWS.SIGN_IN)}
-          className="p-0 h-auto underline"
-        >
-          Back to Sign In
-        </Button>
-      </div>
     </form>
   )
 }
@@ -661,7 +601,7 @@ function Auth({
 
   switch (authView) {
     case VIEWS.SIGN_IN:
-      viewComponent = <SignInForm {...commonProps} magicLink={magicLink} />
+      viewComponent = <SignInForm {...commonProps} />
       break
     case VIEWS.SIGN_UP:
       viewComponent = (
@@ -720,6 +660,69 @@ function Auth({
           )}
           {!onlyThirdPartyProviders && viewComponent}
         </>
+      )}
+
+      {!onlyThirdPartyProviders && authView !== VIEWS.UPDATE_PASSWORD && (
+        <div className="text-center text-sm space-y-1 mt-4">
+          {authView === VIEWS.SIGN_IN && (
+            <>
+              {magicLink && (
+                <Button
+                  variant="link"
+                  type="button"
+                  onClick={() => setAuthViewAndClearMessages(VIEWS.MAGIC_LINK)}
+                  className="p-0 h-auto font-normal"
+                >
+                  Sign in with magic link
+                </Button>
+              )}
+              <p className="text-muted-foreground">
+                Don&apos;t have an account?{' '}
+                <Button
+                  variant="link"
+                  type="button"
+                  onClick={() => setAuthViewAndClearMessages(VIEWS.SIGN_UP)}
+                  className="p-0 h-auto underline"
+                >
+                  Sign up
+                </Button>
+              </p>
+            </>
+          )}
+          {authView === VIEWS.SIGN_UP && (
+            <p className="text-muted-foreground">
+              Already have an account?{' '}
+              <Button
+                variant="link"
+                type="button"
+                onClick={() => setAuthViewAndClearMessages(VIEWS.SIGN_IN)}
+                className="p-0 h-auto underline"
+              >
+                Sign in
+              </Button>
+            </p>
+          )}
+          {authView === VIEWS.MAGIC_LINK && (
+            <Button
+              variant="link"
+              type="button"
+              onClick={() => setAuthViewAndClearMessages(VIEWS.SIGN_IN)}
+              className="p-0 h-auto font-normal"
+            >
+              Sign in with password instead
+            </Button>
+          )}
+          {authView === VIEWS.FORGOTTEN_PASSWORD && (
+            <Button
+              variant="link"
+              type="button"
+              onClick={() => setAuthViewAndClearMessages(VIEWS.SIGN_IN)}
+              className="p-0 h-auto underline"
+            >
+              Back to Sign In
+            </Button>
+          )}
+        </div>
       )}
 
       <div className="mt-4 space-y-2">
