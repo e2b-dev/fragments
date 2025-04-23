@@ -202,6 +202,7 @@ function EmailAuth({
 }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -216,6 +217,9 @@ function EmailAuth({
         })
         if (error) throw error
       } else if (view === VIEWS.SIGN_UP) {
+        if (password !== confirmPassword) {
+          throw new Error('Passwords do not match')
+        }
         if (onSignUpValidate) {
           const isValid = await onSignUpValidate(email, password)
           if (!isValid) {
@@ -243,11 +247,6 @@ function EmailAuth({
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    setEmail('')
-    setPassword('')
-  }, [view])
 
   return (
     <form
@@ -302,6 +301,24 @@ function EmailAuth({
           />
         </div>
       </div>
+      {view === VIEWS.SIGN_UP && (
+        <div className="space-y-2">
+          <Label htmlFor="confirm-password">Confirm Password</Label>
+          <div className="relative">
+            <KeyRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="confirm-password"
+              type="password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="pl-10"
+              autoComplete="new-password"
+            />
+          </div>
+        </div>
+      )}
 
       <Button type="submit" className="w-full" disabled={loading}>
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
