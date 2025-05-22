@@ -85,14 +85,14 @@
       "multiModal": true
     },
     {
-      "id": "claude-4-opus-latest",
+      "id": "claude-opus-4-latest",
       "provider": "Anthropic",
       "providerId": "anthropic",
       "name": "Claude Opus 4",
       "multiModal": true
     },
     {
-      "id": "claude-4-sonnet-latest",
+      "id": "claude-sonnet-4-latest",
       "provider": "Anthropic",
       "providerId": "anthropic",
       "name": "Claude Sonnet 4",
