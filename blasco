@@ -1,0 +1,134 @@
+Desenvolver uma plataforma ERP completa chamada **Blasco**, inspirada no Bling, com todas as funcionalidades equivalentes ou superiores, layout semelhante com cores diferentes (elegantes e suaves), e planos de assinatura conforme especificado.
+
+---
+
+#### 🖥️ Layout e Identidade Visual
+
+* Interface semelhante à do Bling, com usabilidade intuitiva.
+* Utilizar paleta de cores diferentes, priorizando tons elegantes e suaves.
+* Design responsivo para acesso em dispositivos móveis e desktops.
+* Dashboard personalizável com widgets e gráficos interativos.
+
+---
+
+#### ⚙️ Funcionalidades Principais
+
+1. **Gestão de Vendas**
+
+   * Emissão automática de NF-e, NFC-e e NFS-e.
+   * Controle completo de pedidos de venda.
+   * Frente de caixa (PDV) integrada.
+   * Criação de propostas comerciais e orçamentos.
+   * Gestão de ordens de serviço.([bling.inf.br][1], [dooca.com.br][2], [Bling - Sistema de gestão online][3])
+
+2. **Controle de Estoque**
+
+   * Cadastro e gestão de produtos com variações.
+   * Reserva automática de estoque para pedidos.
+   * Controle de entradas e saídas de produtos.
+   * Ordem de produção com controle de matéria-prima.([HostGator Brasil][4], [Bling - Sistema de gestão online][5])
+
+3. **Finanças**
+
+   * Gestão de contas a pagar e a receber.
+   * Fluxo de caixa, balancete e DRE.
+   * Emissão de boletos registrados.
+   * Integração com contas bancárias para conciliação.([Ecommerce na Prática][6], [gostation.com.br][7])
+
+4. **Integrações**
+
+   * Integração com marketplaces (ex: Mercado Livre, Shopee).
+   * Integração com plataformas de e-commerce (ex: Tray, Dooca).
+   * Integração com gateways de pagamento e logística (ex: Correios via SIGEP Web).
+   * Integração com sistemas de frente de caixa e CRM.([Blog do Bling][8], [dooca.com.br][2], [gostation.com.br][7])
+
+5. **Logística**
+
+   * Separação de pedidos e impressão automática de etiquetas.
+   * Geração de DANFE e códigos de rastreamento.
+   * Gestão de envios com melhores preços (ex: Melhor Envio).([Bling - Sistema de gestão online][3], [dooca.com.br][2])
+
+6. **Automatizações e Inteligência**
+
+   * Ações automáticas baseadas em eventos (ex: envio de NF-e após confirmação de pagamento).
+   * Visão analítica com relatórios personalizados.
+   * Alertas e notificações para eventos críticos.([Bling - Sistema de gestão online][3])
+
+7. **Outras Funcionalidades**
+
+   * Cadastro de clientes, fornecedores e transportadoras.
+   * Gestão de comissões para vendedores.
+   * Controle de consignações e ordens de produção.
+   * Agenda integrada para gestão de atendimentos e compromissos.([HostGator Brasil][4])
+
+---
+
+#### 💳 Planos de Assinatura
+
+1. **Básico** – R\$ 40,00/mês
+
+   * Emissão de NF-e e NFC-e.
+   * Controle de estoque básico.
+   * Cadastro de produtos e clientes.
+   * Relatórios financeiros simples.([bling.inf.br][1], [Blog do Bling][8], [HostGator Brasil][4])
+
+2. **Essencial** – R\$ 80,00/mês
+
+   * Todas as funcionalidades do plano Básico.
+   * Integração com até 2 marketplaces.
+   * Gestão de contas a pagar e a receber.
+   * Emissão de boletos registrados.([digital.bling.com.br][9], [Ecommerce na Prática][6], [gostation.com.br][7])
+
+3. **Pro** – R\$ 150,00/mês
+
+   * Todas as funcionalidades do plano Essencial.
+   * Integração com até 5 marketplaces.
+   * Controle de ordens de serviço e produção.
+   * Automatizações básicas.
+
+4. **Plus** – R\$ 400,00/mês
+
+   * Todas as funcionalidades do plano Pro.
+   * Integração com até 10 marketplaces.
+   * Automatizações avançadas.
+   * Relatórios personalizados e visão analítica.([Blog do Bling][8])
+
+5. **Elite Plus** – R\$ 600,00/mês
+
+   * Todas as funcionalidades do plano Plus.
+   * Integrações ilimitadas.
+   * Suporte prioritário.
+   * Consultoria personalizada para implementação.
+
+---
+
+#### 🛠️ Tecnologias e Requisitos Técnicos
+
+* Desenvolvimento web com tecnologias modernas (ex: React, Node.js).
+* Banco de dados relacional (ex: PostgreSQL).
+* APIs RESTful para integrações.
+* Infraestrutura em nuvem com escalabilidade (ex: AWS, Azure).
+* Segurança de dados conforme LGPD.
+
+---
+
+#### 📈 Diferenciais da Blasco
+
+* Interface amigável com design moderno.
+* Funcionalidades equivalentes ou superiores ao Bling.
+* Planos acessíveis com recursos escaláveis.
+* Suporte técnico eficiente e consultoria especializada.
+
+---
+
+Este prompt fornece uma base sólida para o desenvolvimento da plataforma Blasco, garantindo que todas as funcionalidades essenciais estejam presentes e que a experiência do usuário seja otimizada. Se precisar de mais detalhes ou ajustes específicos, estou à disposição para ajudar!
+
+[1]: https://bling.inf.br/?utm_source=chatgpt.com "Sistema ERP da Alfa Networks | Teste Grátis por 7 Dias"
+[2]: https://www.dooca.com.br/blog/bling-erp-sistema-de-gestao-ecommerce-com-emissao-de-nfe/?utm_source=chatgpt.com "Bling ERP - Sistema de gestão ecommerce com emissão de nfe"
+[3]: https://www.bling.com.br/funcionalidades/inteligencia-automacoes?utm_source=chatgpt.com "Automações | Bling - Sistema de gestão online"
+[4]: https://www.hostgator.com.br/blog/erp-bling-vantagens-ecommerce/?utm_source=chatgpt.com "ERP Bling: para que serve? Vantagens para o e-commerce"
+[5]: https://www.bling.com.br/integracao-ecommerce?utm_source=chatgpt.com "ERP para E-commerce: integração para vender mais | Bling"
+[6]: https://ecommercenapratica.com/blog/bling-erp-o-que-e/?utm_source=chatgpt.com "Bling ERP: O que é e como usar? | Ecommerce na Prática"
+[7]: https://gostation.com.br/blog/bling-sistema-erp/?utm_source=chatgpt.com "Bling - sistema de ERP para pequenas e médias empresas"
+[8]: https://blog.bling.com.br/sistema-de-gestao-para-e-commerce/?utm_source=chatgpt.com "Sistema de gestão de e-commerce: Vantagens + Funcionalidades"
+[9]: https://digital.bling.com.br/integracoes-tray?utm_source=chatgpt.com "ERP Integrado com a Tray"
