@@ -239,17 +239,17 @@
       "multiModal": true
     },
     {
-      "id": "open-mistral-nemo",
-      "provider": "Mistral",
-      "providerId": "mistral",
-      "name": "Mistral Nemo",
-      "multiModal": false
-    },
-    {
       "id": "mistral-small-latest",
       "provider": "Mistral",
       "providerId": "mistral",
       "name": "Mistral Small",
+      "multiModal": false
+    },
+    {
+      "id": "open-mistral-nemo",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Mistral Nemo",
       "multiModal": false
     },
     {
