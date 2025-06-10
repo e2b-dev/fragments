@@ -204,11 +204,25 @@
       "multiModal": true
     },
     {
-      "id": "codestral-2501",
+      "id": "magistral-medium-latest",
       "provider": "Mistral",
       "providerId": "mistral",
-      "name": "Codestral 25.01",
-      "multiModal": false
+      "name": "Magistral Medium",
+      "multiModal": true
+    },
+    {
+      "id": "magistral-small-latest",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Magistral Small",
+      "multiModal": true
+    },
+    {
+      "id": "mistral-medium-latest",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Mistral Medium",
+      "multiModal": true
     },
     {
       "id": "mistral-large-latest",
@@ -225,6 +239,13 @@
       "multiModal": true
     },
     {
+      "id": "open-mistral-nemo",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Mistral Nemo",
+      "multiModal": false
+    },
+    {
       "id": "mistral-small-latest",
       "provider": "Mistral",
       "providerId": "mistral",
@@ -232,10 +253,17 @@
       "multiModal": false
     },
     {
-      "id": "open-mistral-nemo",
+      "id": "devstral-small-latest",
       "provider": "Mistral",
       "providerId": "mistral",
-      "name": "Mistral Nemo",
+      "name": "Devstral Small",
+      "multiModal": false
+    },
+    {
+      "id": "codestral-latest",
+      "provider": "Mistral",
+      "providerId": "mistral",
+      "name": "Codestral 25.01",
       "multiModal": false
     },
     {
