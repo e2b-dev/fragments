@@ -1,10 +1,11 @@
 import { createAnthropic } from '@ai-sdk/anthropic'
+import { createFireworks } from '@ai-sdk/fireworks'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createVertex } from '@ai-sdk/google-vertex'
 import { createMistral } from '@ai-sdk/mistral'
 import { createOpenAI } from '@ai-sdk/openai'
+import { createVercel } from '@ai-sdk/vercel'
 import { createOllama } from 'ollama-ai-provider'
-import { createFireworks } from '@ai-sdk/fireworks'
 
 export type LLMModel = {
   id: string
@@ -68,6 +69,11 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
       createOpenAI({
         apiKey: apiKey || process.env.DEEPSEEK_API_KEY,
         baseURL: baseURL || 'https://api.deepseek.com/v1',
+      })(modelNameString),
+    vercel: () =>
+      createVercel({
+        apiKey: apiKey || process.env.VERCEL_API_KEY,
+        baseURL: baseURL || 'https://api.vercel.com/v1',
       })(modelNameString),
   }
 
