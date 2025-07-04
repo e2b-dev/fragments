@@ -1,0 +1,19 @@
+{
+    "name": "Fragments by E2B",
+    "short_name": "Fragments",
+    "description": "Open-source version of Anthropic's Artifacts",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#00000070",
+    "background_color": "#000000",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "type": "image/ico"
+        },
+        {
+            "src": "/favicon.ico",
+            "type": "image/ico"
+        }
+    ]
+}
