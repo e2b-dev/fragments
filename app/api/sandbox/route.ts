@@ -22,7 +22,6 @@ export async function POST(req: Request) {
   console.log('userID', userID)
   // console.log('apiKey', apiKey)
 
-  console.log("Creating sandbox", fragment.template, process.env)
   // Create an interpreter or a sandbox
   const sbx = await Sandbox.create(fragment.template, {
     metadata: {

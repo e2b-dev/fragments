@@ -21,11 +21,3 @@ export const template = Template()
     ])
     .setReadyCmd("sleep 30s")
     .setStartCmd("/compile_page.sh")
-
-async function main() {
-    const sbx = await Sandbox.create("nextjs-developer-new-build-mlejva")
-    const files = await sbx.files.list("/home/user/nextjs-app")
-    console.log(files)
-}
-
-main().catch(console.error)
