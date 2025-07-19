@@ -1,10 +1,14 @@
 import { Template } from "@e2b-dev/template";
-import { Sandbox } from "e2b";
 
 export const template = Template()
     // .skipCache()
     .fromImage("node:21-slim")
-    .runCmd("apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*")
+    .runCmd([
+        "apt-get update",
+        " apt-get install -y curl",
+        "apt-get clean",
+        "rm -rf /var/lib/apt/lists/*",
+    ])
     .copy("./compile_page.sh", "/compile_page.sh")    
     .runCmd("ls -la /")
     .runCmd("chmod +x /compile_page.sh")
