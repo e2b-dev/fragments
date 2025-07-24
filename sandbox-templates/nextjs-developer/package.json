@@ -1,0 +1,13 @@
+{
+  "name": "nextjs-developer",
+  "version": "1.0.0",
+  "scripts": {
+    "build:dev": "tsx build.dev.ts",
+    "build:prod": "tsx build.prod.ts",
+    "build": "tsx build.prod.ts"
+  },
+  "devDependencies": {
+    "@e2b-dev/template": "^0.2.0",
+    "tsx": "^4.20.3"
+  }
+}

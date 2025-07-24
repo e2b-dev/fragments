@@ -13,6 +13,10 @@ import 'core-js/features/object/group-by.js'
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
 
+const getTemplateId = (templateId: string) => {
+  return templateId.replace(/-dev$/, '')
+}
+
 export function ChatPicker({
   templates,
   selectedTemplate,
@@ -57,7 +61,9 @@ export function ChatPicker({
                   <div className="flex items-center space-x-2">
                     <Image
                       className="flex"
-                      src={`/thirdparty/templates/${templateId}.svg`}
+                      src={`/thirdparty/templates/${getTemplateId(
+                        templateId,
+                      )}.svg`}
                       alt={templateId}
                       width={14}
                       height={14}
