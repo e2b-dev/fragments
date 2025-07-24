@@ -40,7 +40,7 @@ const templates = {
   [getTemplateId('vue-developer')]: {
     name: 'Vue.js developer',
     lib: ['vue@latest', 'nuxt@3.13.0', 'tailwindcss'],
-    file: 'app.vue',
+    file: 'app/app.vue',
     instructions:
       'A Vue.js 3+ app that reloads automatically. Only when asked specifically for a Vue app.',
     port: 3000,

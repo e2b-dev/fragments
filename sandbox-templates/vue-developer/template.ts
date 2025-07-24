@@ -10,5 +10,6 @@ export const template = Template({
     'npx nuxi@latest init . --packageManager=npm --gitInit=no -f --modules tailwindcss',
   )
   .copy('nuxt.config.ts', 'nuxt.config.ts')
+  .setWorkdir('/home/user')
   .runCmd('mv /home/user/vue-app/* /home/user/ && rm -rf /home/user/vue-app')
   .setStartCmd('npm run dev', waitForPort(3000))
