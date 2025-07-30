@@ -1,8 +1,6 @@
 import { Template, waitForPort } from '@e2b-dev/template'
 
-export const template = Template({
-  fileContextPath: __dirname,
-})
+export const template = Template()
   .fromNodeImage('21-slim')
   .aptInstall(['curl', 'git']) // required for waitForPort(), we should probably include this in base image
   .setWorkdir('/home/user/vue-app')

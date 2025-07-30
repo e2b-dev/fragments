@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { name as templateAlias } from './package.json'
 import { template } from './template'
 import { Template } from '@e2b-dev/template'
