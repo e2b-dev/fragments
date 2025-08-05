@@ -281,7 +281,7 @@
       "multiModal": false
     },
     {
-      "id": "gpt-oss-120b",
+      "id": "accounts/fireworks/models/gpt-oss-120b",
       "provider": "Fireworks",
       "providerId": "fireworks",
       "name": "GPT OSS 120B",
