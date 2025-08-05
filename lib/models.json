@@ -22,13 +22,6 @@
       "multiModal": true
     },
     {
-      "id": "gpt-oss-120b",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "GPT OSS 120B",
-      "multiModal": true
-    },
-    {
       "id": "gpt-4.1",
       "provider": "OpenAI",
       "providerId": "openai",
@@ -285,6 +278,13 @@
       "provider": "Groq",
       "providerId": "groq",
       "name": "Llama 3.3 70B (Preview)",
+      "multiModal": false
+    },
+    {
+      "id": "gpt-oss-120b",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "GPT OSS 120B",
       "multiModal": false
     },
     {
