@@ -350,13 +350,6 @@
       "multiModal": false
     },
     {
-      "id": "grok-beta",
-      "provider": "xAI",
-      "providerId": "xai",
-      "name": "Grok (Beta)",
-      "multiModal": false
-    },
-    {
       "id": "grok-4",
       "provider": "xAI",
       "providerId": "xai",
