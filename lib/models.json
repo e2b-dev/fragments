@@ -284,7 +284,7 @@
       "id": "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct",
       "provider": "Fireworks",
       "providerId": "fireworks",
-      "name": "Qwen3-Coder-480B-A35B-Instruct",
+      "name": "Qwen3 Coder 480B A35B Instruct",
       "multiModal": false
     },
     {
@@ -334,27 +334,6 @@
       "provider": "Fireworks",
       "providerId": "fireworks",
       "name": "Llama 4 Scout Instruct",
-      "multiModal": false
-    },
-    {
-      "id": "accounts/fireworks/models/qwen3-235b-a22b",
-      "provider": "Fireworks",
-      "providerId": "fireworks",
-      "name": "Qwen3 235B A22B",
-      "multiModal": false
-    },
-    {
-      "id": "accounts/fireworks/models/qwen2p5-coder-32b-instruct",
-      "provider": "Fireworks",
-      "providerId": "fireworks",
-      "name": "Qwen2.5-Coder-32B-Instruct",
-      "multiModal": false
-    },
-    {
-      "id": "accounts/fireworks/models/qwen-qwq-32b-preview",
-      "provider": "Fireworks",
-      "providerId": "fireworks",
-      "name": "Qwen-QWQ-32B-Preview",
       "multiModal": false
     },
     {
