@@ -85,6 +85,13 @@
       "multiModal": true
     },
     {
+      "id": "gpt-oss-120b",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT OSS 120B",
+      "multiModal": true
+    },
+    {
       "id": "claude-opus-4-1-20250805",
       "provider": "Anthropic",
       "providerId": "anthropic",
