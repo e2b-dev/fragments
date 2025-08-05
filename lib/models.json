@@ -274,10 +274,31 @@
       "multiModal": false
     },
     {
+      "id": "openai/gpt-oss-120b",
+      "provider": "Groq",
+      "providerId": "groq",
+      "name": "GPT OSS 120B",
+      "multiModal": false
+    },
+    {
+      "id": "moonshotai/kimi-k2-instruct",
+      "provider": "Groq",
+      "providerId": "groq",
+      "name": "Kimi K2 Instruct",
+      "multiModal": false
+    },
+    {
+      "id": "qwen/qwen3-32b",
+      "provider": "Groq",
+      "providerId": "groq",
+      "name": "Qwen3 32B",
+      "multiModal": false
+    },
+    {
       "id": "llama-3.3-70b-versatile",
       "provider": "Groq",
       "providerId": "groq",
-      "name": "Llama 3.3 70B (Preview)",
+      "name": "Llama 3.3 70B",
       "multiModal": false
     },
     {
