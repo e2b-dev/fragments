@@ -309,6 +309,13 @@
       "multiModal": false
     },
     {
+      "id": "accounts/fireworks/models/qwen3-235b-a22b",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Qwen3 235B A22B",
+      "multiModal": false
+    },
+    {
       "id": "accounts/fireworks/models/qwen2p5-coder-32b-instruct",
       "provider": "Fireworks",
       "providerId": "fireworks",
