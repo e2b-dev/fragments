@@ -379,10 +379,38 @@
       "multiModal": false
     },
     {
-      "id": "grok-beta",
+      "id": "grok-4",
       "provider": "xAI",
       "providerId": "xai",
-      "name": "Grok (Beta)",
+      "name": "Grok 4",
+      "multiModal": true
+    },
+    {
+      "id": "grok-3",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3",
+      "multiModal": false
+    },
+    {
+      "id": "grok-3-mini",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3 Mini",
+      "multiModal": false
+    },
+    {
+      "id": "grok-3-fast",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3 Fast",
+      "multiModal": false
+    },
+    {
+      "id": "grok-3-mini-fast",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3 Mini Fast",
       "multiModal": false
     },
     {
