@@ -343,6 +343,34 @@
       "multiModal": false
     },
     {
+      "id": "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Qwen3-Coder-480B-A35B-Instruct",
+      "multiModal": false
+    },
+    {
+      "id": "accounts/fireworks/models/zai-org/glm-4p5",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Z.ai GLM 4.5",
+      "multiModal": false
+    },
+    {
+      "id": "accounts/fireworks/models/qwen3-235b-a22b-instruct-2507",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Qwen3 235B-A22B-Instruct-2507",
+      "multiModal": false
+    },
+    {
+      "id": "accounts/fireworks/models/qwen3-235b-a22b-thinking-2507",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Qwen3 235B-A22B-Thinking-2507",
+      "multiModal": false
+    },
+    {
       "id": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
       "provider": "Together AI",
       "providerId": "togetherai",
