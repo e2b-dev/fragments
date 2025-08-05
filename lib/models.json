@@ -336,6 +336,13 @@
       "name": "DeepSeek R1"
     },
     {
+      "id": "accounts/fireworks/models/kimi-k2-instruct",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Kimi K2 Instruct",
+      "multiModal": false
+    },
+    {
       "id": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
       "provider": "Together AI",
       "providerId": "togetherai",
