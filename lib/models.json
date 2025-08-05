@@ -302,13 +302,6 @@
       "multiModal": false
     },
     {
-      "id": "deepseek-r1-distill-llama-70b",
-      "provider": "Groq",
-      "providerId": "groq",
-      "name": "DeepSeek R1 Distill Llama 70B",
-      "multiModal": false
-    },
-    {
       "id": "accounts/fireworks/models/llama4-maverick-instruct-basic",
       "provider": "Fireworks",
       "providerId": "fireworks",
