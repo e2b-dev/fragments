@@ -357,6 +357,76 @@
       "multiModal": false
     },
     {
+      "id": "grok-2",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 2",
+      "multiModal": false
+    },
+    {
+      "id": "grok-2-1212",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 2 (1212)",
+      "multiModal": false
+    },
+    {
+      "id": "grok-2-vision-1212",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 2 Vision (1212)",
+      "multiModal": true
+    },
+    {
+      "id": "grok-3",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3",
+      "multiModal": false
+    },
+    {
+      "id": "grok-3-beta",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3 (Beta)",
+      "multiModal": false
+    },
+    {
+      "id": "grok-3-mini",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3 Mini",
+      "multiModal": false
+    },
+    {
+      "id": "grok-3-mini-beta",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3 Mini (Beta)",
+      "multiModal": false
+    },
+    {
+      "id": "grok-3-fast",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3 Fast",
+      "multiModal": false
+    },
+    {
+      "id": "grok-3-mini-fast",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 3 Mini Fast",
+      "multiModal": false
+    },
+    {
+      "id": "grok-4",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok 4",
+      "multiModal": true
+    },
+    {
       "id": "deepseek-chat",
       "provider": "DeepSeek",
       "providerId": "deepseek",
