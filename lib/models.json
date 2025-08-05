@@ -302,6 +302,48 @@
       "multiModal": false
     },
     {
+      "id": "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Qwen3 Coder 480B A35B Instruct",
+      "multiModal": false
+    },
+    {
+      "id": "accounts/fireworks/models/qwen3-235b-a22b-thinking-2507",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Qwen3 235B-A22B-Thinking-2507",
+      "multiModal": false
+    },
+    {
+      "id": "accounts/fireworks/models/qwen3-235b-a22b-instruct-2507",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Qwen3 235B-A22B-Instruct-2507",
+      "multiModal": false
+    },
+    {
+      "id": "accounts/fireworks/models/zai-org/glm-4p5",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Z.ai GLM 4.5",
+      "multiModal": false
+    },
+    {
+      "id": "accounts/fireworks/models/kimi-k2-instruct",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "Kimi K2 Instruct",
+      "multiModal": false
+    },
+    {
+      "id": "accounts/fireworks/models/deepseek-r1",
+      "provider": "Fireworks",
+      "providerId": "fireworks",
+      "name": "DeepSeek R1",
+      "multiModal": false
+    },
+    {
       "id": "accounts/fireworks/models/llama4-maverick-instruct-basic",
       "provider": "Fireworks",
       "providerId": "fireworks",
@@ -327,40 +369,6 @@
       "provider": "Fireworks",
       "providerId": "fireworks",
       "name": "Llama 3.1 70B",
-      "multiModal": false
-    },
-    {
-      "id": "accounts/fireworks/models/qwen3-235b-a22b",
-      "provider": "Fireworks",
-      "providerId": "fireworks",
-      "name": "Qwen3 235B A22B",
-      "multiModal": false
-    },
-    {
-      "id": "accounts/fireworks/models/qwen2p5-coder-32b-instruct",
-      "provider": "Fireworks",
-      "providerId": "fireworks",
-      "name": "Qwen2.5-Coder-32B-Instruct",
-      "multiModal": false
-    },
-    {
-      "id": "accounts/fireworks/models/qwen-qwq-32b-preview",
-      "provider": "Fireworks",
-      "providerId": "fireworks",
-      "name": "Qwen-QWQ-32B-Preview",
-      "multiModal": false
-    },
-    {
-      "id": "accounts/fireworks/models/deepseek-r1",
-      "provider": "Fireworks",
-      "providerId": "fireworks",
-      "name": "DeepSeek R1"
-    },
-    {
-      "id": "accounts/fireworks/models/kimi-k2-instruct",
-      "provider": "Fireworks",
-      "providerId": "fireworks",
-      "name": "Kimi K2 Instruct",
       "multiModal": false
     },
     {
