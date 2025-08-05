@@ -274,17 +274,10 @@
       "multiModal": false
     },
     {
-      "id": "llama-3.3-70b-versatile",
+      "id": "openai/gpt-oss-120b",
       "provider": "Groq",
       "providerId": "groq",
-      "name": "Llama 3.3 70B (Preview)",
-      "multiModal": false
-    },
-    {
-      "id": "deepseek-r1-distill-llama-70b",
-      "provider": "Groq",
-      "providerId": "groq",
-      "name": "DeepSeek R1 Distill Llama 70B",
+      "name": "GPT OSS 120B",
       "multiModal": false
     },
     {
@@ -295,17 +288,24 @@
       "multiModal": false
     },
     {
-      "id": "openai/gpt-oss-120b",
-      "provider": "Groq",
-      "providerId": "groq",
-      "name": "GPT OSS 120B",
-      "multiModal": false
-    },
-    {
       "id": "qwen/qwen3-32b",
       "provider": "Groq",
       "providerId": "groq",
       "name": "Qwen3 32B",
+      "multiModal": false
+    },
+    {
+      "id": "llama-3.3-70b-versatile",
+      "provider": "Groq",
+      "providerId": "groq",
+      "name": "Llama 3.3 70B",
+      "multiModal": false
+    },
+    {
+      "id": "deepseek-r1-distill-llama-70b",
+      "provider": "Groq",
+      "providerId": "groq",
+      "name": "DeepSeek R1 Distill Llama 70B",
       "multiModal": false
     },
     {
