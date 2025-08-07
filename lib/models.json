@@ -1,6 +1,34 @@
 {
   "models": [
     {
+      "id": "gpt-5",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-5",
+      "multiModal": true
+    },
+    {
+      "id": "gpt-5-mini",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-5 Mini",
+      "multiModal": true
+    },
+    {
+      "id": "gpt-5-nano",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-5 Nano",
+      "multiModal": true
+    },
+    {
+      "id": "gpt-5-chat",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-5 Chat",
+      "multiModal": true
+    },
+    {
       "id": "o3",
       "provider": "OpenAI",
       "providerId": "openai",
