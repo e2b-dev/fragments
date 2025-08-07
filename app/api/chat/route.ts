@@ -5,7 +5,7 @@ import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
 import { fragmentSchema as schema } from '@/lib/schema'
 import { Templates } from '@/lib/templates'
-import { streamObject, LanguageModel, CoreMessage } from 'ai'
+import { streamObject, LanguageModel, CoreMessage, APICallError, RetryError, TypeValidationError } from 'ai'
 
 export const maxDuration = 60
 
@@ -72,13 +72,34 @@ export async function POST(req: Request) {
     })
 
     return stream.toTextStreamResponse()
-  } catch (error: any) {
+  } catch (error: unknown) {
+    // Handle AI SDK v4/v5 error classes
+    if (TypeValidationError.isInstance(error)) {
+      return new Response('Schema validation failed.', { status: 400 })
+    }
+
+    let statusCode: number | undefined
+    let message = ''
+
+    if (APICallError.isInstance(error)) {
+      statusCode = error.statusCode
+      message = error.message
+    } else if (RetryError.isInstance(error)) {
+      const last = error.lastError
+      if (APICallError.isInstance(last)) {
+        statusCode = last.statusCode
+        message = last.message
+      } else if (last instanceof Error) {
+        message = last.message
+      }
+    } else if (error instanceof Error) {
+      message = error.message
+    }
+
     const isRateLimitError =
-      error && (error.statusCode === 429 || error.message.includes('limit'))
-    const isOverloadedError =
-      error && (error.statusCode === 529 || error.statusCode === 503)
-    const isAccessDeniedError =
-      error && (error.statusCode === 403 || error.statusCode === 401)
+      statusCode === 429 || (message && message.toLowerCase().includes('limit'))
+    const isOverloadedError = statusCode === 529 || statusCode === 503
+    const isAccessDeniedError = statusCode === 403 || statusCode === 401
 
     if (isRateLimitError) {
       return new Response(
