@@ -1,10 +1,10 @@
 import { createAnthropic } from '@ai-sdk/anthropic'
+import { createFireworks } from '@ai-sdk/fireworks'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createVertex } from '@ai-sdk/google-vertex'
 import { createMistral } from '@ai-sdk/mistral'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOllama } from 'ollama-ai-provider'
-import { createFireworks } from '@ai-sdk/fireworks'
 
 export type LLMModel = {
   id: string
@@ -79,4 +79,16 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
   }
 
   return createClient()
+}
+
+export function getDefaultModelParams(model: LLMModel) {
+  const { id: modelNameString } = model
+
+  if (modelNameString.startsWith('gpt-5')) {
+    return {
+      temperature: 1,
+    }
+  }
+
+  return {}
 }

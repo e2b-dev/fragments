@@ -1,6 +1,10 @@
 import { Duration } from '@/lib/duration'
-import { getModelClient } from '@/lib/models'
-import { LLMModel, LLMModelConfig } from '@/lib/models'
+import {
+  getModelClient,
+  getDefaultModelParams,
+  LLMModel,
+  LLMModelConfig,
+} from '@/lib/models'
 import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
 import { fragmentSchema as schema } from '@/lib/schema'
@@ -68,6 +72,7 @@ export async function POST(req: Request) {
       system: toPrompt(template),
       messages,
       maxRetries: 0, // do not retry on errors
+      ...getDefaultModelParams(model),
       ...modelParams,
     })
 
