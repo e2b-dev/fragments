@@ -22,13 +22,6 @@
       "multiModal": true
     },
     {
-      "id": "gpt-5-chat",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "GPT-5 Chat",
-      "multiModal": true
-    },
-    {
       "id": "o3",
       "provider": "OpenAI",
       "providerId": "openai",
