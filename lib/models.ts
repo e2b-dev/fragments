@@ -84,7 +84,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
 export function getDefaultModelParams(model: LLMModel) {
   const { id: modelNameString } = model
 
-  if (['gpt-5', 'gpt-5-mini', 'gpt-5-nano'].includes(modelNameString)) {
+  if (modelNameString.startsWith('gpt-5')) {
     return {
       temperature: 1,
     }

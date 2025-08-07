@@ -72,8 +72,8 @@ export async function POST(req: Request) {
       system: toPrompt(template),
       messages,
       maxRetries: 0, // do not retry on errors
-      ...modelParams,
       ...getDefaultModelParams(model),
+      ...modelParams,
     })
 
     return stream.toTextStreamResponse()
