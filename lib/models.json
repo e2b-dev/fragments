@@ -461,6 +461,13 @@
       "providerId": "ollama",
       "name": "Mistral Large",
       "multiModal": false
+    },
+    {
+      "id": "v0-1.0-md",
+      "provider": "Vercel",
+      "providerId": "vercel",
+      "name": "v0-1.0-md",
+      "multiModal": true
     }
   ]
 }
