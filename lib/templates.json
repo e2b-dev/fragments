@@ -49,5 +49,22 @@
     "file": "app.py",
     "instructions": "A gradio app. Gradio Blocks/Interface should be called demo.",
     "port": 7860
+  },
+  "svelte-developer": {
+    "name": "Svelte 5 developer",
+    "lib": [
+      "svelte@5",
+      "typescript",
+      "@types/node",
+      "vite",
+      "tailwindcss",
+      "@tanstack/svelte-table",
+      "@tanstack/svelte-query",
+      "postcss",
+      "autoprefixer"
+    ],
+    "file": "src/App.svelte",
+    "instructions": "A Svelte 5 app with TypeScript, Runes API, TanStack Table/Query, and Tailwind CSS. Uses the new Svelte 5 reactivity system with $state, $derived, $effect, and $props runes. Hot module replacement enabled.",
+    "port": 5173
   }
 }

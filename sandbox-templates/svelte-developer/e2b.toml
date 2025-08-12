@@ -1,0 +1,7 @@
+template_id = "YOUR_TEMPLATE_ID_HERE"
+dockerfile = "e2b.Dockerfile"
+template_name = "svelte-developer"
+start_cmd = "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173"
+cpu_count = 4
+memory_mb = 4_096
+team_id = "460355b3-4f64-48f9-9a16-4442817f79f5"
