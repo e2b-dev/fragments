@@ -230,7 +230,7 @@ export default function Home() {
     if (target === 'github') {
       window.open('https://github.com/e2b-dev/fragments', '_blank')
     } else if (target === 'x') {
-      window.open('https://x.com/e2b_dev', '_blank')
+      window.open('https://x.com/e2b', '_blank')
     } else if (target === 'discord') {
       window.open('https://discord.gg/U7KEcGErtQ', '_blank')
     }
