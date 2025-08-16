@@ -232,7 +232,7 @@ export default function Home() {
     } else if (target === 'x') {
       window.open('https://x.com/e2b', '_blank')
     } else if (target === 'discord') {
-      window.open('https://discord.gg/U7KEcGErtQ', '_blank')
+      window.open('https://discord.gg/e2b', '_blank')
     }
 
     posthog.capture(`${target}_click`)
