@@ -99,6 +99,13 @@
       "multiModal": false
     },
     {
+      "id": "gpt-3.5-turbo",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-3.5 Turbo",
+      "multiModal": false
+    },
+    {
       "id": "gpt-4-turbo",
       "provider": "OpenAI",
       "providerId": "openai",
