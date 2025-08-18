@@ -99,18 +99,18 @@
       "multiModal": false
     },
     {
-      "id": "gpt-3.5-turbo",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "GPT-3.5 Turbo",
-      "multiModal": false
-    },
-    {
       "id": "gpt-4-turbo",
       "provider": "OpenAI",
       "providerId": "openai",
       "name": "GPT-4 Turbo",
       "multiModal": true
+    },
+    {
+      "id": "gpt-3.5-turbo",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-3.5 Turbo",
+      "multiModal": false
     },
     {
       "id": "claude-opus-4-1-20250805",
