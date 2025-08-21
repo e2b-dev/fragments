@@ -14,7 +14,15 @@ export async function publish(
   teamID: string | undefined,
   accessToken: string | undefined,
 ) {
+  if (!url.endsWith('.e2b.app')) {
+    throw new Error('Invalid URL')
+  }
+
   const expiration = ms(duration)
+  if (expiration > ms('24h')) {
+    throw new Error('Expiration must be less than 24 hours')
+  }
+
   await Sandbox.setTimeout(sbxId, expiration, {
     ...(teamID && accessToken
       ? {
