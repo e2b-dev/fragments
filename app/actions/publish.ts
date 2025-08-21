@@ -20,7 +20,7 @@ export async function publish(
 
   const expiration = ms(duration)
   if (expiration > ms('24h')) {
-    throw new Error('Expiration must be less than 24 hours')
+    throw new Error('Expiration must be 24 hours or less')
   }
 
   await Sandbox.setTimeout(sbxId, expiration, {
