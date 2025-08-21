@@ -14,8 +14,13 @@ export async function publish(
   teamID: string | undefined,
   accessToken: string | undefined,
 ) {
-  if (new URL(url).hostname !== 'e2b.app') {
-    throw new Error('URL must be on e2b.app domain')
+  try {
+    const parsedUrl = new URL(url)
+    if (!parsedUrl.hostname.endsWith('.e2b.app')) {
+      throw new Error('URL must be on *.e2b.app domain')
+    }
+  } catch (error) {
+    throw new Error('Invalid URL')
   }
 
   const expiration = ms(duration)
