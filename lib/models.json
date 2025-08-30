@@ -435,6 +435,13 @@
       "multiModal": false
     },
     {
+      "id": "grok-code-fast-1",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok Code Fast 1",
+      "multiModal": false
+    },
+    {
       "id": "deepseek-chat",
       "provider": "DeepSeek",
       "providerId": "deepseek",
