@@ -47,7 +47,6 @@ Always provide enough context to unambiguously identify where the edit should be
 IMPORTANT: You must follow the exact schema with all required fields: commentary, instruction, edit, and file_path.`
 
 export async function POST(req: Request) {
-  console.log('=== Morph Chat Route Called ===', new Date().toISOString())
   
   const {
     messages,
@@ -66,10 +65,6 @@ export async function POST(req: Request) {
     currentFragment: FragmentSchema
     morphApiKey?: string
   } = await req.json()
-
-  console.log('Has current fragment:', !!currentFragment)
-  console.log('Has morph API key:', !!morphApiKey)
-  console.log('Fragment file path:', currentFragment?.file_path)
 
   // Rate limiting (same as chat route)
   const limit = !config.apiKey
@@ -95,14 +90,6 @@ export async function POST(req: Request) {
   const modelClient = getModelClient(model, config)
 
   try {
-    // Step 1: Get edit instructions from LLM
-    console.log('=== Calling LLM for edit instructions ===', new Date().toISOString())
-    console.log('Schema being used:', morphEditSchema)
-    console.log('System prompt:', MORPH_SYSTEM_PROMPT)
-    console.log('Messages:', JSON.stringify(messages, null, 2))
-    console.log('Model params:', modelParams)
-    
-    // Try a much simpler system prompt
     const contextualSystemPrompt = `You are a code editor. Generate a JSON response with exactly these fields:
 
 {
@@ -120,8 +107,6 @@ ${currentFragment.code}
 
 IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backticks.`
     
-    // Try a simpler approach - use streamText first to debug
-    console.log('=== Testing with simpler streamText approach ===')
     
     try {
       const { streamText } = await import('ai')
@@ -134,7 +119,6 @@ IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backti
         ...modelParams,
       })
       
-      console.log('StreamText created successfully')
       
       // Collect the full text response
       let fullResponse = ''
@@ -142,7 +126,6 @@ IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backti
         fullResponse += chunk
       }
       
-      console.log('Full text response:', fullResponse)
       
       // Try to parse as JSON manually - strip markdown code blocks if present
       let editInstructions: MorphEditSchema
@@ -157,29 +140,20 @@ IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backti
           jsonString = jsonString.replace(/^```\s*/, '').replace(/\s*```$/, '')
         }
         
-        console.log('Cleaned JSON string:', jsonString.substring(0, 200) + '...')
         editInstructions = JSON.parse(jsonString)
-        console.log('Successfully parsed JSON response')
       } catch (parseError) {
-        console.error('Failed to parse JSON after cleaning:', parseError)
-        console.error('Original response:', fullResponse)
         throw new Error(`LLM returned unparseable response: ${parseError.message}`)
       }
       
       // Validate the parsed response
       const validationResult = morphEditSchema.safeParse(editInstructions)
       if (!validationResult.success) {
-        console.error('Schema validation failed:', validationResult.error)
         throw new Error(`Response doesn't match schema: ${validationResult.error.message}`)
       }
       
       editInstructions = validationResult.data
-      
-      console.log('=== Successfully got LLM response ===')
-      console.log('Edit instructions:', JSON.stringify(editInstructions, null, 2))
 
       // Step 2: Apply edits using Morph
-      console.log('=== Applying Morph patch ===', new Date().toISOString())
       
       const morphResult = await applyPatch({
         target_file: currentFragment.file_path,
@@ -188,8 +162,6 @@ IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backti
         code_edit: editInstructions.edit,
         apiKey: morphApiKey,
       })
-      
-      console.log('=== Morph patch completed ===', new Date().toISOString())
 
       // Step 3: Return updated fragment in standard format
       const updatedFragment: FragmentSchema = {
@@ -198,13 +170,20 @@ IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backti
         commentary: editInstructions.commentary,
       }
 
+      // EXTRA LOGGING: confirm what is about to be sent to the client
+      console.log('Morph route – updatedFragment ready to stream', {
+        file_path: updatedFragment.file_path,
+        codeLength: updatedFragment.code?.length,
+        commentaryPreview: updatedFragment.commentary?.slice(0, 100),
+      })
+      
       // Create a streaming response that matches the AI SDK format
       const encoder = new TextEncoder()
       const stream = new ReadableStream({
         start(controller) {
           // Send the object in the format expected by useObject
-          const objectLine = `0:${JSON.stringify(updatedFragment)}\n`
-          controller.enqueue(encoder.encode(objectLine))
+          const json = JSON.stringify(updatedFragment)
+          controller.enqueue(encoder.encode(json))
           controller.close()
         },
       })
@@ -216,10 +195,8 @@ IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backti
       })
       
     } catch (streamTextError) {
-      console.error('StreamText approach failed:', streamTextError)
       
       // Fallback to original streamObject approach
-      console.log('=== Falling back to streamObject ===')
       
       const editStream = await streamObject({
         model: modelClient as LanguageModel,
@@ -234,7 +211,6 @@ IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backti
       return editStream.toTextStreamResponse()
     }
   } catch (error: any) {
-    console.error('Morph chat error:', error)
     
     // Reuse error handling patterns from main chat route
     const isRateLimitError =
