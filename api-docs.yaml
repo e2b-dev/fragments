@@ -1,0 +1,526 @@
+openapi: 3.0.0
+info:
+  title: Fragments API
+  description: API для генерации и управления проектами с помощью AI и E2B sandboxes
+  version: 1.0.0
+  contact:
+    name: Fragments
+    url: https://github.com/e2b-dev/fragments
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://your-domain.com
+    description: Production server
+
+paths:
+  /api/generate:
+    post:
+      summary: Генерация нового проекта
+      description: |
+        Создает новый проект на основе промпта, используя LLM для генерации кода 
+        и E2B для создания sandbox с превью.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  description: Текст промпта для генерации проекта
+                  example: "Create a simple todo app with Next.js"
+                model:
+                  type: string
+                  description: Модель LLM для использования
+                  default: "gpt-4o"
+                  enum:
+                    - "gpt-4o"
+                    - "gpt-4"
+                    - "gpt-3.5-turbo"
+                  example: "gpt-4o"
+                template:
+                  type: string
+                  description: Шаблон проекта
+                  default: "nextjs-developer"
+                  enum:
+                    - "code-interpreter-v1"
+                    - "nextjs-developer"
+                    - "vue-developer"
+                    - "streamlit-developer"
+                    - "gradio-developer"
+                  example: "nextjs-developer"
+                sessionId:
+                  type: string
+                  description: ID сессии для итеративной работы (если указан, будет использоваться чат API)
+                  example: "session_abc123xyz"
+            examples:
+              simple_todo:
+                summary: Простое todo приложение
+                value:
+                  prompt: "Create a simple todo app with Next.js"
+              weather_dashboard:
+                summary: Dashboard с погодой
+                value:
+                  prompt: "Create a weather dashboard with charts and current weather"
+                  model: "gpt-4o"
+                  template: "nextjs-developer"
+              python_analysis:
+                summary: Python анализ данных
+                value:
+                  prompt: "Create a data analysis script for sales data with visualizations"
+                  template: "code-interpreter-v1"
+      responses:
+        '200':
+          description: Проект успешно создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Уникальный ID созданного sandbox
+                    example: "imy24gfmqdtgszpdq7g37-6532622b"
+                  previewUrl:
+                    type: string
+                    format: uri
+                    description: Прямая ссылка на превью проекта в E2B
+                    example: "https://3000-imy24gfmqdtgszpdq7g37-6532622b.e2b.app"
+                  shortUrl:
+                    type: string
+                    format: uri
+                    description: Короткая ссылка на проект (если KV настроен)
+                    example: "https://fragments.dev/s/abc123"
+                  title:
+                    type: string
+                    description: Название сгенерированного проекта
+                    example: "Todo App"
+                  description:
+                    type: string
+                    description: Описание проекта
+                    example: "A simple Next.js todo application"
+                  sessionId:
+                    type: string
+                    description: ID сессии (если была создана новая сессия)
+                    example: "session_abc123xyz"
+                  messageCount:
+                    type: integer
+                    description: Количество сообщений в сессии
+                    example: 2
+                  fragmentCount:
+                    type: integer
+                    description: Количество сгенерированных фрагментов в сессии
+                    example: 1
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Prompt is required"
+        '403':
+          description: Ошибка авторизации API
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Access denied. Please check your API configuration."
+        '429':
+          description: Превышен лимит запросов
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "The provider is currently unavailable due to request limit."
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "An unexpected error has occurred. Please try again later."
+        '503':
+          description: Сервис недоступен (не настроены API ключи)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "OpenAI API key not configured. Please set OPENAI_API_KEY environment variable."
+
+  /api/generate/chat:
+    post:
+      summary: Чат-based генерация с сессиями
+      description: |
+        Создает проект на основе чат-сессии. Поддерживает итеративную работу 
+        с сохранением контекста между запросами.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                sessionId:
+                  type: string
+                  description: ID существующей сессии (если не указан, создается новая)
+                  example: "session_abc123xyz"
+                message:
+                  type: string
+                  description: Сообщение/промпт для обработки
+                  example: "Add dark mode toggle to the todo app"
+                model:
+                  type: string
+                  description: Модель LLM
+                  default: "gpt-4o"
+                  example: "gpt-4o"
+                template:
+                  type: string
+                  description: Шаблон проекта
+                  default: "nextjs-developer"
+                  example: "nextjs-developer"
+            examples:
+              new_session:
+                summary: Создание новой сессии
+                value:
+                  message: "Create a todo app with Next.js"
+              continue_session:
+                summary: Продолжение существующей сессии
+                value:
+                  sessionId: "session_abc123xyz"
+                  message: "Add dark mode toggle"
+      responses:
+        '200':
+          description: Проект успешно создан/обновлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                    example: "session_abc123xyz"
+                  id:
+                    type: string
+                    example: "sandbox-12345"
+                  previewUrl:
+                    type: string
+                    example: "https://3000-sandbox.e2b.app"
+                  shortUrl:
+                    type: string
+                    example: "https://fragments.dev/s/abc123"
+                  title:
+                    type: string
+                    example: "Todo App with Dark Mode"
+                  description:
+                    type: string
+                    example: "Enhanced todo application with dark mode support"
+                  messageCount:
+                    type: integer
+                    example: 4
+                  fragmentCount:
+                    type: integer
+                    example: 2
+
+  /api/generate/session/{sessionId}:
+    get:
+      summary: Получить историю сессии
+      description: Возвращает полную историю сообщений и фрагментов сессии
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "session_abc123xyz"
+      responses:
+        '200':
+          description: История сессии получена успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                    example: "session_abc123xyz"
+                  messages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        role:
+                          type: string
+                          enum: ["user", "assistant"]
+                        content:
+                          type: string
+                        timestamp:
+                          type: integer
+                  fragments:
+                    type: array
+                    items:
+                      type: object
+                  template:
+                    type: string
+                    example: "nextjs-developer"
+                  model:
+                    type: string
+                    example: "gpt-4o"
+                  messageCount:
+                    type: integer
+                    example: 4
+                  fragmentCount:
+                    type: integer
+                    example: 2
+                  createdAt:
+                    type: integer
+                    example: 1630000000000
+                  updatedAt:
+                    type: integer
+                    example: 1630001000000
+        '404':
+          description: Сессия не найдена
+        '503':
+          description: Хранилище сессий не настроено
+    delete:
+      summary: Удалить сессию
+      description: Удаляет сессию и всю связанную с ней историю
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "session_abc123xyz"
+      responses:
+        '200':
+          description: Сессия успешно удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Session deleted successfully"
+
+components:
+  schemas:
+    GenerateRequest:
+      type: object
+      required:
+        - prompt
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        model:
+          type: string
+          default: "gpt-4o"
+        template:
+          type: string
+          default: "nextjs-developer"
+
+    GenerateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        previewUrl:
+          type: string
+          format: uri
+        shortUrl:
+          type: string
+          format: uri
+        title:
+          type: string
+        description:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+# Документация по обновлению проектов
+x-update-documentation: |
+  ## Обновление проектов
+
+  В текущей версии API не поддерживает прямое обновление существующих проектов.
+  Каждый вызов `/api/generate` создает новый sandbox и новый проект.
+
+  ### Возможные подходы для обновления:
+
+  1. **Создание нового проекта с модификациями**
+     ```bash
+     curl -X POST http://localhost:3000/api/generate \
+       -H "Content-Type: application/json" \
+       -d '{
+         "prompt": "Create a todo app with Next.js and add authentication with NextAuth"
+       }'
+     ```
+
+  2. **Будущие возможности** (не реализованы):
+     - `PATCH /api/generate/{id}` - обновление существующего проекта
+     - `PUT /api/generate/{id}/files` - обновление файлов в проекте
+     - `POST /api/generate/{id}/chat` - чат для итеративных изменений
+
+  ### Текущие ограничения:
+  - Sandbox живет 10 минут по умолчанию
+  - Нет персистентного хранения изменений
+  - Каждая генерация создает новый изолированный проект
+
+# Переменные окружения
+x-environment-variables: |
+  ## Обязательные переменные окружения
+
+  ```bash
+  # E2B API Key - для создания sandbox
+  E2B_API_KEY=your_e2b_api_key
+
+  # OpenAI API Key - для генерации кода
+  OPENAI_API_KEY=your_openai_api_key
+  ```
+
+  ## Опциональные переменные
+
+  ```bash
+  # Для коротких ссылок (Upstash KV)
+  KV_REST_API_URL=your_kv_url
+  KV_REST_API_TOKEN=your_kv_token
+
+  # Для аутентификации (Supabase)
+  SUPABASE_URL=your_supabase_url
+  SUPABASE_ANON_KEY=your_supabase_key
+
+  # Домен сайта
+  NEXT_PUBLIC_SITE_URL=your_domain.com
+  ```
+
+# Примеры использования
+x-examples: |
+  ## Примеры использования
+
+  ### 1. Простое Next.js приложение
+  ```bash
+  curl -X POST http://localhost:3000/api/generate \
+    -H "Content-Type: application/json" \
+    -d '{
+      "prompt": "Create a landing page for a SaaS product with pricing section"
+    }'
+  ```
+
+  ### Итеративная работа с проектами (новое!)
+
+  ### 2. Создание новой сессии
+  ```bash
+  # Шаг 1: Создаем базовое приложение
+  curl -X POST http://localhost:3000/api/generate/chat \
+    -H "Content-Type: application/json" \
+    -d '{
+      "message": "Create a todo app with Next.js"
+    }'
+
+  # Ответ: {"sessionId": "session_abc123xyz", "id": "sandbox-1", ...}
+  ```
+
+  ### 3. Продолжение работы в существующей сессии
+  ```bash
+  # Шаг 2: Добавляем темную тему
+  curl -X POST http://localhost:3000/api/generate/chat \
+    -H "Content-Type: application/json" \
+    -d '{
+      "sessionId": "session_abc123xyz",
+      "message": "Add dark mode toggle to the todo app"
+    }'
+
+  # Шаг 3: Добавляем аутентификацию
+  curl -X POST http://localhost:3000/api/generate/chat \
+    -H "Content-Type: application/json" \
+    -d '{
+      "sessionId": "session_abc123xyz", 
+      "message": "Add user authentication with NextAuth"
+    }'
+  ```
+
+  ### 4. Получение истории сессии
+  ```bash
+  curl -X GET http://localhost:3000/api/generate/session/session_abc123xyz
+  ```
+
+  ### 5. Использование sessionId в основном API
+  ```bash
+  curl -X POST http://localhost:3000/api/generate \
+    -H "Content-Type: application/json" \
+    -d '{
+      "sessionId": "session_abc123xyz",
+      "prompt": "Add database integration with Prisma"
+    }'
+  ```
+
+  ### 2. Python анализ данных
+  ```bash
+  curl -X POST http://localhost:3000/api/generate \
+    -H "Content-Type: application/json" \
+    -d '{
+      "prompt": "Analyze CSV data with pandas and create visualizations",
+      "template": "code-interpreter-v1"
+    }'
+  ```
+
+  ### 3. Vue.js приложение
+  ```bash
+  curl -X POST http://localhost:3000/api/generate \
+    -H "Content-Type: application/json" \
+    -d '{
+      "prompt": "Create a Vue.js dashboard with charts and tables",
+      "template": "vue-developer"
+    }'
+  ```
+
+  ### 4. Streamlit приложение
+  ```bash
+  curl -X POST http://localhost:3000/api/generate \
+    -H "Content-Type: application/json" \
+    -d '{
+      "prompt": "Create a machine learning model evaluation dashboard",
+      "template": "streamlit-developer"
+    }'
+  ```
+
+  ## Обработка ответа
+
+  ```javascript
+  const response = await fetch('http://localhost:3000/api/generate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      prompt: 'Create a todo app with Next.js'
+    })
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log('Project created:', data);
+    
+    // Открыть превью
+    window.open(data.previewUrl, '_blank');
+  } else {
+    console.error('Error:', await response.text());
+  }
+  ```
