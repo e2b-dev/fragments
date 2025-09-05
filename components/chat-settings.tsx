@@ -15,17 +15,26 @@ import {
 } from './ui/tooltip'
 import { LLMModelConfig } from '@/lib/models'
 import { Settings2 } from 'lucide-react'
+import { Switch } from './ui/switch'
 
 export function ChatSettings({
   apiKeyConfigurable,
   baseURLConfigurable,
   languageModel,
   onLanguageModelChange,
+  useMorphApply,
+  onUseMorphApplyChange,
+  morphApiKey,
+  onMorphApiKeyChange,
 }: {
   apiKeyConfigurable: boolean
   baseURLConfigurable: boolean
   languageModel: LLMModelConfig
   onLanguageModelChange: (model: LLMModelConfig) => void
+  useMorphApply?: boolean
+  onUseMorphApplyChange?: (enabled: boolean) => void
+  morphApiKey?: string
+  onMorphApiKeyChange?: (key: string) => void
 }) {
   return (
     <DropdownMenu>
@@ -42,6 +51,29 @@ export function ChatSettings({
         </Tooltip>
       </TooltipProvider>
       <DropdownMenuContent align="start">
+        <div className="flex items-center justify-between px-2 py-2">
+          <Label htmlFor="morph-apply-toggle" className="text-sm font-medium">
+            Use Morph Apply
+          </Label>
+          <Switch
+            id="morph-apply-toggle"
+            checked={useMorphApply || false}
+            onCheckedChange={onUseMorphApplyChange || (() => {})}
+          />
+        </div>
+        {useMorphApply && (
+          <div className="flex flex-col gap-2 px-2 pb-2">
+            <Input
+              name="morphApiKey"
+              type="password"
+              placeholder="Enter your Morph API key"
+              value={morphApiKey || ''}
+              onChange={(e) => onMorphApiKeyChange?.(e.target.value)}
+              className="text-sm"
+            />
+          </div>
+        )}
+        <DropdownMenuSeparator />
         {apiKeyConfigurable && (
           <>
             <div className="flex flex-col gap-2 px-2 py-2">

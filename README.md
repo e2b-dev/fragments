@@ -30,10 +30,15 @@ Powered by the [E2B SDK](https://github.com/e2b-dev/code-interpreter).
   - 🔸 Fireworks
   - 🔸 Together AI
   - 🔸 Ollama
+- Support for Morph Apply model to be more token efficient and faster
 
 **Make sure to give us a star!**
 
 <img width="165" alt="Screenshot 2024-04-20 at 22 13 32" src="https://github.com/mishushakov/llm-scraper/assets/10400064/11e2a79f-a835-48c4-9f85-5c104ca7bb49">
+
+## Morph Apply
+
+Use Morph Apply to generate precise, file-aware code edits automatically. Enable it via the “Use Morph Apply” toggle in Chat Settings and provide a Morph API key (via the UI or `MORPH_API_KEY`). It’s best for iterating on an existing fragment; the first generation still uses the standard chat route.
 
 ## Get started
 
