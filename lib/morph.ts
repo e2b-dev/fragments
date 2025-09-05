@@ -29,14 +29,6 @@ export async function applyPatch({
     stream: true,
   }
 
-  console.log('=== Morph API Request ===')
-  console.log('URL:', 'https://api.morphllm.com/v1/chat/completions')
-  console.log('Has API Key:', !!morphApiKey)
-  console.log('Request Body:', JSON.stringify(requestBody, null, 2))
-  console.log('Instruction:', instructions)
-  console.log('Code Edit:', code_edit)
-  console.log('Initial Code Length:', initialCode?.length || 0)
-
   try {
     const response = await fetch('https://api.morphllm.com/v1/chat/completions', {
       method: 'POST',
@@ -61,16 +53,12 @@ export async function applyPatch({
       throw new Error('No response body from Morph API')
     }
 
-    console.log('=== Reading Morph Stream ===')
     const decoder = new TextDecoder()
     let mergedCode = ''
-    let chunkCount = 0
     
     while (true) {
       const { done, value } = await reader.read()
       if (done) break
-      
-      chunkCount++
       const chunk = decoder.decode(value)
       const lines = chunk.split('\n')
       
