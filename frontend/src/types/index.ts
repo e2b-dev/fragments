@@ -65,7 +65,7 @@ export interface Template {
 }
 
 // Model types
-export type ModelId = 'gpt-5' | 'gpt-4o' | 'gpt-4' | 'gpt-3.5-turbo'
+export type ModelId = 'qwen-3-coder-480b' | 'qwen-3-coder-120b' | 'qwen-3-coder-35b' | 'gpt-5' | 'gpt-4o' | 'gpt-4' | 'gpt-3.5-turbo'
 
 export interface Model {
   id: ModelId

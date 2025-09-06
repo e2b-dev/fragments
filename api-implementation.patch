@@ -1,0 +1,1357 @@
+From acf672d0a642ed6703689c22f8c9b9f78f0a38d5 Mon Sep 17 00:00:00 2001
+From: neolite <ufadiz@gmail.com>
+Date: Fri, 5 Sep 2025 09:39:43 +0300
+Subject: [PATCH] Add API routes for project generation and session-based
+ updates
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Add /api/generate endpoint for single-shot project generation
+- Add /api/generate/chat endpoint for session-based iterative updates
+- Add /api/generate/session/{sessionId} endpoints for session management
+- Implement KV storage for persistent chat sessions (24h TTL)
+- Add comprehensive Swagger documentation in api-docs.yaml
+- Support both standalone generation and iterative chat-based workflow
+- Compatible with existing UI chat functionality
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+---
+ CLAUDE.md                                     | 106 ++++
+ api-docs.yaml                                 | 526 ++++++++++++++++++
+ app/api/generate/chat/route.ts                | 273 +++++++++
+ app/api/generate/route.ts                     | 223 ++++++++
+ app/api/generate/session/[sessionId]/route.ts | 158 ++++++
+ 5 files changed, 1286 insertions(+)
+ create mode 100644 CLAUDE.md
+ create mode 100644 api-docs.yaml
+ create mode 100644 app/api/generate/chat/route.ts
+ create mode 100644 app/api/generate/route.ts
+ create mode 100644 app/api/generate/session/[sessionId]/route.ts
+
+diff --git a/CLAUDE.md b/CLAUDE.md
+new file mode 100644
+index 0000000..90240a9
+--- /dev/null
++++ b/CLAUDE.md
+@@ -0,0 +1,106 @@
++# CLAUDE.md
++
++This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
++
++## Development Commands
++
++```bash
++# Start development server with turbo mode
++npm run dev
++
++# Build the application
++npm run build
++
++# Start production server
++npm start
++
++# Run linting
++npm run lint
++```
++
++## Architecture Overview
++
++This is a Next.js 14 application that provides an AI-powered code generation platform similar to Claude Artifacts, v0, or GPT Engineer. The app uses the E2B SDK to execute generated code in secure sandboxes.
++
++### Core Technologies
++- **Next.js 14** with App Router and Server Actions
++- **TypeScript** with strict mode enabled
++- **Tailwind CSS** with shadcn/ui components
++- **Vercel AI SDK** for LLM integration
++- **E2B Code Interpreter** for secure code execution
++- **Supabase** for authentication (optional)
++- **Upstash KV** for rate limiting and short URLs (optional)
++
++### Key Directories
++
++- `/app` - Next.js App Router pages and API routes
++  - `/api/chat` - Main chat API endpoint for LLM interactions
++  - `/api/sandbox` - E2B sandbox management
++  - `/actions` - Server actions for publishing and validation
++- `/components` - React components
++  - `/ui` - shadcn/ui component library
++- `/lib` - Shared utilities and configuration
++  - `models.json` - Available LLM models configuration
++  - `templates.json` - Supported coding environments (Python, Next.js, Vue.js, Streamlit, Gradio)
++  - `models.ts` - LLM provider configurations and client setup
++  - `templates.ts` - Template management logic
++- `/sandbox-templates` - E2B template definitions for different coding environments
++- `/public/thirdparty` - Third-party logos and assets
++
++### LLM Provider Support
++
++The application supports multiple LLM providers configured in `lib/models.ts`:
++- OpenAI (GPT-4o, o1, etc.)
++- Anthropic (Claude 3.5 Sonnet, Haiku)
++- Google (Gemini models via Vertex AI and Generative AI)
++- Mistral (various models including Codestral)
++- Groq, Fireworks, Together AI
++- xAI (Grok models)
++- Ollama (for local models)
++
++### Template System
++
++Templates define different coding environments in `lib/templates.json`:
++- **code-interpreter-v1**: Python data analysis with Jupyter
++- **nextjs-developer**: Next.js applications
++- **vue-developer**: Vue.js applications  
++- **streamlit-developer**: Streamlit apps
++- **gradio-developer**: Gradio interfaces
++
++Each template specifies libraries, entry files, instructions, and ports.
++
++### Environment Configuration
++
++Key environment variables (see `.env.template`):
++- `E2B_API_KEY` - Required for code execution
++- `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc. - LLM provider keys
++- `SUPABASE_URL`, `SUPABASE_ANON_KEY` - Authentication (optional)
++- `KV_REST_API_URL`, `KV_REST_API_TOKEN` - Upstash KV (optional)
++- `NEXT_PUBLIC_POSTHOG_KEY` - Analytics (optional)
++
++### Code Execution Flow
++
++1. User sends messages via `/api/chat`
++2. LLM generates structured response using Zod schema (`lib/schema.ts`)
++3. Code execution happens via E2B sandbox API (`/api/sandbox`)
++4. Real-time streaming updates sent back to client
++
++### Rate Limiting
++
++Rate limiting is implemented for users without API keys using Upstash KV storage. Default: 10 requests per day, configurable via environment variables.
++
++## Adding New Features
++
++### Adding LLM Models
++1. Add model configuration to `lib/models.json`
++2. Update provider configurations in `lib/models.ts` if needed
++3. Add provider logo to `public/thirdparty/logos/` if new provider
++
++### Adding Templates
++1. Create new template folder in `sandbox-templates/`
++2. Use E2B CLI to initialize and build template
++3. Add template configuration to `lib/templates.json`
++4. Add template logo to `public/thirdparty/templates/` (optional)
++
++### Path Aliases
++- `@/*` maps to project root for clean imports
+\ No newline at end of file
+diff --git a/api-docs.yaml b/api-docs.yaml
+new file mode 100644
+index 0000000..1ab754a
+--- /dev/null
++++ b/api-docs.yaml
+@@ -0,0 +1,526 @@
++openapi: 3.0.0
++info:
++  title: Fragments API
++  description: API для генерации и управления проектами с помощью AI и E2B sandboxes
++  version: 1.0.0
++  contact:
++    name: Fragments
++    url: https://github.com/e2b-dev/fragments
++
++servers:
++  - url: http://localhost:3000
++    description: Development server
++  - url: https://your-domain.com
++    description: Production server
++
++paths:
++  /api/generate:
++    post:
++      summary: Генерация нового проекта
++      description: |
++        Создает новый проект на основе промпта, используя LLM для генерации кода 
++        и E2B для создания sandbox с превью.
++      requestBody:
++        required: true
++        content:
++          application/json:
++            schema:
++              type: object
++              required:
++                - prompt
++              properties:
++                prompt:
++                  type: string
++                  description: Текст промпта для генерации проекта
++                  example: "Create a simple todo app with Next.js"
++                model:
++                  type: string
++                  description: Модель LLM для использования
++                  default: "gpt-4o"
++                  enum:
++                    - "gpt-4o"
++                    - "gpt-4"
++                    - "gpt-3.5-turbo"
++                  example: "gpt-4o"
++                template:
++                  type: string
++                  description: Шаблон проекта
++                  default: "nextjs-developer"
++                  enum:
++                    - "code-interpreter-v1"
++                    - "nextjs-developer"
++                    - "vue-developer"
++                    - "streamlit-developer"
++                    - "gradio-developer"
++                  example: "nextjs-developer"
++                sessionId:
++                  type: string
++                  description: ID сессии для итеративной работы (если указан, будет использоваться чат API)
++                  example: "session_abc123xyz"
++            examples:
++              simple_todo:
++                summary: Простое todo приложение
++                value:
++                  prompt: "Create a simple todo app with Next.js"
++              weather_dashboard:
++                summary: Dashboard с погодой
++                value:
++                  prompt: "Create a weather dashboard with charts and current weather"
++                  model: "gpt-4o"
++                  template: "nextjs-developer"
++              python_analysis:
++                summary: Python анализ данных
++                value:
++                  prompt: "Create a data analysis script for sales data with visualizations"
++                  template: "code-interpreter-v1"
++      responses:
++        '200':
++          description: Проект успешно создан
++          content:
++            application/json:
++              schema:
++                type: object
++                properties:
++                  id:
++                    type: string
++                    description: Уникальный ID созданного sandbox
++                    example: "imy24gfmqdtgszpdq7g37-6532622b"
++                  previewUrl:
++                    type: string
++                    format: uri
++                    description: Прямая ссылка на превью проекта в E2B
++                    example: "https://3000-imy24gfmqdtgszpdq7g37-6532622b.e2b.app"
++                  shortUrl:
++                    type: string
++                    format: uri
++                    description: Короткая ссылка на проект (если KV настроен)
++                    example: "https://fragments.dev/s/abc123"
++                  title:
++                    type: string
++                    description: Название сгенерированного проекта
++                    example: "Todo App"
++                  description:
++                    type: string
++                    description: Описание проекта
++                    example: "A simple Next.js todo application"
++                  sessionId:
++                    type: string
++                    description: ID сессии (если была создана новая сессия)
++                    example: "session_abc123xyz"
++                  messageCount:
++                    type: integer
++                    description: Количество сообщений в сессии
++                    example: 2
++                  fragmentCount:
++                    type: integer
++                    description: Количество сгенерированных фрагментов в сессии
++                    example: 1
++        '400':
++          description: Некорректный запрос
++          content:
++            application/json:
++              schema:
++                type: object
++                properties:
++                  error:
++                    type: string
++                    example: "Prompt is required"
++        '403':
++          description: Ошибка авторизации API
++          content:
++            text/plain:
++              schema:
++                type: string
++                example: "Access denied. Please check your API configuration."
++        '429':
++          description: Превышен лимит запросов
++          content:
++            text/plain:
++              schema:
++                type: string
++                example: "The provider is currently unavailable due to request limit."
++        '500':
++          description: Внутренняя ошибка сервера
++          content:
++            text/plain:
++              schema:
++                type: string
++                example: "An unexpected error has occurred. Please try again later."
++        '503':
++          description: Сервис недоступен (не настроены API ключи)
++          content:
++            application/json:
++              schema:
++                type: object
++                properties:
++                  error:
++                    type: string
++                    example: "OpenAI API key not configured. Please set OPENAI_API_KEY environment variable."
++
++  /api/generate/chat:
++    post:
++      summary: Чат-based генерация с сессиями
++      description: |
++        Создает проект на основе чат-сессии. Поддерживает итеративную работу 
++        с сохранением контекста между запросами.
++      requestBody:
++        required: true
++        content:
++          application/json:
++            schema:
++              type: object
++              required:
++                - message
++              properties:
++                sessionId:
++                  type: string
++                  description: ID существующей сессии (если не указан, создается новая)
++                  example: "session_abc123xyz"
++                message:
++                  type: string
++                  description: Сообщение/промпт для обработки
++                  example: "Add dark mode toggle to the todo app"
++                model:
++                  type: string
++                  description: Модель LLM
++                  default: "gpt-4o"
++                  example: "gpt-4o"
++                template:
++                  type: string
++                  description: Шаблон проекта
++                  default: "nextjs-developer"
++                  example: "nextjs-developer"
++            examples:
++              new_session:
++                summary: Создание новой сессии
++                value:
++                  message: "Create a todo app with Next.js"
++              continue_session:
++                summary: Продолжение существующей сессии
++                value:
++                  sessionId: "session_abc123xyz"
++                  message: "Add dark mode toggle"
++      responses:
++        '200':
++          description: Проект успешно создан/обновлен
++          content:
++            application/json:
++              schema:
++                type: object
++                properties:
++                  sessionId:
++                    type: string
++                    example: "session_abc123xyz"
++                  id:
++                    type: string
++                    example: "sandbox-12345"
++                  previewUrl:
++                    type: string
++                    example: "https://3000-sandbox.e2b.app"
++                  shortUrl:
++                    type: string
++                    example: "https://fragments.dev/s/abc123"
++                  title:
++                    type: string
++                    example: "Todo App with Dark Mode"
++                  description:
++                    type: string
++                    example: "Enhanced todo application with dark mode support"
++                  messageCount:
++                    type: integer
++                    example: 4
++                  fragmentCount:
++                    type: integer
++                    example: 2
++
++  /api/generate/session/{sessionId}:
++    get:
++      summary: Получить историю сессии
++      description: Возвращает полную историю сообщений и фрагментов сессии
++      parameters:
++        - name: sessionId
++          in: path
++          required: true
++          schema:
++            type: string
++          example: "session_abc123xyz"
++      responses:
++        '200':
++          description: История сессии получена успешно
++          content:
++            application/json:
++              schema:
++                type: object
++                properties:
++                  sessionId:
++                    type: string
++                    example: "session_abc123xyz"
++                  messages:
++                    type: array
++                    items:
++                      type: object
++                      properties:
++                        role:
++                          type: string
++                          enum: ["user", "assistant"]
++                        content:
++                          type: string
++                        timestamp:
++                          type: integer
++                  fragments:
++                    type: array
++                    items:
++                      type: object
++                  template:
++                    type: string
++                    example: "nextjs-developer"
++                  model:
++                    type: string
++                    example: "gpt-4o"
++                  messageCount:
++                    type: integer
++                    example: 4
++                  fragmentCount:
++                    type: integer
++                    example: 2
++                  createdAt:
++                    type: integer
++                    example: 1630000000000
++                  updatedAt:
++                    type: integer
++                    example: 1630001000000
++        '404':
++          description: Сессия не найдена
++        '503':
++          description: Хранилище сессий не настроено
++    delete:
++      summary: Удалить сессию
++      description: Удаляет сессию и всю связанную с ней историю
++      parameters:
++        - name: sessionId
++          in: path
++          required: true
++          schema:
++            type: string
++          example: "session_abc123xyz"
++      responses:
++        '200':
++          description: Сессия успешно удалена
++          content:
++            application/json:
++              schema:
++                type: object
++                properties:
++                  message:
++                    type: string
++                    example: "Session deleted successfully"
++
++components:
++  schemas:
++    GenerateRequest:
++      type: object
++      required:
++        - prompt
++      properties:
++        prompt:
++          type: string
++          minLength: 1
++          maxLength: 4000
++        model:
++          type: string
++          default: "gpt-4o"
++        template:
++          type: string
++          default: "nextjs-developer"
++
++    GenerateResponse:
++      type: object
++      properties:
++        id:
++          type: string
++        previewUrl:
++          type: string
++          format: uri
++        shortUrl:
++          type: string
++          format: uri
++        title:
++          type: string
++        description:
++          type: string
++
++    Error:
++      type: object
++      properties:
++        error:
++          type: string
++
++# Документация по обновлению проектов
++x-update-documentation: |
++  ## Обновление проектов
++
++  В текущей версии API не поддерживает прямое обновление существующих проектов.
++  Каждый вызов `/api/generate` создает новый sandbox и новый проект.
++
++  ### Возможные подходы для обновления:
++
++  1. **Создание нового проекта с модификациями**
++     ```bash
++     curl -X POST http://localhost:3000/api/generate \
++       -H "Content-Type: application/json" \
++       -d '{
++         "prompt": "Create a todo app with Next.js and add authentication with NextAuth"
++       }'
++     ```
++
++  2. **Будущие возможности** (не реализованы):
++     - `PATCH /api/generate/{id}` - обновление существующего проекта
++     - `PUT /api/generate/{id}/files` - обновление файлов в проекте
++     - `POST /api/generate/{id}/chat` - чат для итеративных изменений
++
++  ### Текущие ограничения:
++  - Sandbox живет 10 минут по умолчанию
++  - Нет персистентного хранения изменений
++  - Каждая генерация создает новый изолированный проект
++
++# Переменные окружения
++x-environment-variables: |
++  ## Обязательные переменные окружения
++
++  ```bash
++  # E2B API Key - для создания sandbox
++  E2B_API_KEY=your_e2b_api_key
++
++  # OpenAI API Key - для генерации кода
++  OPENAI_API_KEY=your_openai_api_key
++  ```
++
++  ## Опциональные переменные
++
++  ```bash
++  # Для коротких ссылок (Upstash KV)
++  KV_REST_API_URL=your_kv_url
++  KV_REST_API_TOKEN=your_kv_token
++
++  # Для аутентификации (Supabase)
++  SUPABASE_URL=your_supabase_url
++  SUPABASE_ANON_KEY=your_supabase_key
++
++  # Домен сайта
++  NEXT_PUBLIC_SITE_URL=your_domain.com
++  ```
++
++# Примеры использования
++x-examples: |
++  ## Примеры использования
++
++  ### 1. Простое Next.js приложение
++  ```bash
++  curl -X POST http://localhost:3000/api/generate \
++    -H "Content-Type: application/json" \
++    -d '{
++      "prompt": "Create a landing page for a SaaS product with pricing section"
++    }'
++  ```
++
++  ### Итеративная работа с проектами (новое!)
++
++  ### 2. Создание новой сессии
++  ```bash
++  # Шаг 1: Создаем базовое приложение
++  curl -X POST http://localhost:3000/api/generate/chat \
++    -H "Content-Type: application/json" \
++    -d '{
++      "message": "Create a todo app with Next.js"
++    }'
++
++  # Ответ: {"sessionId": "session_abc123xyz", "id": "sandbox-1", ...}
++  ```
++
++  ### 3. Продолжение работы в существующей сессии
++  ```bash
++  # Шаг 2: Добавляем темную тему
++  curl -X POST http://localhost:3000/api/generate/chat \
++    -H "Content-Type: application/json" \
++    -d '{
++      "sessionId": "session_abc123xyz",
++      "message": "Add dark mode toggle to the todo app"
++    }'
++
++  # Шаг 3: Добавляем аутентификацию
++  curl -X POST http://localhost:3000/api/generate/chat \
++    -H "Content-Type: application/json" \
++    -d '{
++      "sessionId": "session_abc123xyz", 
++      "message": "Add user authentication with NextAuth"
++    }'
++  ```
++
++  ### 4. Получение истории сессии
++  ```bash
++  curl -X GET http://localhost:3000/api/generate/session/session_abc123xyz
++  ```
++
++  ### 5. Использование sessionId в основном API
++  ```bash
++  curl -X POST http://localhost:3000/api/generate \
++    -H "Content-Type: application/json" \
++    -d '{
++      "sessionId": "session_abc123xyz",
++      "prompt": "Add database integration with Prisma"
++    }'
++  ```
++
++  ### 2. Python анализ данных
++  ```bash
++  curl -X POST http://localhost:3000/api/generate \
++    -H "Content-Type: application/json" \
++    -d '{
++      "prompt": "Analyze CSV data with pandas and create visualizations",
++      "template": "code-interpreter-v1"
++    }'
++  ```
++
++  ### 3. Vue.js приложение
++  ```bash
++  curl -X POST http://localhost:3000/api/generate \
++    -H "Content-Type: application/json" \
++    -d '{
++      "prompt": "Create a Vue.js dashboard with charts and tables",
++      "template": "vue-developer"
++    }'
++  ```
++
++  ### 4. Streamlit приложение
++  ```bash
++  curl -X POST http://localhost:3000/api/generate \
++    -H "Content-Type: application/json" \
++    -d '{
++      "prompt": "Create a machine learning model evaluation dashboard",
++      "template": "streamlit-developer"
++    }'
++  ```
++
++  ## Обработка ответа
++
++  ```javascript
++  const response = await fetch('http://localhost:3000/api/generate', {
++    method: 'POST',
++    headers: {
++      'Content-Type': 'application/json',
++    },
++    body: JSON.stringify({
++      prompt: 'Create a todo app with Next.js'
++    })
++  });
++
++  if (response.ok) {
++    const data = await response.json();
++    console.log('Project created:', data);
++    
++    // Открыть превью
++    window.open(data.previewUrl, '_blank');
++  } else {
++    console.error('Error:', await response.text());
++  }
++  ```
+\ No newline at end of file
+diff --git a/app/api/generate/chat/route.ts b/app/api/generate/chat/route.ts
+new file mode 100644
+index 0000000..b639e81
+--- /dev/null
++++ b/app/api/generate/chat/route.ts
+@@ -0,0 +1,273 @@
++import { Duration } from '@/lib/duration'
++import {
++  getModelClient,
++  LLMModel,
++  LLMModelConfig,
++} from '@/lib/models'
++import { toPrompt } from '@/lib/prompt'
++import { fragmentSchema as schema } from '@/lib/schema'
++import templates, { TemplateId } from '@/lib/templates'
++import { publish } from '@/app/actions/publish'
++import { generateObject, LanguageModel, CoreMessage } from 'ai'
++import { Sandbox } from '@e2b/code-interpreter'
++import { kv } from '@vercel/kv'
++import { customAlphabet } from 'nanoid'
++
++export const maxDuration = 300
++
++const sandboxTimeout = 10 * 60 * 1000 // 10 minutes in ms
++const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 10)
++
++type ChatMessage = {
++  role: 'user' | 'assistant'
++  content: string
++  timestamp?: number
++}
++
++type SessionData = {
++  messages: ChatMessage[]
++  fragments: any[]
++  template: TemplateId
++  model: string
++  createdAt: number
++  updatedAt: number
++}
++
++type GenerateChatRequest = {
++  sessionId?: string
++  message: string
++  model?: string
++  template?: TemplateId
++}
++
++export async function POST(req: Request) {
++  try {
++    const {
++      sessionId: inputSessionId,
++      message,
++      model = 'gpt-4o',
++      template = 'nextjs-developer',
++    }: GenerateChatRequest = await req.json()
++
++    if (!message) {
++      return new Response('Message is required', { status: 400 })
++    }
++
++    // Check if required API keys are available
++    if (!process.env.OPENAI_API_KEY) {
++      return new Response(
++        JSON.stringify({
++          error: 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.'
++        }),
++        { 
++          status: 503,
++          headers: { 'Content-Type': 'application/json' }
++        }
++      )
++    }
++
++    if (!process.env.E2B_API_KEY) {
++      return new Response(
++        JSON.stringify({
++          error: 'E2B API key not configured. Please set E2B_API_KEY environment variable.'
++        }),
++        { 
++          status: 503,
++          headers: { 'Content-Type': 'application/json' }
++        }
++      )
++    }
++
++    // Generate or use existing session ID
++    const sessionId = inputSessionId || `session_${nanoid()}`
++
++    // Retrieve existing session data from KV storage
++    let sessionData: SessionData | null = null
++    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN && inputSessionId) {
++      try {
++        sessionData = await kv.get(`chat_session:${sessionId}`)
++      } catch (error) {
++        console.log('KV not available, creating new session')
++      }
++    }
++
++    // Initialize session data if not found
++    if (!sessionData) {
++      sessionData = {
++        messages: [],
++        fragments: [],
++        template,
++        model,
++        createdAt: Date.now(),
++        updatedAt: Date.now()
++      }
++    }
++
++    // Add user message to session
++    const userMessage: ChatMessage = {
++      role: 'user',
++      content: message,
++      timestamp: Date.now()
++    }
++    sessionData.messages.push(userMessage)
++    sessionData.updatedAt = Date.now()
++
++    // Prepare messages for LLM (convert to CoreMessage format)
++    const coreMessages: CoreMessage[] = sessionData.messages.map(msg => ({
++      role: msg.role,
++      content: msg.content
++    }))
++
++    // Set up model configuration
++    const modelConfig: LLMModel = {
++      id: model,
++      name: model,
++      provider: 'openai',
++      providerId: 'openai'
++    }
++
++    const config: LLMModelConfig = {
++      model: model,
++      apiKey: process.env.OPENAI_API_KEY,
++      temperature: 0.7,
++    }
++
++    const modelClient = getModelClient(modelConfig, config)
++
++    // Generate code using LLM with full conversation history
++    const result = await generateObject({
++      model: modelClient as LanguageModel,
++      schema,
++      system: toPrompt(templates),
++      messages: coreMessages,
++      maxRetries: 0,
++    })
++
++    const fragment = result.object
++
++    // Add assistant response to session
++    const assistantMessage: ChatMessage = {
++      role: 'assistant',
++      content: `Generated: ${fragment.title || 'Project'} - ${fragment.description || 'Code generated successfully'}`,
++      timestamp: Date.now()
++    }
++    sessionData.messages.push(assistantMessage)
++    sessionData.fragments.push(fragment)
++
++    // Create E2B sandbox
++    const sbx = await Sandbox.create(fragment.template, {
++      metadata: {
++        template: fragment.template,
++        sessionId: sessionId,
++        userID: '',
++        teamID: '',
++      },
++      timeoutMs: sandboxTimeout,
++    })
++
++    // Install packages if needed
++    if (fragment.has_additional_dependencies) {
++      await sbx.commands.run(fragment.install_dependencies_command)
++      console.log(
++        `Installed dependencies: ${fragment.additional_dependencies.join(', ')} in sandbox ${sbx.sandboxId}`,
++      )
++    }
++
++    // Write code to sandbox
++    if (fragment.code && Array.isArray(fragment.code)) {
++      for (const file of fragment.code) {
++        await sbx.files.write(file.file_path, file.file_content)
++        console.log(`Copied file to ${file.file_path} in ${sbx.sandboxId}`)
++      }
++    } else {
++      await sbx.files.write(fragment.file_path, fragment.code)
++      console.log(`Copied file to ${fragment.file_path} in ${sbx.sandboxId}`)
++    }
++
++    // Get preview URL
++    const previewUrl = `https://${sbx.getHost(fragment.port || 80)}`
++
++    // Publish the project (create short URL if KV is available)
++    let shortUrl: string | undefined
++    try {
++      const publishResult = await publish(
++        previewUrl,
++        sbx.sandboxId,
++        '10m' as Duration,
++        undefined, // teamID
++        undefined, // accessToken
++      )
++      shortUrl = publishResult.url
++    } catch (error) {
++      console.log('Publishing failed, using direct URL:', error)
++      shortUrl = previewUrl
++    }
++
++    // Save updated session data to KV storage
++    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
++      try {
++        await kv.set(
++          `chat_session:${sessionId}`, 
++          sessionData,
++          { ex: 24 * 60 * 60 } // 24 hours TTL
++        )
++      } catch (error) {
++        console.log('Failed to save session to KV:', error)
++      }
++    }
++
++    return new Response(
++      JSON.stringify({
++        sessionId,
++        id: sbx.sandboxId,
++        previewUrl,
++        shortUrl,
++        title: fragment.title,
++        description: fragment.description,
++        messageCount: sessionData.messages.length,
++        fragmentCount: sessionData.fragments.length,
++      }),
++      {
++        headers: {
++          'Content-Type': 'application/json',
++        },
++      },
++    )
++
++  } catch (error: any) {
++    console.error('Error in generate chat API:', error)
++
++    const isRateLimitError =
++      error && (error.statusCode === 429 || error.message.includes('limit'))
++    const isOverloadedError =
++      error && (error.statusCode === 529 || error.statusCode === 503)
++    const isAccessDeniedError =
++      error && (error.statusCode === 403 || error.statusCode === 401)
++
++    if (isRateLimitError) {
++      return new Response(
++        'The provider is currently unavailable due to request limit.',
++        { status: 429 }
++      )
++    }
++
++    if (isOverloadedError) {
++      return new Response(
++        'The provider is currently unavailable. Please try again later.',
++        { status: 529 }
++      )
++    }
++
++    if (isAccessDeniedError) {
++      return new Response(
++        'Access denied. Please check your API configuration.',
++        { status: 403 }
++      )
++    }
++
++    return new Response(
++      'An unexpected error has occurred. Please try again later.',
++      { status: 500 }
++    )
++  }
++}
+\ No newline at end of file
+diff --git a/app/api/generate/route.ts b/app/api/generate/route.ts
+new file mode 100644
+index 0000000..39959c0
+--- /dev/null
++++ b/app/api/generate/route.ts
+@@ -0,0 +1,223 @@
++import { Duration } from '@/lib/duration'
++import {
++  getModelClient,
++  LLMModel,
++  LLMModelConfig,
++} from '@/lib/models'
++import { toPrompt } from '@/lib/prompt'
++import { fragmentSchema as schema } from '@/lib/schema'
++import templates, { TemplateId } from '@/lib/templates'
++import { ExecutionResultWeb } from '@/lib/types'
++import { publish } from '@/app/actions/publish'
++import { streamObject, LanguageModel, generateObject } from 'ai'
++import { Sandbox } from '@e2b/code-interpreter'
++
++export const maxDuration = 300
++
++const sandboxTimeout = 10 * 60 * 1000 // 10 minutes in ms
++
++type GenerateRequest = {
++  prompt: string
++  model?: string
++  template?: TemplateId
++  sessionId?: string
++}
++
++export async function POST(req: Request) {
++  try {
++    const {
++      prompt,
++      model = 'gpt-4o',
++      template = 'nextjs-developer',
++      sessionId,
++    }: GenerateRequest = await req.json()
++
++    if (!prompt) {
++      return new Response('Prompt is required', { status: 400 })
++    }
++
++    // If sessionId is provided, redirect to chat API for session-based generation
++    if (sessionId) {
++      const chatApiUrl = new URL('/api/generate/chat', req.url)
++      
++      const chatResponse = await fetch(chatApiUrl.toString(), {
++        method: 'POST',
++        headers: {
++          'Content-Type': 'application/json',
++        },
++        body: JSON.stringify({
++          sessionId,
++          message: prompt,
++          model,
++          template,
++        }),
++      })
++
++      // Return the chat API response
++      const responseBody = await chatResponse.text()
++      return new Response(responseBody, {
++        status: chatResponse.status,
++        headers: {
++          'Content-Type': 'application/json',
++        },
++      })
++    }
++
++    // Default model config for OpenAI
++    const modelConfig: LLMModel = {
++      id: 'gpt-4o',
++      name: 'GPT-4o',
++      provider: 'openai',
++      providerId: 'openai'
++    }
++
++    const config: LLMModelConfig = {
++      model: model,
++      apiKey: process.env.OPENAI_API_KEY,
++      temperature: 0.7,
++    }
++
++    // Check if OpenAI API key is available
++    if (!process.env.OPENAI_API_KEY) {
++      return new Response(
++        JSON.stringify({
++          error: 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.'
++        }),
++        { 
++          status: 503,
++          headers: { 'Content-Type': 'application/json' }
++        }
++      )
++    }
++
++    // Check if E2B API key is available
++    if (!process.env.E2B_API_KEY) {
++      return new Response(
++        JSON.stringify({
++          error: 'E2B API key not configured. Please set E2B_API_KEY environment variable.'
++        }),
++        { 
++          status: 503,
++          headers: { 'Content-Type': 'application/json' }
++        }
++      )
++    }
++
++    const modelClient = getModelClient(modelConfig, config)
++
++    // Generate code using LLM
++    const result = await generateObject({
++      model: modelClient as LanguageModel,
++      schema,
++      system: toPrompt(templates),
++      messages: [
++        {
++          role: 'user',
++          content: `Use template: ${template}. ${prompt}`,
++        },
++      ],
++      maxRetries: 0,
++    })
++
++    const fragment = result.object
++
++    // Create E2B sandbox
++    const sbx = await Sandbox.create(fragment.template, {
++      metadata: {
++        template: fragment.template,
++        userID: '',
++        teamID: '',
++      },
++      timeoutMs: sandboxTimeout,
++    })
++
++    // Install packages if needed
++    if (fragment.has_additional_dependencies) {
++      await sbx.commands.run(fragment.install_dependencies_command)
++      console.log(
++        `Installed dependencies: ${fragment.additional_dependencies.join(', ')} in sandbox ${sbx.sandboxId}`,
++      )
++    }
++
++    // Write code to sandbox
++    if (fragment.code && Array.isArray(fragment.code)) {
++      for (const file of fragment.code) {
++        await sbx.files.write(file.file_path, file.file_content)
++        console.log(`Copied file to ${file.file_path} in ${sbx.sandboxId}`)
++      }
++    } else {
++      await sbx.files.write(fragment.file_path, fragment.code)
++      console.log(`Copied file to ${fragment.file_path} in ${sbx.sandboxId}`)
++    }
++
++    // Get preview URL
++    const previewUrl = `https://${sbx.getHost(fragment.port || 80)}`
++
++    // Publish the project (create short URL if KV is available)
++    let shortUrl: string | undefined
++    try {
++      const publishResult = await publish(
++        previewUrl,
++        sbx.sandboxId,
++        '10m' as Duration,
++        undefined, // teamID
++        undefined, // accessToken
++      )
++      shortUrl = publishResult.url
++    } catch (error) {
++      console.log('Publishing failed, using direct URL:', error)
++      shortUrl = previewUrl
++    }
++
++    return new Response(
++      JSON.stringify({
++        id: sbx.sandboxId,
++        previewUrl,
++        shortUrl,
++        title: fragment.title,
++        description: fragment.description,
++      }),
++      {
++        headers: {
++          'Content-Type': 'application/json',
++        },
++      },
++    )
++
++  } catch (error: any) {
++    console.error('Error in generate API:', error)
++
++    const isRateLimitError =
++      error && (error.statusCode === 429 || error.message.includes('limit'))
++    const isOverloadedError =
++      error && (error.statusCode === 529 || error.statusCode === 503)
++    const isAccessDeniedError =
++      error && (error.statusCode === 403 || error.statusCode === 401)
++
++    if (isRateLimitError) {
++      return new Response(
++        'The provider is currently unavailable due to request limit.',
++        { status: 429 }
++      )
++    }
++
++    if (isOverloadedError) {
++      return new Response(
++        'The provider is currently unavailable. Please try again later.',
++        { status: 529 }
++      )
++    }
++
++    if (isAccessDeniedError) {
++      return new Response(
++        'Access denied. Please check your API configuration.',
++        { status: 403 }
++      )
++    }
++
++    return new Response(
++      'An unexpected error has occurred. Please try again later.',
++      { status: 500 }
++    )
++  }
++}
+\ No newline at end of file
+diff --git a/app/api/generate/session/[sessionId]/route.ts b/app/api/generate/session/[sessionId]/route.ts
+new file mode 100644
+index 0000000..90ba3b9
+--- /dev/null
++++ b/app/api/generate/session/[sessionId]/route.ts
+@@ -0,0 +1,158 @@
++import { kv } from '@vercel/kv'
++
++type ChatMessage = {
++  role: 'user' | 'assistant'
++  content: string
++  timestamp?: number
++}
++
++type SessionData = {
++  messages: ChatMessage[]
++  fragments: any[]
++  template: string
++  model: string
++  createdAt: number
++  updatedAt: number
++}
++
++export async function GET(
++  req: Request,
++  { params }: { params: { sessionId: string } }
++) {
++  try {
++    const { sessionId } = params
++
++    if (!sessionId) {
++      return new Response('Session ID is required', { status: 400 })
++    }
++
++    // Check if KV storage is available
++    if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
++      return new Response(
++        JSON.stringify({
++          error: 'Session storage not configured. KV storage required for session management.'
++        }),
++        { 
++          status: 503,
++          headers: { 'Content-Type': 'application/json' }
++        }
++      )
++    }
++
++    // Retrieve session data from KV storage
++    let sessionData: SessionData | null = null
++    try {
++      sessionData = await kv.get(`chat_session:${sessionId}`)
++    } catch (error) {
++      console.error('Failed to retrieve session from KV:', error)
++      return new Response(
++        JSON.stringify({ error: 'Failed to retrieve session data' }),
++        { 
++          status: 500,
++          headers: { 'Content-Type': 'application/json' }
++        }
++      )
++    }
++
++    if (!sessionData) {
++      return new Response(
++        JSON.stringify({ error: 'Session not found' }),
++        { 
++          status: 404,
++          headers: { 'Content-Type': 'application/json' }
++        }
++      )
++    }
++
++    // Return session data
++    return new Response(
++      JSON.stringify({
++        sessionId,
++        messages: sessionData.messages,
++        fragments: sessionData.fragments,
++        template: sessionData.template,
++        model: sessionData.model,
++        messageCount: sessionData.messages.length,
++        fragmentCount: sessionData.fragments.length,
++        createdAt: sessionData.createdAt,
++        updatedAt: sessionData.updatedAt,
++      }),
++      {
++        headers: {
++          'Content-Type': 'application/json',
++        },
++      },
++    )
++
++  } catch (error: any) {
++    console.error('Error in session retrieval API:', error)
++
++    return new Response(
++      JSON.stringify({ error: 'An unexpected error occurred' }),
++      { 
++        status: 500,
++        headers: { 'Content-Type': 'application/json' }
++      }
++    )
++  }
++}
++
++export async function DELETE(
++  req: Request,
++  { params }: { params: { sessionId: string } }
++) {
++  try {
++    const { sessionId } = params
++
++    if (!sessionId) {
++      return new Response('Session ID is required', { status: 400 })
++    }
++
++    // Check if KV storage is available
++    if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
++      return new Response(
++        JSON.stringify({
++          error: 'Session storage not configured. KV storage required for session management.'
++        }),
++        { 
++          status: 503,
++          headers: { 'Content-Type': 'application/json' }
++        }
++      )
++    }
++
++    // Delete session from KV storage
++    try {
++      await kv.del(`chat_session:${sessionId}`)
++    } catch (error) {
++      console.error('Failed to delete session from KV:', error)
++      return new Response(
++        JSON.stringify({ error: 'Failed to delete session data' }),
++        { 
++          status: 500,
++          headers: { 'Content-Type': 'application/json' }
++        }
++      )
++    }
++
++    return new Response(
++      JSON.stringify({ message: 'Session deleted successfully' }),
++      {
++        headers: {
++          'Content-Type': 'application/json',
++        },
++      },
++    )
++
++  } catch (error: any) {
++    console.error('Error in session deletion API:', error)
++
++    return new Response(
++      JSON.stringify({ error: 'An unexpected error occurred' }),
++      { 
++        status: 500,
++        headers: { 'Content-Type': 'application/json' }
++      }
++    )
++  }
++}
+\ No newline at end of file
+-- 
+2.44.0
+

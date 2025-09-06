@@ -4,6 +4,7 @@ import {
   LLMModel,
   LLMModelConfig,
 } from '@/lib/models'
+import { createLLMModelConfig } from '@/lib/model-loader'
 import { toPrompt } from '@/lib/prompt'
 import { fragmentSchema as schema } from '@/lib/schema'
 import templates, { TemplateId } from '@/lib/templates'
@@ -53,11 +54,27 @@ export async function POST(req: Request) {
       return new Response('Message is required', { status: 400 })
     }
 
-    // Check if required API keys are available
-    if (!process.env.OPENAI_API_KEY) {
+    // Get model configuration dynamically
+    const modelData = createLLMModelConfig(model)
+    if (!modelData) {
       return new Response(
         JSON.stringify({
-          error: 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.'
+          error: `Unknown model: ${model}`
+        }),
+        { 
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    const { modelConfig, config } = modelData
+
+    // Check if the required API key is available
+    if (!config.apiKey) {
+      return new Response(
+        JSON.stringify({
+          error: `API key not configured for ${modelConfig.provider}. Please set the appropriate API key environment variable.`
         }),
         { 
           status: 503,
@@ -117,20 +134,6 @@ export async function POST(req: Request) {
       role: msg.role,
       content: msg.content
     }))
-
-    // Set up model configuration
-    const modelConfig: LLMModel = {
-      id: model,
-      name: model,
-      provider: 'openai',
-      providerId: 'openai'
-    }
-
-    const config: LLMModelConfig = {
-      model: model,
-      apiKey: process.env.OPENAI_API_KEY,
-      temperature: 0.7,
-    }
 
     const modelClient = getModelClient(modelConfig, config)
 

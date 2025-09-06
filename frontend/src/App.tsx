@@ -6,6 +6,9 @@ import { PreviewPanel } from './components/PreviewPanel'
 import type { ModelId, TemplateId } from './types'
 
 const MODELS: { id: ModelId; name: string }[] = [
+  { id: 'qwen-3-coder-480b', name: 'Qwen 3 Coder 480B (Cerebras)' },
+  { id: 'qwen-3-coder-120b', name: 'Qwen 3 Coder 120B (Cerebras)' },
+  { id: 'qwen-3-coder-35b', name: 'Qwen 3 Coder 35B (Cerebras)' },
   { id: 'gpt-5', name: 'GPT-5' },
   { id: 'gpt-4o', name: 'GPT-4o' },
   { id: 'gpt-4', name: 'GPT-4' },
@@ -22,7 +25,7 @@ const TEMPLATES: { id: TemplateId; name: string }[] = [
 
 function App() {
   const chat = useChat()
-  const [selectedModel, setSelectedModel] = useState<ModelId>('gpt-5')
+  const [selectedModel, setSelectedModel] = useState<ModelId>('qwen-3-coder-480b')
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>('nextjs-developer')
 
   const handleSendMessage = async (message: string) => {
