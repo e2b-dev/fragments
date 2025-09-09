@@ -1,10 +1,9 @@
 import { Duration } from '@/lib/duration'
 import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
-import { morphEditSchema, MorphEditSchema } from '@/lib/morph-schema'
 import ratelimit from '@/lib/ratelimit'
-import { FragmentSchema } from '@/lib/schema'
-import { streamText, LanguageModel, CoreMessage } from 'ai'
+import { FragmentSchema, morphEditSchema, MorphEditSchema } from '@/lib/schema'
+import { generateObject, LanguageModel, CoreMessage } from 'ai'
 import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 
 export const maxDuration = 300
@@ -64,40 +63,19 @@ Current code:
 ${currentFragment.code}
 \`\`\`
 
-IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backticks.`
+`
     
     
-    const textStream = await streamText({
+    const result = await generateObject({
       model: modelClient as LanguageModel,
       system: contextualSystemPrompt,
       messages,
+      schema: morphEditSchema,
       maxRetries: 0,
       ...modelParams,
     })
 
-    // Collect the full text response
-    let fullResponse = ''
-    for await (const chunk of textStream.textStream) {
-      fullResponse += chunk
-    }
-
-    // Parse as JSON manually - strip markdown code blocks if present
-    let jsonString = fullResponse.trim()
-    if (jsonString.startsWith('```json')) {
-      jsonString = jsonString.replace(/^```json\s*/, '').replace(/\s*```$/, '')
-    } else if (jsonString.startsWith('```')) {
-      jsonString = jsonString.replace(/^```\s*/, '').replace(/\s*```$/, '')
-    }
-
-    let editInstructions: MorphEditSchema = JSON.parse(jsonString)
-
-    // Validate the parsed response
-    const validationResult = morphEditSchema.safeParse(editInstructions)
-    if (!validationResult.success) {
-      throw new Error(`Response doesn't match schema: ${validationResult.error.message}`)
-    }
-
-    editInstructions = validationResult.data
+    const editInstructions = result.object
 
     // Apply edits using Morph
     const morphResult = await applyPatch({
