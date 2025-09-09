@@ -1,14 +1,14 @@
 export async function applyPatch({
-  target_file,
+  targetFile,
   instructions,
   initialCode,
-  code_edit,
+  codeEdit,
   apiKey,
 }: {
-  target_file: string
+  targetFile: string
   instructions: string
   initialCode: string
-  code_edit: string
+  codeEdit: string
   apiKey?: string
 }) {
   // Use provided API key or fall back to env var
@@ -23,7 +23,7 @@ export async function applyPatch({
     messages: [
       {
         role: 'user',
-        content: `<instruction>${instructions}</instruction>\n<code>${initialCode}</code>\n<update>${code_edit}</update>`,
+        content: `<instruction>${instructions}</instruction>\n<code>${initialCode}</code>\n<update>${codeEdit}</update>`,
       },
     ],
     stream: true,
@@ -85,7 +85,7 @@ export async function applyPatch({
     }
 
     return {
-      file_path: target_file,
+      filePath: targetFile,
       code: mergedCode,
     }
   } catch (error: any) {

@@ -48,7 +48,6 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState('')
   const { session, userTeam } = useAuth(setAuthDialog, setAuthView)
   const [useMorphApply, setUseMorphApply] = useLocalStorage('useMorphApply', false)
-  const [morphApiKey, setMorphApiKey] = useLocalStorage('morphApiKey', '')
 
   const filteredModels = modelsList.models.filter((model) => {
     if (process.env.NEXT_PUBLIC_HIDE_LOCAL_MODELS) {
@@ -186,7 +185,7 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-      ...(shouldUseMorph && fragment ? { currentFragment: fragment, morphApiKey } : {}),
+      ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
     })
 
     setChatInput('')
@@ -207,7 +206,7 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-      ...(shouldUseMorph && fragment ? { currentFragment: fragment, morphApiKey } : {}),
+      ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
     })
   }
 
@@ -328,8 +327,6 @@ export default function Home() {
               baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
               useMorphApply={useMorphApply}
               onUseMorphApplyChange={setUseMorphApply}
-              morphApiKey={morphApiKey}
-              onMorphApiKeyChange={setMorphApiKey}
             />
           </ChatInput>
         </div>

@@ -1,11 +1,11 @@
 import { Duration } from '@/lib/duration'
 import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
-// @ts-ignore - TypeScript module resolution issue
 import { applyPatch } from '@/lib/morph'
 import { morphEditSchema, MorphEditSchema } from '@/lib/morph-schema'
 import ratelimit from '@/lib/ratelimit'
 import { FragmentSchema } from '@/lib/schema'
 import { streamText, LanguageModel, CoreMessage } from 'ai'
+import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 
 export const maxDuration = 300
 
@@ -22,20 +22,14 @@ export async function POST(req: Request) {
   
   const {
     messages,
-    userID,
-    teamID,
     model,
     config,
     currentFragment,
-    morphApiKey,
   }: {
     messages: CoreMessage[]
-    userID: string | undefined
-    teamID: string | undefined
     model: LLMModel
     config: LLMModelConfig
     currentFragment: FragmentSchema
-    morphApiKey?: string
   } = await req.json()
 
   // Rate limiting (same as chat route)
@@ -48,14 +42,7 @@ export async function POST(req: Request) {
     : false
 
   if (limit) {
-    return new Response('You have reached your request limit for the day.', {
-      status: 429,
-      headers: {
-        'X-RateLimit-Limit': limit.amount.toString(),
-        'X-RateLimit-Remaining': limit.remaining.toString(),
-        'X-RateLimit-Reset': limit.reset.toString(),
-      },
-    })
+    return createRateLimitResponse(limit)
   }
 
   const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
@@ -114,11 +101,11 @@ IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backti
 
     // Apply edits using Morph
     const morphResult = await applyPatch({
-      target_file: currentFragment.file_path,
+      targetFile: currentFragment.file_path,
       instructions: editInstructions.instruction,
       initialCode: currentFragment.code,
-      code_edit: editInstructions.edit,
-      apiKey: morphApiKey,
+      codeEdit: editInstructions.edit,
+      apiKey: process.env.MORPH_API_KEY,
     })
 
     // Return updated fragment in standard format
@@ -144,21 +131,6 @@ IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown code blocks or backti
       },
     })
   } catch (error: any) {
-    
-    // Reuse error handling patterns from main chat route
-    const isRateLimitError =
-      error && (error.statusCode === 429 || error.message.includes('limit'))
-    
-    if (isRateLimitError) {
-      return new Response(
-        'The provider is currently unavailable due to request limit.',
-        { status: 429 }
-      )
-    }
-
-    return new Response(
-      `An error occurred: ${error.message}`,
-      { status: 500 }
-    )
+    return handleAPIError(error, { hasOwnApiKey: !!config.apiKey })
   }
 }
