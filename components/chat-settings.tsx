@@ -15,7 +15,7 @@ import {
   TooltipTrigger,
 } from './ui/tooltip'
 import { LLMModelConfig } from '@/lib/models'
-import { Settings2 } from 'lucide-react'
+import { ExternalLink, Settings2 } from 'lucide-react'
 
 export function ChatSettings({
   apiKeyConfigurable,
@@ -51,15 +51,25 @@ export function ChatSettings({
         </Tooltip>
       </TooltipProvider>
       <DropdownMenuContent align="start">
-        <div className="flex items-center justify-between px-2 py-2">
-          <Label htmlFor="morph-apply-toggle" className="text-sm font-medium">
-            Use Morph Apply
-          </Label>
-          <Switch
-            id="morph-apply-toggle"
-            checked={useMorphApply}
-            onCheckedChange={onUseMorphApplyChange}
-          />
+        <div className="flex flex-col gap-2 px-2 py-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="morph-apply-toggle" className="text-sm font-medium">
+              Use Morph Apply
+            </Label>
+            <Switch
+              id="morph-apply-toggle"
+              checked={useMorphApply}
+              onCheckedChange={onUseMorphApplyChange}
+            />
+          </div>
+          <a
+            className="text-sm text-muted-foreground flex items-center gap-1 hover:underline"
+            target="_blank"
+            href="https://morphllm.com"
+          >
+            Learn more about Morph Apply <ExternalLink className="h-4 w-4" />
+            <span className="sr-only">Learn more about Morph Apply</span>
+          </a>
         </div>
         <DropdownMenuSeparator />
         {apiKeyConfigurable && (

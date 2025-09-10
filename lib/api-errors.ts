@@ -11,7 +11,12 @@ export interface APIError {
  * Checks if an error is a rate limit error
  */
 export function isRateLimitError(error: any): boolean {
-  return error && (error.statusCode === 429 || error.message.includes('limit'))
+  return (
+    error &&
+    (error.statusCode === 429 ||
+      error.message.toLowerCase().includes('limit') ||
+      error.message.toLowerCase().includes('billing'))
+  )
 }
 
 /**

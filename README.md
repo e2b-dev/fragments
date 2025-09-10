@@ -30,7 +30,7 @@ Powered by the [E2B SDK](https://github.com/e2b-dev/code-interpreter).
   - 🔸 Fireworks
   - 🔸 Together AI
   - 🔸 Ollama
-- Support for [Morph](https://morphllm.com/) Apply model to be more token efficient, accurate and faster
+- Integrates with [Morph](https://morphllm.com/) Apply model for token efficient, accurate and faster code editing.
 
 **Make sure to give us a star!**
 
