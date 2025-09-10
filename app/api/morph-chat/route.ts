@@ -83,7 +83,6 @@ ${currentFragment.code}
       instructions: editInstructions.instruction,
       initialCode: currentFragment.code,
       codeEdit: editInstructions.edit,
-      apiKey: process.env.MORPH_API_KEY,
     })
 
     // Return updated fragment in standard format

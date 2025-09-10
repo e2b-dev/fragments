@@ -1,4 +1,5 @@
-import OpenAI from "openai";
+import { createOpenAI } from '@ai-sdk/openai'
+import { generateText, LanguageModel } from 'ai'
 
 export async function applyPatch({
   targetFile,
@@ -20,23 +21,16 @@ export async function applyPatch({
     throw new Error('Morph API key is required. Please add it in settings or set MORPH_API_KEY environment variable.')
   }
 
-  const openai = new OpenAI({
+  const openai = createOpenAI({
     apiKey: morphApiKey,
     baseURL: "https://api.morphllm.com/v1",
   });
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "morph-v3-large",
-      messages: [
-        {
-          role: "user",
-          content: `<instruction>${instructions}</instruction>\n<code>${initialCode}</code>\n<update>${codeEdit}</update>`,
-        },
-      ],
+    const { text: mergedCode } = await generateText({
+      model: openai("morph-v3-large") as LanguageModel,
+      prompt: `<instruction>${instructions}</instruction>\n<code>${initialCode}</code>\n<update>${codeEdit}</update>`,
     });
-
-    const mergedCode = response.choices[0]?.message?.content;
 
     if (!mergedCode) {
       throw new Error('Morph Apply returned empty content')

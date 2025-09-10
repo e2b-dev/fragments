@@ -29,8 +29,8 @@ export function ChatSettings({
   baseURLConfigurable: boolean
   languageModel: LLMModelConfig
   onLanguageModelChange: (model: LLMModelConfig) => void
-  useMorphApply?: boolean
-  onUseMorphApplyChange?: (enabled: boolean) => void
+  useMorphApply: boolean
+  onUseMorphApplyChange: (enabled: boolean) => void
 }) {
   return (
     <DropdownMenu>
@@ -49,12 +49,12 @@ export function ChatSettings({
       <DropdownMenuContent align="start">
         <div className="flex items-center justify-between px-2 py-2">
           <Label htmlFor="morph-apply-toggle" className="text-sm font-medium">
-            Disable Morph Apply
+            Use Morph Apply
           </Label>
           <Switch
             id="morph-apply-toggle"
-            checked={useMorphApply || false}
-            onCheckedChange={onUseMorphApplyChange || (() => {})}
+            checked={useMorphApply}
+            onCheckedChange={onUseMorphApplyChange}
           />
         </div>
         <DropdownMenuSeparator />
