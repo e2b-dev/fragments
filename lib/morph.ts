@@ -16,21 +16,23 @@ export async function applyPatch({
 }) {
   // Use provided API key or fall back to env var
   const morphApiKey = apiKey || process.env.MORPH_API_KEY
-  
+
   if (!morphApiKey) {
-    throw new Error('Morph API key is required. Please add it in settings or set MORPH_API_KEY environment variable.')
+    throw new Error(
+      'Morph API key is required. Please add it in settings or set MORPH_API_KEY environment variable.',
+    )
   }
 
   const openai = createOpenAI({
     apiKey: morphApiKey,
-    baseURL: "https://api.morphllm.com/v1",
-  });
+    baseURL: 'https://api.morphllm.com/v1',
+  })
 
   try {
     const { text: mergedCode } = await generateText({
-      model: openai("morph-v3-large") as LanguageModel,
+      model: openai('morph-v3-large') as LanguageModel,
       prompt: `<instruction>${instructions}</instruction>\n<code>${initialCode}</code>\n<update>${codeEdit}</update>`,
-    });
+    })
 
     if (!mergedCode) {
       throw new Error('Morph Apply returned empty content')

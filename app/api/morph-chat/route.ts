@@ -1,10 +1,10 @@
+import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
 import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
 import ratelimit from '@/lib/ratelimit'
 import { FragmentSchema, morphEditSchema, MorphEditSchema } from '@/lib/schema'
 import { generateObject, LanguageModel, CoreMessage } from 'ai'
-import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 
 export const maxDuration = 300
 
@@ -18,7 +18,6 @@ const ratelimitWindow = process.env.RATE_LIMIT_WINDOW
 // System prompt is constructed dynamically below using the current file context
 
 export async function POST(req: Request) {
-  
   const {
     messages,
     model,
@@ -64,8 +63,7 @@ ${currentFragment.code}
 \`\`\`
 
 `
-    
-    
+
     const result = await generateObject({
       model: modelClient as LanguageModel,
       system: contextualSystemPrompt,

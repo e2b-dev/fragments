@@ -7,6 +7,7 @@ import {
 } from './ui/dropdown-menu'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
+import { Switch } from './ui/switch'
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +16,6 @@ import {
 } from './ui/tooltip'
 import { LLMModelConfig } from '@/lib/models'
 import { Settings2 } from 'lucide-react'
-import { Switch } from './ui/switch'
 
 export function ChatSettings({
   apiKeyConfigurable,
@@ -38,7 +38,11 @@ export function ChatSettings({
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-muted-foreground h-6 w-6 rounded-sm">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground h-6 w-6 rounded-sm"
+              >
                 <Settings2 className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>

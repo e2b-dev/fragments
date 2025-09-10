@@ -31,7 +31,10 @@ export function isAccessDeniedError(error: any): boolean {
 /**
  * Handles API errors and returns appropriate Response objects
  */
-export function handleAPIError(error: any, context?: { hasOwnApiKey?: boolean }): Response {
+export function handleAPIError(
+  error: any,
+  context?: { hasOwnApiKey?: boolean },
+): Response {
   // Log the error for debugging
   console.error('API Error:', error)
 
@@ -39,28 +42,28 @@ export function handleAPIError(error: any, context?: { hasOwnApiKey?: boolean })
     const message = context?.hasOwnApiKey
       ? 'The provider is currently unavailable due to request limit.'
       : 'The provider is currently unavailable due to request limit. Try using your own API key.'
-    
+
     return new Response(message, { status: 429 })
   }
 
   if (isOverloadedError(error)) {
     return new Response(
       'The provider is currently unavailable. Please try again later.',
-      { status: 529 }
+      { status: 529 },
     )
   }
 
   if (isAccessDeniedError(error)) {
     return new Response(
       'Access denied. Please make sure your API key is valid.',
-      { status: 403 }
+      { status: 403 },
     )
   }
 
   // Generic error handling
   return new Response(
     'An unexpected error has occurred. Please try again later.',
-    { status: 500 }
+    { status: 500 },
   )
 }
 

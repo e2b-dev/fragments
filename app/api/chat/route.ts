@@ -1,15 +1,11 @@
+import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
-import {
-  getModelClient,
-  LLMModel,
-  LLMModelConfig,
-} from '@/lib/models'
+import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
 import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
 import { fragmentSchema as schema } from '@/lib/schema'
 import { Templates } from '@/lib/templates'
 import { streamObject, LanguageModel, CoreMessage } from 'ai'
-import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 
 export const maxDuration = 300
 
