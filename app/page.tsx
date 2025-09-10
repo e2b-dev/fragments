@@ -47,7 +47,7 @@ export default function Home() {
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const { session, userTeam } = useAuth(setAuthDialog, setAuthView)
-  const [useMorphApply, setUseMorphApply] = useLocalStorage('useMorphApply', false)
+  const [useMorphApply, setUseMorphApply] = useLocalStorage('useMorphApply', true)
 
   const filteredModels = modelsList.models.filter((model) => {
     if (process.env.NEXT_PUBLIC_HIDE_LOCAL_MODELS) {
