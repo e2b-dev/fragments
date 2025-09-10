@@ -1,9 +1,6 @@
+import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
-import {
-  getModelClient,
-  LLMModel,
-  LLMModelConfig,
-} from '@/lib/models'
+import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
 import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
 import { fragmentSchema as schema } from '@/lib/schema'
@@ -45,14 +42,7 @@ export async function POST(req: Request) {
     : false
 
   if (limit) {
-    return new Response('You have reached your request limit for the day.', {
-      status: 429,
-      headers: {
-        'X-RateLimit-Limit': limit.amount.toString(),
-        'X-RateLimit-Remaining': limit.remaining.toString(),
-        'X-RateLimit-Reset': limit.reset.toString(),
-      },
-    })
+    return createRateLimitResponse(limit)
   }
 
   console.log('userID', userID)
@@ -76,47 +66,6 @@ export async function POST(req: Request) {
 
     return stream.toTextStreamResponse()
   } catch (error: any) {
-    const isRateLimitError =
-      error && (error.statusCode === 429 || error.message.includes('limit'))
-    const isOverloadedError =
-      error && (error.statusCode === 529 || error.statusCode === 503)
-    const isAccessDeniedError =
-      error && (error.statusCode === 403 || error.statusCode === 401)
-
-    if (isRateLimitError) {
-      return new Response(
-        'The provider is currently unavailable due to request limit. Try using your own API key.',
-        {
-          status: 429,
-        },
-      )
-    }
-
-    if (isOverloadedError) {
-      return new Response(
-        'The provider is currently unavailable. Please try again later.',
-        {
-          status: 529,
-        },
-      )
-    }
-
-    if (isAccessDeniedError) {
-      return new Response(
-        'Access denied. Please make sure your API key is valid.',
-        {
-          status: 403,
-        },
-      )
-    }
-
-    console.error('Error:', error)
-
-    return new Response(
-      'An unexpected error has occurred. Please try again later.',
-      {
-        status: 500,
-      },
-    )
+    return handleAPIError(error, { hasOwnApiKey: !!config.apiKey })
   }
 }

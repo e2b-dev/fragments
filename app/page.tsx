@@ -47,6 +47,10 @@ export default function Home() {
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const { session, userTeam } = useAuth(setAuthDialog, setAuthView)
+  const [useMorphApply, setUseMorphApply] = useLocalStorage(
+    'useMorphApply',
+    process.env.NEXT_PUBLIC_USE_MORPH_APPLY === 'true',
+  )
 
   const filteredModels = modelsList.models.filter((model) => {
     if (process.env.NEXT_PUBLIC_HIDE_LOCAL_MODELS) {
@@ -64,8 +68,13 @@ export default function Home() {
       : { [selectedTemplate]: templates[selectedTemplate] }
   const lastMessage = messages[messages.length - 1]
 
+  // Determine which API to use based on morph toggle and existing fragment
+  const shouldUseMorph =
+    useMorphApply && fragment && fragment.code && fragment.file_path
+  const apiEndpoint = shouldUseMorph ? '/api/morph-chat' : '/api/chat'
+
   const { object, submit, isLoading, stop, error } = useObject({
-    api: '/api/chat',
+    api: apiEndpoint,
     schema,
     onError: (error) => {
       console.error('Error submitting request:', error)
@@ -180,6 +189,7 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
+      ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
     })
 
     setChatInput('')
@@ -200,6 +210,7 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
+      ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
     })
   }
 
@@ -318,6 +329,8 @@ export default function Home() {
               onLanguageModelChange={handleLanguageModelChange}
               apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
               baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
+              useMorphApply={useMorphApply}
+              onUseMorphApplyChange={setUseMorphApply}
             />
           </ChatInput>
         </div>
