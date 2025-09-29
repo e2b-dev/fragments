@@ -77,11 +77,16 @@ export default function Home() {
 
   const lastMessage = useMemo(() => messages[messages.length - 1], [messages])
 
-  const setLastMessage = useCallback((message: Message) => {
-    setMessages((previousMessages) => [
-      ...previousMessages.slice(0, -1),
-      message,
-    ])
+  const setLastMessage = useCallback((updates: Partial<Message>) => {
+    setMessages((previousMessages) => {
+      const lastMessage = previousMessages[previousMessages.length - 1]
+      if (!lastMessage) return previousMessages
+      
+      return [
+        ...previousMessages.slice(0, -1),
+        { ...lastMessage, ...updates },
+      ]
+    })
   }, [])
 
   const currentTemplate = useMemo(
@@ -139,6 +144,7 @@ export default function Home() {
 
         setResult(result)
         setCurrentPreview({ fragment, result })
+        setLastMessage({ result })
         setCurrentTab('fragment')
         setIsPreviewLoading(false)
       }
@@ -163,7 +169,6 @@ export default function Home() {
 
       if (lastMessage && lastMessage.role === 'assistant') {
         setLastMessage({
-          role: 'assistant',
           content,
           object,
         })
