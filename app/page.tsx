@@ -47,8 +47,6 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([])
   const [fragment, setFragment] = useState<DeepPartial<FragmentSchema>>()
   const [isSideBarOpen, setIsSideBarOpen] = useState(false)
-  const [currentFragment, setCurrentFragment] =
-    useState<DeepPartial<FragmentSchema>>()
   const [currentTab, setCurrentTab] = useState<'code' | 'fragment'>('code')
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
@@ -96,8 +94,8 @@ export default function Home() {
 
   // Determine which API to use based on morph toggle and existing fragment
   const shouldUseMorph = useMemo(
-    () => useMorphApply && currentFragment,
-    [useMorphApply, currentFragment],
+    () => useMorphApply && fragment,
+    [useMorphApply, fragment],
   )
 
   const apiEndpoint = useMemo(
@@ -141,7 +139,6 @@ export default function Home() {
 
         setResult(result)
         setCurrentPreview({ fragment, result })
-        setCurrentFragment(fragment)
         setCurrentTab('fragment')
         setIsPreviewLoading(false)
       }
@@ -210,7 +207,7 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-      ...(shouldUseMorph ? { currentFragment } : {}),
+      ...(shouldUseMorph ? { currentFragment: fragment } : {}),
     })
 
     setChatInput('')
@@ -232,7 +229,7 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-      ...(shouldUseMorph ? { currentFragment } : {}),
+      ...(shouldUseMorph ? { currentFragment: fragment } : {}),
     })
   }
 
@@ -277,7 +274,6 @@ export default function Home() {
     setFiles([])
     setMessages([])
     setFragment(undefined)
-    setCurrentFragment(undefined)
     setResult(undefined)
     setCurrentTab('code')
     setIsPreviewLoading(false)
