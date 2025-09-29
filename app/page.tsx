@@ -19,7 +19,13 @@ import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
 import { usePostHog } from 'posthog-js/react'
-import { SetStateAction, useEffect, useState } from 'react'
+import {
+  SetStateAction,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
 export default function Home() {
@@ -40,6 +46,9 @@ export default function Home() {
   const [result, setResult] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
   const [fragment, setFragment] = useState<DeepPartial<FragmentSchema>>()
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false)
+  const [currentFragment, setCurrentFragment] =
+    useState<DeepPartial<FragmentSchema>>()
   const [currentTab, setCurrentTab] = useState<'code' | 'fragment'>('code')
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isAuthDialogOpen, setAuthDialog] = useState(false)
@@ -52,26 +61,49 @@ export default function Home() {
     process.env.NEXT_PUBLIC_USE_MORPH_APPLY === 'true',
   )
 
-  const filteredModels = modelsList.models.filter((model) => {
-    if (process.env.NEXT_PUBLIC_HIDE_LOCAL_MODELS) {
-      return model.providerId !== 'ollama'
-    }
-    return true
-  })
-
-  const currentModel = filteredModels.find(
-    (model) => model.id === languageModel.model,
+  const filteredModels = useMemo(
+    () =>
+      modelsList.models.filter((model) => {
+        if (process.env.NEXT_PUBLIC_HIDE_LOCAL_MODELS) {
+          return model.providerId !== 'ollama'
+        }
+        return true
+      }),
+    [],
   )
-  const currentTemplate =
-    selectedTemplate === 'auto'
-      ? templates
-      : { [selectedTemplate]: templates[selectedTemplate] }
-  const lastMessage = messages[messages.length - 1]
+
+  const currentModel = useMemo(
+    () => filteredModels.find((model) => model.id === languageModel.model),
+    [filteredModels, languageModel.model],
+  )
+
+  const lastMessage = useMemo(() => messages[messages.length - 1], [messages])
+
+  const setLastMessage = useCallback((message: Message) => {
+    setMessages((previousMessages) => [
+      ...previousMessages.slice(0, -1),
+      message,
+    ])
+  }, [])
+
+  const currentTemplate = useMemo(
+    () =>
+      selectedTemplate === 'auto'
+        ? templates
+        : { [selectedTemplate]: templates[selectedTemplate] },
+    [selectedTemplate],
+  )
 
   // Determine which API to use based on morph toggle and existing fragment
-  const shouldUseMorph =
-    useMorphApply && fragment && fragment.code && fragment.file_path
-  const apiEndpoint = shouldUseMorph ? '/api/morph-chat' : '/api/chat'
+  const shouldUseMorph = useMemo(
+    () => useMorphApply && currentFragment,
+    [useMorphApply, currentFragment],
+  )
+
+  const apiEndpoint = useMemo(
+    () => (shouldUseMorph ? '/api/morph-chat' : '/api/chat'),
+    [shouldUseMorph],
+  )
 
   const { object, submit, isLoading, stop, error } = useObject({
     api: apiEndpoint,
@@ -109,7 +141,7 @@ export default function Home() {
 
         setResult(result)
         setCurrentPreview({ fragment, result })
-        setMessage({ result })
+        setCurrentFragment(fragment)
         setCurrentTab('fragment')
         setIsPreviewLoading(false)
       }
@@ -133,7 +165,8 @@ export default function Home() {
       }
 
       if (lastMessage && lastMessage.role === 'assistant') {
-        setMessage({
+        setLastMessage({
+          role: 'assistant',
           content,
           object,
         })
@@ -144,18 +177,6 @@ export default function Home() {
   useEffect(() => {
     if (error) stop()
   }, [error])
-
-  function setMessage(message: Partial<Message>, index?: number) {
-    setMessages((previousMessages) => {
-      const updatedMessages = [...previousMessages]
-      updatedMessages[index ?? previousMessages.length - 1] = {
-        ...previousMessages[index ?? previousMessages.length - 1],
-        ...message,
-      }
-
-      return updatedMessages
-    })
-  }
 
   async function handleSubmitAuth(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -189,12 +210,13 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-      ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
+      ...(shouldUseMorph ? { currentFragment } : {}),
     })
 
     setChatInput('')
     setFiles([])
     setCurrentTab('code')
+    setIsSideBarOpen(true)
 
     posthog.capture('chat_submit', {
       template: selectedTemplate,
@@ -210,7 +232,7 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-      ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
+      ...(shouldUseMorph ? { currentFragment } : {}),
     })
   }
 
@@ -255,6 +277,7 @@ export default function Home() {
     setFiles([])
     setMessages([])
     setFragment(undefined)
+    setCurrentFragment(undefined)
     setResult(undefined)
     setCurrentTab('code')
     setIsPreviewLoading(false)
@@ -266,6 +289,7 @@ export default function Home() {
   }) {
     setFragment(preview.fragment)
     setResult(preview.result)
+    setIsSideBarOpen(true)
   }
 
   function handleUndo() {
@@ -283,9 +307,11 @@ export default function Home() {
           supabase={supabase}
         />
       )}
-      <div className="grid w-full md:grid-cols-2">
+      <div
+        className={`grid w-full ${isSideBarOpen ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}
+      >
         <div
-          className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
+          className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto`}
         >
           <NavBar
             session={session}
@@ -343,7 +369,8 @@ export default function Home() {
           isPreviewLoading={isPreviewLoading}
           fragment={fragment}
           result={result as ExecutionResult}
-          onClose={() => setFragment(undefined)}
+          isSideBarOpen={isSideBarOpen}
+          setIsSideBarOpen={setIsSideBarOpen}
         />
       </div>
     </main>
