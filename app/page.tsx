@@ -165,9 +165,7 @@ export default function Home() {
           content,
           object,
         })
-      }
-
-      if (lastMessage && lastMessage.role === 'assistant') {
+      } else if (lastMessage && lastMessage.role === 'assistant') {
         setLastMessage({
           content,
           object,
