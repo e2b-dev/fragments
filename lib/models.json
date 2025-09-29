@@ -106,6 +106,13 @@
       "multiModal": true
     },
     {
+      "id": "claude-sonnet-4-5-20250929",
+      "provider": "Anthropic",
+      "providerId": "anthropic",
+      "name": "Claude Sonnet 4.5",
+      "multiModal": true
+    },
+    {
       "id": "claude-opus-4-1-20250805",
       "provider": "Anthropic",
       "providerId": "anthropic",
