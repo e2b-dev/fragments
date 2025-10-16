@@ -2,6 +2,7 @@
 
 import { FragmentInterpreter } from './fragment-interpreter'
 import { FragmentWeb } from './fragment-web'
+import { getTemplateId } from '@/lib/templates'
 import {
   ExecutionResult,
   ExecutionResultInterpreter,
@@ -9,7 +10,7 @@ import {
 } from '@/lib/types'
 
 export function FragmentPreview({ result }: { result: ExecutionResult }) {
-  if (result.template === 'code-interpreter-v1') {
+  if (getTemplateId(result.template) === getTemplateId('code-interpreter-v1')) {
     return <FragmentInterpreter result={result as ExecutionResultInterpreter} />
   }
 
