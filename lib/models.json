@@ -106,6 +106,13 @@
       "multiModal": true
     },
     {
+      "id": "claude-sonnet-4-5-20250929",
+      "provider": "Anthropic",
+      "providerId": "anthropic",
+      "name": "Claude Sonnet 4.5",
+      "multiModal": true
+    },
+    {
       "id": "claude-opus-4-1-20250805",
       "provider": "Anthropic",
       "providerId": "anthropic",
@@ -432,6 +439,13 @@
       "provider": "xAI",
       "providerId": "xai",
       "name": "Grok 3 Mini Fast",
+      "multiModal": false
+    },
+    {
+      "id": "grok-code-fast-1",
+      "provider": "xAI",
+      "providerId": "xai",
+      "name": "Grok Code Fast 1",
       "multiModal": false
     },
     {

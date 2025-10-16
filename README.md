@@ -30,6 +30,7 @@ Powered by the [E2B SDK](https://github.com/e2b-dev/code-interpreter).
   - 🔸 Fireworks
   - 🔸 Together AI
   - 🔸 Ollama
+- Integrates with [Morph](https://morphllm.com/) Apply model for token efficient, accurate and faster code editing.
 
 **Make sure to give us a star!**
 
@@ -88,6 +89,9 @@ MISTRAL_API_KEY=
 XAI_API_KEY=
 
 ### Optional env vars
+
+# (on by default) Get your MORPH key here - https://morphllm.com/dashboard/api-keys
+MORPH_API_KEY=
 
 # Domain of the site
 NEXT_PUBLIC_SITE_URL=

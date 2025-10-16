@@ -80,15 +80,3 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
 
   return createClient()
 }
-
-export function getDefaultModelParams(model: LLMModel) {
-  const { id: modelNameString } = model
-
-  if (modelNameString.startsWith('gpt-5')) {
-    return {
-      temperature: 1,
-    }
-  }
-
-  return {}
-}
