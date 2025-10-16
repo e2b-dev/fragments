@@ -195,7 +195,7 @@ npm run build
         "pandas",
         "numpy",
         "matplotlib",
-        "request",
+        "requests",
         "seaborn",
         "plotly"
       ],
