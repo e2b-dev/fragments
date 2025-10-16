@@ -42,6 +42,7 @@ export function Preview({
   }
 
   const isLinkAvailable =
+    result?.template &&
     getTemplateId(result?.template!) !== 'code-interpreter-v1'
 
   return (
