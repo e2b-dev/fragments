@@ -10,6 +10,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { FragmentSchema } from '@/lib/schema'
+import { stripDevSuffix } from '@/lib/templates'
 import { ExecutionResult, ExecutionResultWeb } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { ChevronsRight, LoaderCircle } from 'lucide-react'
@@ -40,7 +41,8 @@ export function Preview({
     return null
   }
 
-  const isLinkAvailable = result?.template !== 'code-interpreter-v1'
+  const isLinkAvailable =
+    stripDevSuffix(result?.template!) !== 'code-interpreter-v1'
 
   return (
     <div className="absolute md:relative z-10 top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover h-full w-full overflow-auto">

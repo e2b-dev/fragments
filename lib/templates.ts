@@ -1,14 +1,14 @@
-export function getTemplateId(id: string) {
+export function getTemplateIdSuffix(id: string) {
   const isDev = process.env.NODE_ENV === 'development'
   return isDev ? `${id}-dev` : id
 }
 
-export function stripDevSuffix(id: string) {
+export function getTemplateId(id: string) {
   return id.replace(/-dev$/, '')
 }
 
 const templates = {
-  [getTemplateId('code-interpreter-v1')]: {
+  [getTemplateIdSuffix('code-interpreter-v1')]: {
     name: 'Python data analyst',
     lib: [
       'python',
@@ -24,7 +24,7 @@ const templates = {
       'Runs code as a Jupyter notebook cell. Strong data analysis angle. Can use complex visualisation to explain results.',
     port: null,
   },
-  [getTemplateId('nextjs-developer')]: {
+  [getTemplateIdSuffix('nextjs-developer')]: {
     name: 'Next.js developer',
     lib: [
       'nextjs@14.2.5',
@@ -41,7 +41,7 @@ const templates = {
       'A Next.js 13+ app that reloads automatically. Using the pages router.',
     port: 3000,
   },
-  [getTemplateId('vue-developer')]: {
+  [getTemplateIdSuffix('vue-developer')]: {
     name: 'Vue.js developer',
     lib: ['vue@latest', 'nuxt@3.13.0', 'tailwindcss'],
     file: 'app/app.vue',
@@ -49,7 +49,7 @@ const templates = {
       'A Vue.js 3+ app that reloads automatically. Only when asked specifically for a Vue app.',
     port: 3000,
   },
-  [getTemplateId('streamlit-developer')]: {
+  [getTemplateIdSuffix('streamlit-developer')]: {
     name: 'Streamlit developer',
     lib: [
       'streamlit',
@@ -64,7 +64,7 @@ const templates = {
     instructions: 'A streamlit app that reloads automatically.',
     port: 8501,
   },
-  [getTemplateId('gradio-developer')]: {
+  [getTemplateIdSuffix('gradio-developer')]: {
     name: 'Gradio developer',
     lib: [
       'gradio',

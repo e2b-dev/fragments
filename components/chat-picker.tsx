@@ -8,14 +8,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
-import { Templates } from '@/lib/templates'
+import { getTemplateId, Templates } from '@/lib/templates'
 import 'core-js/features/object/group-by.js'
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
-
-const getTemplateId = (templateId: string) => {
-  return templateId.replace(/-dev$/, '')
-}
 
 export function ChatPicker({
   templates,
