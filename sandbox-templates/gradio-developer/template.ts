@@ -1,4 +1,4 @@
-import { Template, waitForPort } from '@e2b-dev/template'
+import { Template, waitForPort } from 'e2b'
 
 export const template = Template()
   .fromPythonImage('3.9-slim')

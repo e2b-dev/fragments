@@ -79,8 +79,6 @@ const templates = {
 }
 
 export type Templates = typeof templates
-export type TemplateId = keyof typeof templates
-export type TemplateConfig = (typeof templates)[TemplateId]
 export default templates
 
 export function templatesToPrompt(templates: Templates) {

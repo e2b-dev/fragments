@@ -1,4 +1,3 @@
-import { TemplateId } from './templates'
 import { ExecutionError, Result } from '@e2b/code-interpreter'
 
 type ExecutionResultBase = {
@@ -6,7 +5,7 @@ type ExecutionResultBase = {
 }
 
 export type ExecutionResultInterpreter = ExecutionResultBase & {
-  template: 'code-interpreter-v1'
+  template: string
   stdout: string[]
   stderr: string[]
   runtimeError?: ExecutionError
@@ -14,7 +13,7 @@ export type ExecutionResultInterpreter = ExecutionResultBase & {
 }
 
 export type ExecutionResultWeb = ExecutionResultBase & {
-  template: Exclude<TemplateId, 'code-interpreter-v1'>
+  template: string
   url: string
 }
 
