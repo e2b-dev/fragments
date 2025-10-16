@@ -2,7 +2,7 @@ import { Template, waitForPort } from 'e2b'
 
 export const template = Template()
   .fromNodeImage('21-slim')
-  .aptInstall(['curl', 'git']) // required for waitForPort(), we should probably include this in base image
+  .aptInstall(['curl', 'git']) // required for waitForPort()
   .setWorkdir('/home/user/vue-app')
   .runCmd(
     'npx nuxi@latest init . --packageManager=npm --gitInit=no -f --modules tailwindcss',
