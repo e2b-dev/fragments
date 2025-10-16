@@ -3,6 +3,10 @@ export function getTemplateId(id: string) {
   return isDev ? `${id}-dev` : id
 }
 
+export function stripDevSuffix(id: string) {
+  return id.replace(/-dev$/, '')
+}
+
 const templates = {
   [getTemplateId('code-interpreter-v1')]: {
     name: 'Python data analyst',
