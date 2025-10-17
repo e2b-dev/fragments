@@ -10,7 +10,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { FragmentSchema } from '@/lib/schema'
-import { ExecutionResult } from '@/lib/types'
+import { getTemplateId } from '@/lib/templates'
+import { ExecutionResult, ExecutionResultWeb } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { ChevronsRight, LoaderCircle } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
@@ -40,7 +41,9 @@ export function Preview({
     return null
   }
 
-  const isLinkAvailable = result?.template !== 'code-interpreter-v1'
+  const isLinkAvailable =
+    result?.template &&
+    getTemplateId(result?.template!) !== 'code-interpreter-v1'
 
   return (
     <div className="absolute md:relative z-10 top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover h-full w-full overflow-auto">
@@ -100,7 +103,7 @@ export function Preview({
             <div className="flex items-center justify-end gap-2">
               {isLinkAvailable && (
                 <DeployDialog
-                  url={result.url!}
+                  url={(result as ExecutionResultWeb).url!}
                   sbxId={result.sbxId!}
                   teamID={teamID}
                   accessToken={accessToken}

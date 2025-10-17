@@ -6,9 +6,10 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss'],
   vite: {
     server: {
+      allowedHosts: ['.e2b-zulu.dev', '.e2b.dev', '.e2b.app'],
       hmr: {
-        protocol: 'wss'
-      }
-    }
-  }
+        protocol: 'wss',
+      },
+    },
+  },
 })

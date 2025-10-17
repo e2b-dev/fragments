@@ -14,7 +14,7 @@ import { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 import { FragmentSchema, fragmentSchema as schema } from '@/lib/schema'
 import { supabase } from '@/lib/supabase'
-import templates, { TemplateId } from '@/lib/templates'
+import templates from '@/lib/templates'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
@@ -25,7 +25,7 @@ import { useLocalStorage } from 'usehooks-ts'
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
   const [files, setFiles] = useState<File[]>([])
-  const [selectedTemplate, setSelectedTemplate] = useState<'auto' | TemplateId>(
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(
     'auto',
   )
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>(

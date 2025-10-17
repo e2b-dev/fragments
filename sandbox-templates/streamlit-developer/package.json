@@ -1,0 +1,10 @@
+{
+  "name": "streamlit-developer",
+  "version": "1.0.0",
+  "scripts": {
+    "build:dev": "tsx build.dev.ts",
+    "build:prod": "tsx build.prod.ts",
+    "build": "tsx build.prod.ts"
+  }
+}
+  

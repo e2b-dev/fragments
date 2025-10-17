@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { LLMModel, LLMModelConfig } from '@/lib/models'
-import { TemplateId, Templates } from '@/lib/templates'
+import { getTemplateId, Templates } from '@/lib/templates'
 import 'core-js/features/object/group-by.js'
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
@@ -22,8 +22,8 @@ export function ChatPicker({
   onLanguageModelChange,
 }: {
   templates: Templates
-  selectedTemplate: 'auto' | TemplateId
-  onSelectedTemplateChange: (template: 'auto' | TemplateId) => void
+  selectedTemplate: string
+  onSelectedTemplateChange: (template: string) => void
   models: LLMModel[]
   languageModel: LLMModelConfig
   onLanguageModelChange: (config: LLMModelConfig) => void
@@ -57,7 +57,9 @@ export function ChatPicker({
                   <div className="flex items-center space-x-2">
                     <Image
                       className="flex"
-                      src={`/thirdparty/templates/${templateId}.svg`}
+                      src={`/thirdparty/templates/${getTemplateId(
+                        templateId,
+                      )}.svg`}
                       alt={templateId}
                       width={14}
                       height={14}
