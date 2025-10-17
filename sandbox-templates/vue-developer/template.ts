@@ -1,7 +1,7 @@
 import { Template, waitForPort } from 'e2b'
 
 export const template = Template()
-  .fromNodeImage('21-slim')
+  .fromNodeImage('24-slim')
   .aptInstall(['curl', 'git']) // required for waitForPort()
   .setWorkdir('/home/user/vue-app')
   .runCmd(

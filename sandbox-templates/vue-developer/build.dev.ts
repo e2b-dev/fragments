@@ -5,7 +5,7 @@ import { defaultBuildLogger, Template } from 'e2b'
 
 Template.build(template, {
   alias: `${templateAlias}-dev`,
-  cpuCount: 2,
-  memoryMB: 2048,
+  cpuCount: 4,
+  memoryMB: 4096,
   onBuildLogs: defaultBuildLogger(),
 })

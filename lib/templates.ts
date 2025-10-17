@@ -8,7 +8,7 @@ export function getTemplateId(id: string) {
 }
 
 const templates = {
-  [getTemplateIdSuffix('code-interpreter-v1')]: {
+  'code-interpreter-v1': {
     name: 'Python data analyst',
     lib: [
       'python',
