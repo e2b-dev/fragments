@@ -25,7 +25,8 @@ export function Preview({
   isPreviewLoading,
   fragment,
   result,
-  onClose,
+  isSideBarOpen,
+  setIsSideBarOpen,
 }: {
   teamID: string | undefined
   accessToken: string | undefined
@@ -35,9 +36,10 @@ export function Preview({
   isPreviewLoading: boolean
   fragment?: DeepPartial<FragmentSchema>
   result?: ExecutionResult
-  onClose: () => void
+  isSideBarOpen: boolean
+  setIsSideBarOpen: Dispatch<SetStateAction<boolean>>
 }) {
-  if (!fragment) {
+  if (!isSideBarOpen) {
     return null
   }
 
@@ -62,7 +64,7 @@ export function Preview({
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground"
-                  onClick={onClose}
+                  onClick={() => setIsSideBarOpen(false)}
                 >
                   <ChevronsRight className="h-5 w-5" />
                 </Button>
