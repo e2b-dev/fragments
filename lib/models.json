@@ -85,13 +85,6 @@
       "multiModal": true
     },
     {
-      "id": "o1",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "o1",
-      "multiModal": true
-    },
-    {
       "id": "o1-mini",
       "provider": "OpenAI",
       "providerId": "openai",
@@ -141,13 +134,6 @@
       "multiModal": true
     },
     {
-      "id": "claude-3-5-sonnet-latest",
-      "provider": "Anthropic",
-      "providerId": "anthropic",
-      "name": "Claude Sonnet 3.5",
-      "multiModal": true
-    },
-    {
       "id": "claude-3-5-haiku-latest",
       "provider": "Anthropic",
       "providerId": "anthropic",
@@ -183,13 +169,6 @@
       "multiModal": true
     },
     {
-      "id": "gemini-1.5-pro-002",
-      "provider": "Google Vertex AI",
-      "providerId": "vertex",
-      "name": "Gemini 1.5 Pro",
-      "multiModal": true
-    },
-    {
       "id": "gemini-1.5-flash-002",
       "provider": "Google Vertex AI",
       "providerId": "vertex",
@@ -222,13 +201,6 @@
       "provider": "Google Generative AI",
       "providerId": "google",
       "name": "Gemini 2.0 Flash Lite",
-      "multiModal": true
-    },
-    {
-      "id": "models/gemini-1.5-pro",
-      "provider": "Google Generative AI",
-      "providerId": "google",
-      "name": "Gemini 1.5 Pro",
       "multiModal": true
     },
     {
