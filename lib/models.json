@@ -141,13 +141,6 @@
       "multiModal": true
     },
     {
-      "id": "claude-3-5-sonnet-latest",
-      "provider": "Anthropic",
-      "providerId": "anthropic",
-      "name": "Claude Sonnet 3.5",
-      "multiModal": true
-    },
-    {
       "id": "claude-3-5-haiku-latest",
       "provider": "Anthropic",
       "providerId": "anthropic",
