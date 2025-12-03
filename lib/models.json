@@ -99,6 +99,20 @@
       "multiModal": true
     },
     {
+      "id": "claude-opus-4-5-20251101",
+      "provider": "Anthropic",
+      "providerId": "anthropic",
+      "name": "Claude Opus 4.5",
+      "multiModal": true
+    },
+    {
+      "id": "claude-haiku-4-5-20251001",
+      "provider": "Anthropic",
+      "providerId": "anthropic",
+      "name": "Claude Haiku 4.5",
+      "multiModal": true
+    },
+    {
       "id": "claude-sonnet-4-5-20250929",
       "provider": "Anthropic",
       "providerId": "anthropic",
@@ -124,13 +138,6 @@
       "provider": "Anthropic",
       "providerId": "anthropic",
       "name": "Claude Sonnet 4",
-      "multiModal": true
-    },
-    {
-      "id": "claude-3-7-sonnet-latest",
-      "provider": "Anthropic",
-      "providerId": "anthropic",
-      "name": "Claude Sonnet 3.7",
       "multiModal": true
     },
     {
