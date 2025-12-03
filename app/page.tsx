@@ -31,7 +31,7 @@ export default function Home() {
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>(
     'languageModel',
     {
-      model: 'claude-3-5-sonnet-latest',
+      model: 'claude-sonnet-4-20250514',
     },
   )
 
@@ -59,9 +59,20 @@ export default function Home() {
     return true
   })
 
+  const defaultModel = filteredModels.find(
+    (model) => model.id === 'claude-sonnet-4-20250514',
+  ) || filteredModels[0]
+
   const currentModel = filteredModels.find(
     (model) => model.id === languageModel.model,
-  )
+  ) || defaultModel
+
+  // Update localStorage if stored model no longer exists
+  useEffect(() => {
+    if (languageModel.model && !filteredModels.find((m) => m.id === languageModel.model)) {
+      setLanguageModel({ ...languageModel, model: defaultModel.id })
+    }
+  }, [languageModel.model])
   const currentTemplate =
     selectedTemplate === 'auto'
       ? templates
