@@ -27,11 +27,11 @@ const templates = {
   [getTemplateIdSuffix('nextjs-developer')]: {
     name: 'Next.js developer',
     lib: [
-      'nextjs@14.2.5',
+      'nextjs@16.0.7',
       'typescript',
       '@types/node',
-      '@types/react',
-      '@types/react-dom',
+      '@types/react@19.2.7',
+      '@types/react-dom@19.2.3',
       'postcss',
       'tailwindcss',
       'shadcn',

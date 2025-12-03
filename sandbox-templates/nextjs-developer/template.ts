@@ -5,7 +5,7 @@ export const template = Template()
   .aptInstall('curl')
   .setWorkdir('/home/user/nextjs-app')
   .runCmd(
-    'npx create-next-app@14.2.33 . --ts --tailwind --no-eslint --import-alias "@/*" --use-npm --no-app --no-src-dir',
+    'npx create-next-app@16.0.7 . --ts --tailwind --no-eslint --import-alias "@/*" --use-npm --no-app --no-src-dir',
   )
   .runCmd('npx shadcn@2.1.7 init -d')
   .runCmd('npx shadcn@2.1.7 add --all')
