@@ -33,7 +33,7 @@
     "@upstash/ratelimit": "^2.0.1",
     "@vercel/analytics": "^1.5.0",
     "@vercel/kv": "^2.0.0",
-    "ai": "^3.3.8",
+    "ai": "^5.0.106",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "core-js": "^3.38.0",
