@@ -41,7 +41,7 @@
     "e2b": "^2.8.3",
     "lucide-react": "^0.396.0",
     "nanoid": "^5.1.6",
-    "next": "^14.2.33",
+    "next": "^14.2.34",
     "next-themes": "^0.3.0",
     "ollama-ai-provider": "^1.2.0",
     "posthog-js": "^1.158.3",
