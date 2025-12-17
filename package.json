@@ -38,7 +38,7 @@
     "clsx": "^2.1.1",
     "core-js": "^3.38.0",
     "dotenv": "^17.2.0",
-    "e2b": "^2.8.3",
+    "e2b": "^2.8.4",
     "lucide-react": "^0.396.0",
     "nanoid": "^5.1.6",
     "next": "^14.2.35",
@@ -67,5 +67,12 @@
     "tailwindcss": "^3.4.1",
     "tsx": "^4.20.3",
     "typescript": "^5.5.4"
+  },
+  "overrides": {
+    "eslint-config-next": {
+      "@next/eslint-plugin-next": {
+        "glob": "10.5.0"
+      }
+    }
   }
 }
