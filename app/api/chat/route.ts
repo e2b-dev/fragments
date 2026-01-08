@@ -5,7 +5,7 @@ import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
 import { fragmentSchema as schema } from '@/lib/schema'
 import { Templates } from '@/lib/templates'
-import { streamObject, LanguageModel, CoreMessage } from 'ai'
+import { streamText, Output, LanguageModel, type ModelMessage } from 'ai'
 
 export const maxDuration = 300
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     model,
     config,
   }: {
-    messages: CoreMessage[]
+    messages: ModelMessage[]
     userID: string | undefined
     teamID: string | undefined
     template: Templates
@@ -54,18 +54,29 @@ export async function POST(req: Request) {
   const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
   const modelClient = getModelClient(model, config)
 
-  try {
-    const stream = await streamObject({
-      model: modelClient as LanguageModel,
-      schema,
-      system: toPrompt(template),
-      messages,
-      maxRetries: 0, // do not retry on errors
-      ...modelParams,
-    })
+  let apiError: any = null
 
-    return stream.toTextStreamResponse()
-  } catch (error: any) {
-    return handleAPIError(error, { hasOwnApiKey: !!config.apiKey })
+  const result = streamText({
+    model: modelClient as LanguageModel,
+    output: Output.object({ schema }),
+    system: toPrompt(template),
+    messages,
+    maxRetries: 0,
+    onError: ({ error }) => {
+      apiError = error
+    },
+    ...modelParams,
+  })
+
+  // Check if API call succeeds by awaiting first chunk
+  try {
+    await result.response
+  } catch {
+    // apiError is set by onError callback with the actual API error
+    if (apiError) {
+      return handleAPIError(apiError, { hasOwnApiKey: !!config.apiKey })
+    }
   }
+
+  return result.toTextStreamResponse()
 }
