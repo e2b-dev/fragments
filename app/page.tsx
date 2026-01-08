@@ -79,10 +79,8 @@ export default function Home() {
       : { [selectedTemplate]: templates[selectedTemplate] }
   const lastMessage = messages[messages.length - 1]
 
-  // Determine which API to use based on morph toggle and existing fragment
-  const shouldUseMorph =
-    useMorphApply && fragment && fragment.code && fragment.file_path
-  const apiEndpoint = shouldUseMorph ? '/api/morph-chat' : '/api/chat'
+  // Determine which API to use based on morph toggle
+  const apiEndpoint = useMorphApply ? '/api/morph-chat' : '/api/chat'
 
   const { object, submit, isLoading, stop, error } = useObject({
     api: apiEndpoint,
@@ -200,7 +198,7 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-      ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
+      ...(useMorphApply && fragment?.code ? { currentFragment: fragment } : {}),
     })
 
     setChatInput('')
@@ -221,7 +219,7 @@ export default function Home() {
       template: currentTemplate,
       model: currentModel,
       config: languageModel,
-      ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
+      ...(useMorphApply && fragment?.code ? { currentFragment: fragment } : {}),
     })
   }
 
