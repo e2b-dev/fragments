@@ -116,6 +116,7 @@ export function ChatInput({
           >
             <X className="h-3 w-3 cursor-pointer" />
           </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={URL.createObjectURL(file)}
             alt={file.name}
@@ -124,6 +125,7 @@ export function ChatInput({
         </div>
       )
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files])
 
   function onEnter(e: React.KeyboardEvent<HTMLFormElement>) {
@@ -141,6 +143,7 @@ export function ChatInput({
     if (!isMultiModal) {
       handleFileChange([])
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMultiModal])
 
   return (

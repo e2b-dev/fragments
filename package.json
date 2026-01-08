@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.1.6",
@@ -39,15 +39,15 @@
     "core-js": "^3.38.0",
     "dotenv": "^17.2.0",
     "e2b": "^2.8.4",
-    "lucide-react": "^0.396.0",
+    "lucide-react": "^0.462.0",
     "nanoid": "^5.1.6",
-    "next": "^14.2.35",
-    "next-themes": "^0.3.0",
+    "next": "16.1.1",
+    "next-themes": "^0.4.6",
     "ollama-ai-provider": "^1.2.0",
     "posthog-js": "^1.158.3",
     "prismjs": "^1.30.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "react-textarea-autosize": "^8.5.3",
     "simple-icons": "^14.12.3",
     "tailwind-merge": "^2.5.2",
@@ -59,20 +59,13 @@
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^22.2.0",
     "@types/prismjs": "^1.26.4",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.4",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.20.3",
     "typescript": "^5.5.4"
-  },
-  "overrides": {
-    "eslint-config-next": {
-      "@next/eslint-plugin-next": {
-        "glob": "10.5.0"
-      }
-    }
   }
 }
