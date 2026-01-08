@@ -126,7 +126,8 @@ export default function Home() {
   })
 
   useEffect(() => {
-    if (object) {
+    // Only update messages during active streaming, not when toggling settings
+    if (object && isLoading) {
       setFragment(object)
       const content: Message['content'] = [
         { type: 'text', text: object.commentary || '' },
@@ -148,7 +149,7 @@ export default function Home() {
         })
       }
     }
-  }, [object])
+  }, [object, isLoading])
 
   useEffect(() => {
     if (error) stop()
