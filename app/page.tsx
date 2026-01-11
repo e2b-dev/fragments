@@ -17,7 +17,7 @@ import { supabase } from '@/lib/supabase'
 import templates from '@/lib/templates'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
-import { experimental_useObject as useObject } from 'ai/react'
+import { experimental_useObject as useObject } from '@ai-sdk/react'
 import { usePostHog } from 'posthog-js/react'
 import { SetStateAction, useEffect, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
@@ -72,6 +72,7 @@ export default function Home() {
     if (languageModel.model && !filteredModels.find((m) => m.id === languageModel.model)) {
       setLanguageModel({ ...languageModel, model: defaultModel.id })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [languageModel.model])
   const currentTemplate =
     selectedTemplate === 'auto'
@@ -83,6 +84,31 @@ export default function Home() {
   const shouldUseMorph =
     useMorphApply && fragment && fragment.code && fragment.file_path
   const apiEndpoint = shouldUseMorph ? '/api/morph-chat' : '/api/chat'
+
+  function setMessage(message: Partial<Message>, index?: number) {
+    setMessages((previousMessages) => {
+      const updatedMessages = [...previousMessages]
+      updatedMessages[index ?? previousMessages.length - 1] = {
+        ...previousMessages[index ?? previousMessages.length - 1],
+        ...message,
+      }
+
+      return updatedMessages
+    })
+  }
+
+  function addMessage(message: Message) {
+    setMessages((previousMessages) => [...previousMessages, message])
+    return [...messages, message]
+  }
+
+  function setCurrentPreview(preview: {
+    fragment: DeepPartial<FragmentSchema> | undefined
+    result: ExecutionResult | undefined
+  }) {
+    setFragment(preview.fragment)
+    setResult(preview.result)
+  }
 
   const { object, submit, isLoading, stop, error } = useObject({
     api: apiEndpoint,
@@ -150,23 +176,13 @@ export default function Home() {
         })
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [object])
 
   useEffect(() => {
     if (error) stop()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
-
-  function setMessage(message: Partial<Message>, index?: number) {
-    setMessages((previousMessages) => {
-      const updatedMessages = [...previousMessages]
-      updatedMessages[index ?? previousMessages.length - 1] = {
-        ...previousMessages[index ?? previousMessages.length - 1],
-        ...message,
-      }
-
-      return updatedMessages
-    })
-  }
 
   async function handleSubmitAuth(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -225,11 +241,6 @@ export default function Home() {
     })
   }
 
-  function addMessage(message: Message) {
-    setMessages((previousMessages) => [...previousMessages, message])
-    return [...messages, message]
-  }
-
   function handleSaveInputChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setChatInput(e.target.value)
   }
@@ -269,14 +280,6 @@ export default function Home() {
     setResult(undefined)
     setCurrentTab('code')
     setIsPreviewLoading(false)
-  }
-
-  function setCurrentPreview(preview: {
-    fragment: DeepPartial<FragmentSchema> | undefined
-    result: ExecutionResult | undefined
-  }) {
-    setFragment(preview.fragment)
-    setResult(preview.result)
   }
 
   function handleUndo() {

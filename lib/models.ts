@@ -22,7 +22,7 @@ export type LLMModelConfig = {
   topK?: number
   frequencyPenalty?: number
   presencePenalty?: number
-  maxTokens?: number
+  maxOutputTokens?: number
 }
 
 export function getModelClient(model: LLMModel, config: LLMModelConfig) {

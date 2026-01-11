@@ -559,7 +559,7 @@ function Auth({
   magicLink = false,
   onSignUpValidate,
   metadata,
-}: AuthProps): JSX.Element | null {
+}: AuthProps): React.ReactNode {
   const [authView, setAuthView] = useState<ViewType>(view)
   const {
     loading,
@@ -571,11 +571,13 @@ function Auth({
     clearMessages,
   } = useAuthForm()
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setAuthView(view)
     setError(null)
     setMessage(null)
   }, [view, setError, setMessage])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const setAuthViewAndClearMessages = useCallback(
     (newView: ViewType) => {

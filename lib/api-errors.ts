@@ -8,14 +8,22 @@ export interface APIError {
 }
 
 /**
+ * Gets the status code from an error
+ */
+function getStatusCode(error: any): number | undefined {
+  return error?.statusCode ?? error?.status
+}
+
+/**
  * Checks if an error is a rate limit error
  */
 export function isRateLimitError(error: any): boolean {
+  const status = getStatusCode(error)
   return (
     error &&
-    (error.statusCode === 429 ||
-      error.message.toLowerCase().includes('limit') ||
-      error.message.toLowerCase().includes('billing'))
+    (status === 429 ||
+      error.message?.toLowerCase().includes('limit') ||
+      error.message?.toLowerCase().includes('billing'))
   )
 }
 
@@ -23,14 +31,17 @@ export function isRateLimitError(error: any): boolean {
  * Checks if an error is an overloaded/unavailable error
  */
 export function isOverloadedError(error: any): boolean {
-  return error && (error.statusCode === 529 || error.statusCode === 503)
+  const status = getStatusCode(error)
+  return error && (status === 529 || status === 503)
 }
 
 /**
  * Checks if an error is an access denied/unauthorized error
  */
 export function isAccessDeniedError(error: any): boolean {
-  return error && (error.statusCode === 403 || error.statusCode === 401)
+  const status = getStatusCode(error)
+  const message = error?.message?.toLowerCase() || ''
+  return error && (status === 403 || status === 401 || message.includes('api key') || message.includes('x-api-key') || message.includes('unauthorized'))
 }
 
 /**
@@ -40,8 +51,7 @@ export function handleAPIError(
   error: any,
   context?: { hasOwnApiKey?: boolean },
 ): Response {
-  // Log the error for debugging
-  console.error('API Error:', error)
+  console.error('API Error:', error?.message || error)
 
   if (isRateLimitError(error)) {
     const message = context?.hasOwnApiKey

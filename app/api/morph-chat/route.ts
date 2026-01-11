@@ -3,8 +3,8 @@ import { Duration } from '@/lib/duration'
 import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
 import ratelimit from '@/lib/ratelimit'
-import { FragmentSchema, morphEditSchema, MorphEditSchema } from '@/lib/schema'
-import { generateObject, LanguageModel, CoreMessage } from 'ai'
+import { FragmentSchema, morphEditSchema } from '@/lib/schema'
+import { generateText, Output, LanguageModel, type ModelMessage } from 'ai'
 
 export const maxDuration = 300
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     config,
     currentFragment,
   }: {
-    messages: CoreMessage[]
+    messages: ModelMessage[]
     model: LLMModel
     config: LLMModelConfig
     currentFragment: FragmentSchema
@@ -64,16 +64,16 @@ ${currentFragment.code}
 
 `
 
-    const result = await generateObject({
+    const result = await generateText({
       model: modelClient as LanguageModel,
       system: contextualSystemPrompt,
       messages,
-      schema: morphEditSchema,
+      output: Output.object({ schema: morphEditSchema }),
       maxRetries: 0,
       ...modelParams,
     })
 
-    const editInstructions = result.object
+    const editInstructions = result.output!
 
     // Apply edits using Morph
     const morphResult = await applyPatch({
@@ -105,7 +105,7 @@ ${currentFragment.code}
         'Content-Type': 'text/plain; charset=utf-8',
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleAPIError(error, { hasOwnApiKey: !!config.apiKey })
   }
 }

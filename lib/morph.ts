@@ -1,4 +1,4 @@
-import { createOpenAI } from '@ai-sdk/openai'
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { generateText, LanguageModel } from 'ai'
 
 export async function applyPatch({
@@ -23,16 +23,28 @@ export async function applyPatch({
     )
   }
 
-  const openai = createOpenAI({
+  const morph = createOpenAICompatible({
+    name: 'morph',
     apiKey: morphApiKey,
     baseURL: 'https://api.morphllm.com/v1',
   })
 
   try {
-    const { text: mergedCode } = await generateText({
-      model: openai('morph-v3-large') as LanguageModel,
-      prompt: `<instruction>${instructions}</instruction>\n<code>${initialCode}</code>\n<update>${codeEdit}</update>`,
+    console.log('[Morph] Starting applyPatch', {
+      targetFile,
+      instructionsLength: instructions.length,
+      initialCodeLength: initialCode.length,
+      codeEditLength: codeEdit.length,
+      hasApiKey: !!morphApiKey
     })
+
+    const { text: mergedCode } = await generateText({
+      model: morph('morph-v3-large') as LanguageModel,
+      prompt: `<instruction>${instructions}</instruction>\n<code>${initialCode}</code>\n<update>${codeEdit}</update>`,
+      maxRetries: 0,
+    })
+
+    console.log('[Morph] Success', { mergedCodeLength: mergedCode?.length })
 
     if (!mergedCode) {
       throw new Error('Morph Apply returned empty content')
@@ -43,6 +55,13 @@ export async function applyPatch({
       code: mergedCode,
     }
   } catch (error: any) {
+    console.error('[Morph] Error', {
+      message: error.message,
+      status: error.status,
+      cause: error.cause,
+      name: error.name,
+      stack: error.stack?.substring(0, 500),
+    })
     if (error.message.includes('Invalid API key') || error.status === 401) {
       throw new Error('Invalid Morph API key. Please check your settings.')
     }
