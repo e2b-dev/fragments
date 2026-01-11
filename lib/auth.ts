@@ -36,6 +36,7 @@ export function useAuth(
   useEffect(() => {
     if (!supabase) {
       console.warn('Supabase is not initialized')
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       return setSession({ user: { email: 'demo@e2b.dev' } } as Session)
     }
 

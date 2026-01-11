@@ -22,6 +22,7 @@ export function Chat({
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(messages)])
 
   return (
@@ -40,6 +41,7 @@ export function Chat({
             }
             if (content.type === 'image') {
               return (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   key={id}
                   src={content.image}

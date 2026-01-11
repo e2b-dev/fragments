@@ -1,5 +1,6 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
   async headers() {
     return [
       {
@@ -10,7 +11,7 @@ const nextConfig = {
             value: 'DENY',
           },
         ],
-      }
+      },
     ]
   },
 }
