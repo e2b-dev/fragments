@@ -79,8 +79,8 @@ export default function Home() {
       : { [selectedTemplate]: templates[selectedTemplate] }
   const lastMessage = messages[messages.length - 1]
 
-  // Determine which API to use based on morph toggle
-  const apiEndpoint = useMorphApply ? '/api/morph-chat' : '/api/chat'
+  // Determine which API to use based on morph toggle AND whether we have a fragment to edit
+  const apiEndpoint = useMorphApply && fragment?.code ? '/api/morph-chat' : '/api/chat'
 
   const { object, submit, isLoading, stop, error } = useObject({
     api: apiEndpoint,

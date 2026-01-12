@@ -30,6 +30,14 @@ export async function POST(req: Request) {
     currentFragment: FragmentSchema
   } = await req.json()
 
+  // Validate that currentFragment exists (required for morph edits)
+  if (!currentFragment?.file_path || !currentFragment?.code) {
+    return new Response(
+      JSON.stringify({ error: 'currentFragment with file_path and code is required for morph edits' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    )
+  }
+
   // Rate limiting (same as chat route)
   const limit = !config.apiKey
     ? await ratelimit(
