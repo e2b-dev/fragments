@@ -1,0 +1,36 @@
+// configuration options: https://docs.renovatebot.com/configuration-options/
+// list of all presets: https://docs.renovatebot.com/presets-default/
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: ['config:recommended', ':automergeRequireAllStatusChecks'],
+  dependencyDashboard: true,
+  // let it fly for now, we've got a lot to catch up on
+  //  schedule: [
+  //    "0 * * * *"
+  //  ],
+  timezone: 'UTC',
+  // Always squash PRs when automerging
+  automergeType: 'pr',
+  automergeStrategy: 'squash',
+  packageRules: [
+    {
+      description: 'Group and automerge patch updates after CI passes',
+      matchUpdateTypes: ['patch'],
+      automerge: true,
+      groupName: 'patch-updates',
+    },
+    {
+      description: 'Create PRs for minor updates without automerge',
+      matchUpdateTypes: ['minor'],
+      automerge: false,
+    },
+    {
+      description: 'Require dashboard approval for major updates',
+      matchUpdateTypes: ['major'],
+      dependencyDashboardApproval: true,
+      automerge: false,
+    },
+  ],
+  prConcurrentLimit: 1,
+  rebaseWhen: 'auto',
+}
