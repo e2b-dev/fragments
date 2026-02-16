@@ -73,6 +73,9 @@ export function CodeView({ code, lang, onMention }: CodeViewProps) {
     const range = selection.getRangeAt(0)
     const rect = range.getBoundingClientRect()
     const containerRect = container.getBoundingClientRect()
+    const edgePadding = 8
+    const hintHalfWidth = 90
+    const verticalOffset = 8
 
     // Calculate offsets
     const preRange = range.cloneRange()
@@ -81,9 +84,19 @@ export function CodeView({ code, lang, onMention }: CodeViewProps) {
     const start = preRange.toString().length
     const end = start + selection.toString().length
 
+    const rawCenterX =
+      rect.width > 0
+        ? rect.left - containerRect.left + rect.width / 2
+        : containerRect.width / 2
+    const minX = edgePadding + hintHalfWidth
+    const maxX = Math.max(minX, containerRect.width - edgePadding - hintHalfWidth)
+
     setHint({
-      x: rect.left - containerRect.left + rect.width / 2,
-      y: rect.top - containerRect.top - 35,
+      x: Math.min(Math.max(rawCenterX, minX), maxX),
+      y: Math.max(
+        verticalOffset,
+        rect.bottom - containerRect.top + verticalOffset
+      ),
       data: {
         text: selection.toString(),
         start,
