@@ -12,6 +12,7 @@ import { isFileInArray } from '@/lib/utils'
 import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
 import { SetStateAction, useEffect, useMemo, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
+import { useAttachedCode } from '@/lib/attached-code-context'
 
 export function ChatInput({
   retry,
@@ -42,6 +43,14 @@ export function ChatInput({
   handleFileChange: (change: SetStateAction<File[]>) => void
   children: React.ReactNode
 }) {
+  // ✅ Attached code context (from Step 2)
+  const { attached, clear } = useAttachedCode()
+  const [showAttached, setShowAttached] = useState(false)
+
+  useEffect(() => {
+    if (attached) setShowAttached(true)
+  }, [attached])
+
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
     handleFileChange((prev) => {
       const newFiles = Array.from(e.target.files || [])
@@ -172,8 +181,10 @@ export function ChatInput({
           </button>
         </div>
       )}
+
       <div className="relative">
         <RepoBanner className="absolute bottom-full inset-x-2 translate-y-1 z-0 pb-2" />
+
         <div
           className={`shadow-md rounded-2xl relative z-10 bg-background border ${
             dragActive
@@ -182,6 +193,54 @@ export function ChatInput({
           }`}
         >
           <div className="flex items-center px-3 py-2 gap-1">{children}</div>
+
+          {/* ✅ Attached Context Panel (visible before sending) */}
+          {attached ? (
+            <div className="mx-3 mb-2 rounded-xl border bg-muted/40 p-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold">
+                    Attached code context
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    <span className="font-medium">
+                      {attached.filePath || 'unknown file'}
+                    </span>
+                    {attached.language ? (
+                      <span className="ml-2">({attached.language})</span>
+                    ) : null}
+                    {attached.truncated ? (
+                      <span className="ml-2 text-amber-500">— truncated</span>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="flex shrink-0 items-center gap-2">
+                  <button
+                    type="button"
+                    className="rounded-md border px-2 py-1 text-xs hover:bg-muted"
+                    onClick={() => setShowAttached((v) => !v)}
+                  >
+                    {showAttached ? 'Collapse' : 'Expand'}
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-md border px-2 py-1 text-xs hover:bg-muted"
+                    onClick={clear}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+
+              {showAttached ? (
+                <pre className="mt-3 max-h-40 overflow-auto rounded-md bg-background/60 p-2 text-xs">
+                  <code>{attached.text}</code>
+                </pre>
+              ) : null}
+            </div>
+          ) : null}
+
           <TextareaAutosize
             autoFocus={true}
             minRows={1}
@@ -194,6 +253,7 @@ export function ChatInput({
             onChange={handleInputChange}
             onPaste={isMultiModal ? handlePaste : undefined}
           />
+
           <div className="flex p-3 gap-2 items-center">
             <input
               type="file"
@@ -227,6 +287,7 @@ export function ChatInput({
               </TooltipProvider>
               {files.length > 0 && filePreview}
             </div>
+
             <div>
               {!isLoading ? (
                 <TooltipProvider>
@@ -269,6 +330,7 @@ export function ChatInput({
           </div>
         </div>
       </div>
+
       <p className="text-xs text-muted-foreground mt-2 text-center">
         Fragments is an open-source project made by{' '}
         <a href="https://e2b.dev" target="_blank" className="text-[#ff8800]">

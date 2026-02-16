@@ -21,13 +21,22 @@ import { experimental_useObject as useObject } from 'ai/react'
 import { usePostHog } from 'posthog-js/react'
 import { SetStateAction, useEffect, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
+import { useAttachedCode, AttachedCodeProvider } from '@/lib/attached-code-context'
 
 export default function Home() {
+  return (
+    <AttachedCodeProvider>
+      <HomeContent />
+    </AttachedCodeProvider>
+  )
+}
+
+function HomeContent() {
+  const { attached, clear } = useAttachedCode()
+
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
   const [files, setFiles] = useState<File[]>([])
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(
-    'auto',
-  )
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('auto')
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>(
     'languageModel',
     {
@@ -59,24 +68,29 @@ export default function Home() {
     return true
   })
 
-  const defaultModel = filteredModels.find(
-    (model) => model.id === 'claude-sonnet-4-20250514',
-  ) || filteredModels[0]
+  const defaultModel =
+    filteredModels.find((model) => model.id === 'claude-sonnet-4-20250514') ||
+    filteredModels[0]
 
-  const currentModel = filteredModels.find(
-    (model) => model.id === languageModel.model,
-  ) || defaultModel
+  const currentModel =
+    filteredModels.find((model) => model.id === languageModel.model) ||
+    defaultModel
 
   // Update localStorage if stored model no longer exists
   useEffect(() => {
-    if (languageModel.model && !filteredModels.find((m) => m.id === languageModel.model)) {
+    if (
+      languageModel.model &&
+      !filteredModels.find((m) => m.id === languageModel.model)
+    ) {
       setLanguageModel({ ...languageModel, model: defaultModel.id })
     }
   }, [languageModel.model])
+
   const currentTemplate =
     selectedTemplate === 'auto'
       ? templates
       : { [selectedTemplate]: templates[selectedTemplate] }
+
   const lastMessage = messages[messages.length - 1]
 
   // Determine which API to use based on morph toggle and existing fragment
@@ -92,7 +106,6 @@ export default function Home() {
       if (error.message.includes('limit')) {
         setIsRateLimited(true)
       }
-
       setErrorMessage(error.message)
     },
     onFinish: async ({ object: fragment, error }) => {
@@ -163,9 +176,33 @@ export default function Home() {
         ...previousMessages[index ?? previousMessages.length - 1],
         ...message,
       }
-
       return updatedMessages
     })
+  }
+
+  function buildAttachedContextBlock() {
+    if (!attached) return ''
+
+    const file = attached.filePath || 'unknown'
+    const lang = attached.language || 'text'
+    const lines =
+      attached.startLine && attached.endLine
+        ? `${attached.startLine}-${attached.endLine}`
+        : 'unknown'
+
+    return (
+      `[ATTACHED_CODE_CONTEXT]\n` +
+      `file: ${file}\n` +
+      `language: ${lang}\n` +
+      `lines: ${lines}\n` +
+      '```' +
+      lang +
+      `\n` +
+      `${attached.text}\n` +
+      '```' +
+      `\n` +
+      `[/ATTACHED_CODE_CONTEXT]\n`
+    )
   }
 
   async function handleSubmitAuth(e: React.FormEvent<HTMLFormElement>) {
@@ -179,7 +216,11 @@ export default function Home() {
       stop()
     }
 
-    const content: Message['content'] = [{ type: 'text', text: chatInput }]
+    // ✅ inject attached context (deterministic)
+    const contextBlock = buildAttachedContextBlock()
+    const finalPrompt = contextBlock ? `${contextBlock}\n${chatInput}` : chatInput
+
+    const content: Message['content'] = [{ type: 'text', text: finalPrompt }]
     const images = await toMessageImage(files)
 
     if (images.length > 0) {
@@ -203,9 +244,13 @@ export default function Home() {
       ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
     })
 
+    // ✅ clear UI input
     setChatInput('')
     setFiles([])
     setCurrentTab('code')
+
+    // ✅ clear attached context after successful enqueue
+    if (attached) clear()
 
     posthog.capture('chat_submit', {
       template: selectedTemplate,
@@ -294,9 +339,12 @@ export default function Home() {
           supabase={supabase}
         />
       )}
+
       <div className="grid w-full md:grid-cols-2">
         <div
-          className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
+          className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${
+            fragment ? 'col-span-1' : 'col-span-2'
+          }`}
         >
           <NavBar
             session={session}
@@ -345,6 +393,7 @@ export default function Home() {
             />
           </ChatInput>
         </div>
+
         <Preview
           teamID={userTeam?.id}
           accessToken={session?.access_token}

@@ -69,9 +69,7 @@ export function FragmentCode({
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground"
-                  onClick={() =>
-                    download(currentFile, currentFileContent || '')
-                  }
+                  onClick={() => download(currentFile, currentFileContent || '')}
                 >
                   <Download className="h-4 w-4" />
                 </Button>
@@ -81,10 +79,12 @@ export function FragmentCode({
           </TooltipProvider>
         </div>
       </div>
+
       <div className="flex flex-col flex-1 overflow-x-auto">
         <CodeView
           code={currentFileContent || ''}
           lang={currentFile.split('.').pop() || ''}
+          filePath={currentFile}
         />
       </div>
     </div>
