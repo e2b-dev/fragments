@@ -107,6 +107,9 @@ export function ChatInput({
     }
   }
 
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
   const [dragActive, setDragActive] = useState(false)
 
   function handleDrag(e: React.DragEvent) {
@@ -223,51 +226,58 @@ export function ChatInput({
         >
           <div className="flex items-center px-3 py-2 gap-1">{children}</div>
 
-          <MentionsInput
-            value={input}
-            inputRef={(el: HTMLTextAreaElement | null) => {
-              inputElementRef.current = el
-            }}
-            onChange={(e) => {
-              updateCursorPosition()
-              // react-mentions onChange gives (event, newPlainTextValue, newMarkupValue)
-              // We usually want the markup version (with __id__display__)
-              handleInputChange({
-                ...e,
-                target: { ...e.target, value: e.target.value }, // markup
-              } as any)
-            }}
-            onSelect={updateCursorPosition}
-            onKeyUp={updateCursorPosition}
-            onClick={updateCursorPosition}
-            className="mentions"
-            style={{}}
-            placeholder="Describe your app... @someone or type anywhere"
-            disabled={isErrored}
-            onPaste={isMultiModal ? handlePaste : undefined}
-            singleLine={false}
-            allowSpaceInQuery
-          >
-            <Mention
-              trigger="@"
-              data={users}
-              appendSpaceOnAdd
-              displayTransform={(id, display) => `@${display}`}
-              renderSuggestion={(
-                suggestion: SuggestionDataItem,
-                search,
-                highlightedDisplay,
-                index,
-                focused,
-              ) => (
-                <div className={`p-2 ${focused ? 'bg-accent' : ''}`}>
-                  @{suggestion.display}
-                </div>
-              )}
-              // The magic: render inserted mention as chip
-              className="mentions__mention mentions__mention--removable"
-            />
-          </MentionsInput>
+          {mounted ? (
+            <MentionsInput
+              value={input}
+              inputRef={(el: HTMLTextAreaElement | null) => {
+                inputElementRef.current = el
+              }}
+              onChange={(e) => {
+                updateCursorPosition()
+                handleInputChange({
+                  ...e,
+                  target: { ...e.target, value: e.target.value },
+                } as any)
+              }}
+              onSelect={updateCursorPosition}
+              onKeyUp={updateCursorPosition}
+              onClick={updateCursorPosition}
+              className="mentions"
+              style={{}}
+              placeholder="Describe your app... @someone or type anywhere"
+              disabled={isErrored}
+              onPaste={isMultiModal ? handlePaste : undefined}
+              singleLine={false}
+              allowSpaceInQuery
+            >
+              <Mention
+                trigger="@"
+                data={users}
+                appendSpaceOnAdd
+                displayTransform={(id, display) => `@${display}`}
+                renderSuggestion={(
+                  suggestion: SuggestionDataItem,
+                  search,
+                  highlightedDisplay,
+                  index,
+                  focused,
+                ) => (
+                  <div className={`p-2 ${focused ? 'bg-accent' : ''}`}>
+                    @{suggestion.display}
+                  </div>
+                )}
+                className="mentions__mention mentions__mention--removable"
+              />
+            </MentionsInput>
+          ) : (
+            <div className="mentions">
+              <textarea
+                className="mentions__input"
+                placeholder="Describe your app... @someone or type anywhere"
+                disabled
+              />
+            </div>
+          )}
 
           {/* Ad-hoc test button – inserts fake chip */}
           <div className="flex p-3 gap-2 items-center">
