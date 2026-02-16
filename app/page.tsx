@@ -6,6 +6,7 @@ import { Chat } from '@/components/chat'
 import { ChatInput } from '@/components/chat-input'
 import { ChatPicker } from '@/components/chat-picker'
 import { ChatSettings } from '@/components/chat-settings'
+import { CodeSelection } from '@/components/code-view'
 import { NavBar } from '@/components/navbar'
 import { Preview } from '@/components/preview'
 import { useAuth } from '@/lib/auth'
@@ -19,15 +20,13 @@ import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
 import { usePostHog } from 'posthog-js/react'
-import { SetStateAction, useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useRef, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
   const [files, setFiles] = useState<File[]>([])
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(
-    'auto',
-  )
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('auto')
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>(
     'languageModel',
     {
@@ -46,6 +45,9 @@ export default function Home() {
   const [authView, setAuthView] = useState<ViewType>('sign_in')
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const addMentionRef = useRef<
+    (mention: { id: string; display: string }) => void
+  >()
   const { session, userTeam } = useAuth(setAuthDialog, setAuthView)
   const [useMorphApply, setUseMorphApply] = useLocalStorage(
     'useMorphApply',
@@ -59,17 +61,20 @@ export default function Home() {
     return true
   })
 
-  const defaultModel = filteredModels.find(
-    (model) => model.id === 'claude-sonnet-4-20250514',
-  ) || filteredModels[0]
+  const defaultModel =
+    filteredModels.find((model) => model.id === 'claude-sonnet-4-20250514') ||
+    filteredModels[0]
 
-  const currentModel = filteredModels.find(
-    (model) => model.id === languageModel.model,
-  ) || defaultModel
+  const currentModel =
+    filteredModels.find((model) => model.id === languageModel.model) ||
+    defaultModel
 
   // Update localStorage if stored model no longer exists
   useEffect(() => {
-    if (languageModel.model && !filteredModels.find((m) => m.id === languageModel.model)) {
+    if (
+      languageModel.model &&
+      !filteredModels.find((m) => m.id === languageModel.model)
+    ) {
       setLanguageModel({ ...languageModel, model: defaultModel.id })
     }
   }, [languageModel.model])
@@ -238,6 +243,26 @@ export default function Home() {
     setFiles(change)
   }
 
+  function setAddMentionHandler(
+    handler: (mention: { id: string; display: string }) => void,
+  ) {
+    addMentionRef.current = handler
+  }
+
+  function handleCodeMention(selection: CodeSelection) {
+    if (!selection.text.trim()) return
+    const fileName = selection.fileName || 'file'
+    const lineRange =
+      selection.startLine === selection.endLine
+        ? `${selection.startLine}`
+        : `${selection.startLine}-${selection.endLine}`
+
+    addMentionRef.current?.({
+      display: `${fileName}:${lineRange}`,
+      id: selection.text.trim(),
+    })
+  }
+
   function logout() {
     supabase
       ? supabase.auth.signOut()
@@ -326,6 +351,8 @@ export default function Home() {
             isMultiModal={currentModel?.multiModal || false}
             files={files}
             handleFileChange={handleFileChange}
+            fragment={fragment}
+            setAddMentionHandler={setAddMentionHandler}
           >
             <ChatPicker
               templates={templates}
@@ -355,6 +382,7 @@ export default function Home() {
           fragment={fragment}
           result={result as ExecutionResult}
           onClose={() => setFragment(undefined)}
+          onCodeMention={handleCodeMention}
         />
       </div>
     </main>

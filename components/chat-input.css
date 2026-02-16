@@ -1,0 +1,55 @@
+.mentions {
+  position: relative;
+}
+
+.mentions__input,
+.mentions__highlighter {
+  font: inherit;
+  padding: 0.75rem 0.75rem;
+  border: none;
+  background: transparent;
+  outline: none;
+  resize: none;
+  width: 100%;
+  min-height: 48px;
+  line-height: 1.5;
+}
+
+.mentions__highlighter {
+  color: transparent !important; /* hide highlighter text */
+  pointer-events: none;
+  white-space: pre-wrap;
+}
+
+.mentions__mention {
+  background: hsl(var(--primary) / 0.15);
+  border-radius: 4px;
+
+  /* Use box-shadow to create a "padded" chip look without breaking text alignment */
+  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.15);
+}
+
+/* Removed:
+  - color (fixes double text)
+  - display, align-items, gap (fixes layout shifts)
+  - padding, margin, border, font-size (fixes alignment with text area)
+*/
+
+.mentions__mention--removable:hover {
+  background: hsl(var(--primary) / 0.25);
+}
+
+.mentions__remove-btn {
+  background: none;
+  border: none;
+  color: hsl(var(--primary) / 0.7);
+  font-size: 1.1em;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  margin-left: 0.1rem;
+}
+
+.mentions__remove-btn:hover {
+  color: hsl(var(--destructive));
+}

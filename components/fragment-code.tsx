@@ -1,4 +1,4 @@
-import { CodeView } from './code-view'
+import { CodeSelection, CodeView } from './code-view'
 import { Button } from './ui/button'
 import { CopyButton } from './ui/copy-button'
 import {
@@ -12,8 +12,10 @@ import { useState } from 'react'
 
 export function FragmentCode({
   files,
+  onMention,
 }: {
   files: { name: string; content: string }[]
+  onMention?: (selection: CodeSelection) => void
 }) {
   const [currentFile, setCurrentFile] = useState(files[0].name)
   const currentFileContent = files.find(
@@ -85,6 +87,11 @@ export function FragmentCode({
         <CodeView
           code={currentFileContent || ''}
           lang={currentFile.split('.').pop() || ''}
+          onMention={
+            onMention
+              ? (selection) => onMention({ ...selection, fileName: currentFile })
+              : undefined
+          }
         />
       </div>
     </div>

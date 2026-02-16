@@ -1,9 +1,37 @@
 import { Message } from '@/lib/messages'
+import { parseMentionSegments } from '@/lib/messages'
 import { FragmentSchema } from '@/lib/schema'
 import { ExecutionResult } from '@/lib/types'
 import { DeepPartial } from 'ai'
 import { LoaderIcon, Terminal } from 'lucide-react'
 import { useEffect } from 'react'
+
+function renderTextWithMentions(text: string, keyPrefix: string) {
+  const nodes: Array<string | JSX.Element> = []
+  const segments = parseMentionSegments(text)
+  let matchIndex = 0
+
+  for (const segment of segments) {
+    if (segment.type === 'text') {
+      nodes.push(segment.text)
+      continue
+    }
+
+    nodes.push(
+      <span
+        key={`${keyPrefix}-mention-${matchIndex}`}
+        className="inline-block rounded bg-primary/15 px-1 py-0.5 font-sans text-xs text-primary align-middle"
+        title={segment.decodedId}
+        data-mention-id={segment.decodedId}
+      >
+        @{segment.display}
+      </span>,
+    )
+    matchIndex += 1
+  }
+
+  return nodes.length > 0 ? nodes : [text]
+}
 
 export function Chat({
   messages,
@@ -36,7 +64,11 @@ export function Chat({
         >
           {message.content.map((content, id) => {
             if (content.type === 'text') {
-              return content.text
+              return (
+                <span key={id}>
+                  {renderTextWithMentions(content.text, `message-${index}-content-${id}`)}
+                </span>
+              )
             }
             if (content.type === 'image') {
               return (

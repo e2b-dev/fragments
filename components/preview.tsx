@@ -1,3 +1,4 @@
+import { CodeSelection } from './code-view'
 import { DeployDialog } from './deploy-dialog'
 import { FragmentCode } from './fragment-code'
 import { FragmentPreview } from './fragment-preview'
@@ -26,6 +27,7 @@ export function Preview({
   fragment,
   result,
   onClose,
+  onCodeMention,
 }: {
   teamID: string | undefined
   accessToken: string | undefined
@@ -36,6 +38,7 @@ export function Preview({
   fragment?: DeepPartial<FragmentSchema>
   result?: ExecutionResult
   onClose: () => void
+  onCodeMention?: (selection: CodeSelection) => void
 }) {
   if (!fragment) {
     return null
@@ -123,6 +126,7 @@ export function Preview({
                       content: fragment.code,
                     },
                   ]}
+                  onMention={onCodeMention}
                 />
               )}
             </TabsContent>
