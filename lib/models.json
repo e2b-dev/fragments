@@ -22,6 +22,13 @@
       "multiModal": true
     },
     {
+      "id": "gpt-5-codex",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-5-Codex",
+      "multiModal": true
+    },
+    {
       "id": "o3",
       "provider": "OpenAI",
       "providerId": "openai",
