@@ -319,6 +319,7 @@ export default function Home() {
             errorMessage={errorMessage}
             isLoading={isLoading}
             isRateLimited={isRateLimited}
+            hasUserApiKey={!!languageModel.apiKey}
             stop={stop}
             input={chatInput}
             handleInputChange={handleSaveInputChange}
