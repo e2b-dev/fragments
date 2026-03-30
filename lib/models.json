@@ -99,6 +99,13 @@
       "multiModal": true
     },
     {
+      "id": "gpt-3.5-turbo",
+      "provider": "OpenAI",
+      "providerId": "openai",
+      "name": "GPT-3.5 Turbo",
+      "multiModal": false
+    },
+    {
       "id": "claude-opus-4-5-20251101",
       "provider": "Anthropic",
       "providerId": "anthropic",
