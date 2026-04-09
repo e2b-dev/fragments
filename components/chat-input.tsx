@@ -157,14 +157,14 @@ export function ChatInput({
         <div
           className={`flex items-center p-1.5 text-sm font-medium mx-4 mb-10 rounded-xl ${
             isRateLimited
-              ? 'bg-orange-400/10 text-orange-400'
+              ? 'bg-yellow-500/10 text-yellow-600'
               : 'bg-red-400/10 text-red-400'
           }`}
         >
           <span className="flex-1 px-1.5">{errorMessage}</span>
           <button
             className={`px-2 py-1 rounded-sm ${
-              isRateLimited ? 'bg-orange-400/20' : 'bg-red-400/20'
+              isRateLimited ? 'bg-yellow-500/20' : 'bg-red-400/20'
             }`}
             onClick={retry}
           >
@@ -270,9 +270,9 @@ export function ChatInput({
         </div>
       </div>
       <p className="text-xs text-muted-foreground mt-2 text-center">
-        Fragments is an open-source project made by{' '}
-        <a href="https://e2b.dev" target="_blank" className="text-[#ff8800]">
-          ✶ E2B
+        Powered by{' '}
+        <a href="https://onseason.ai" target="_blank" className="text-primary font-medium hover:underline">
+          OnSeason
         </a>
       </p>
     </form>

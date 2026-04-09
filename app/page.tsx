@@ -6,6 +6,7 @@ import { Chat } from '@/components/chat'
 import { ChatInput } from '@/components/chat-input'
 import { ChatPicker } from '@/components/chat-picker'
 import { ChatSettings } from '@/components/chat-settings'
+import { LandingHero } from '@/components/landing-hero'
 import { NavBar } from '@/components/navbar'
 import { Preview } from '@/components/preview'
 import { useAuth } from '@/lib/auth'
@@ -111,16 +112,17 @@ export default function Home() {
             userID: session?.user?.id,
             teamID: userTeam?.id,
             accessToken: session?.access_token,
+            sbxId: result?.sbxId,
           }),
         })
 
-        const result = await response.json()
-        console.log('result', result)
-        posthog.capture('sandbox_created', { url: result.url })
+        const sandboxResult = await response.json()
+        console.log('result', sandboxResult)
+        posthog.capture('sandbox_created', { url: sandboxResult.url })
 
-        setResult(result)
-        setCurrentPreview({ fragment, result })
-        setMessage({ result })
+        setResult(sandboxResult)
+        setCurrentPreview({ fragment, result: sandboxResult })
+        setMessage({ result: sandboxResult })
         setCurrentTab('fragment')
         setIsPreviewLoading(false)
       }
@@ -250,11 +252,11 @@ export default function Home() {
 
   function handleSocialClick(target: 'github' | 'x' | 'discord') {
     if (target === 'github') {
-      window.open('https://github.com/e2b-dev/fragments', '_blank')
+      window.open('https://github.com/onseason-ai/staycy', '_blank')
     } else if (target === 'x') {
-      window.open('https://x.com/e2b', '_blank')
+      window.open('https://x.com/onseason_ai', '_blank')
     } else if (target === 'discord') {
-      window.open('https://discord.gg/e2b', '_blank')
+      window.open('https://discord.gg/onseason', '_blank')
     }
 
     posthog.capture(`${target}_click`)
@@ -284,6 +286,8 @@ export default function Home() {
     setCurrentPreview({ fragment: undefined, result: undefined })
   }
 
+  const isLanding = messages.length === 0 && !isLoading
+
   return (
     <main className="flex min-h-screen max-h-screen">
       {supabase && (
@@ -294,38 +298,35 @@ export default function Home() {
           supabase={supabase}
         />
       )}
-      <div className="grid w-full md:grid-cols-2">
-        <div
-          className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
-        >
-          <NavBar
-            session={session}
-            showLogin={() => setAuthDialog(true)}
-            signOut={logout}
-            onSocialClick={handleSocialClick}
-            onClear={handleClearChat}
-            canClear={messages.length > 0}
-            canUndo={messages.length > 1 && !isLoading}
-            onUndo={handleUndo}
-          />
-          <Chat
-            messages={messages}
-            isLoading={isLoading}
-            setCurrentPreview={setCurrentPreview}
-          />
-          <ChatInput
-            retry={retry}
-            isErrored={error !== undefined}
-            errorMessage={errorMessage}
-            isLoading={isLoading}
-            isRateLimited={isRateLimited}
-            stop={stop}
+
+      {isLanding ? (
+        /* ── Landing page layout ── */
+        <div className="flex flex-col w-full max-h-full overflow-auto">
+          <div className="max-w-[900px] w-full mx-auto px-4">
+            <NavBar
+              session={session}
+              showLogin={() => setAuthDialog(true)}
+              signOut={logout}
+              onSocialClick={handleSocialClick}
+              onClear={handleClearChat}
+              canClear={false}
+              canUndo={false}
+              onUndo={handleUndo}
+            />
+          </div>
+          <LandingHero
             input={chatInput}
-            handleInputChange={handleSaveInputChange}
-            handleSubmit={handleSubmitAuth}
+            onInputChange={handleSaveInputChange}
+            onSubmit={handleSubmitAuth}
+            isLoading={isLoading}
+            stop={stop}
             isMultiModal={currentModel?.multiModal || false}
             files={files}
             handleFileChange={handleFileChange}
+            isErrored={error !== undefined}
+            errorMessage={errorMessage}
+            isRateLimited={isRateLimited}
+            retry={retry}
           >
             <ChatPicker
               templates={templates}
@@ -343,20 +344,74 @@ export default function Home() {
               useMorphApply={useMorphApply}
               onUseMorphApplyChange={setUseMorphApply}
             />
-          </ChatInput>
+          </LandingHero>
         </div>
-        <Preview
-          teamID={userTeam?.id}
-          accessToken={session?.access_token}
-          selectedTab={currentTab}
-          onSelectedTabChange={setCurrentTab}
-          isChatLoading={isLoading}
-          isPreviewLoading={isPreviewLoading}
-          fragment={fragment}
-          result={result as ExecutionResult}
-          onClose={() => setFragment(undefined)}
-        />
-      </div>
+      ) : (
+        /* ── Chat + Preview split layout ── */
+        <div className="grid w-full md:grid-cols-2">
+          <div
+            className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
+          >
+            <NavBar
+              session={session}
+              showLogin={() => setAuthDialog(true)}
+              signOut={logout}
+              onSocialClick={handleSocialClick}
+              onClear={handleClearChat}
+              canClear={messages.length > 0}
+              canUndo={messages.length > 1 && !isLoading}
+              onUndo={handleUndo}
+            />
+            <Chat
+              messages={messages}
+              isLoading={isLoading}
+              setCurrentPreview={setCurrentPreview}
+            />
+            <ChatInput
+              retry={retry}
+              isErrored={error !== undefined}
+              errorMessage={errorMessage}
+              isLoading={isLoading}
+              isRateLimited={isRateLimited}
+              stop={stop}
+              input={chatInput}
+              handleInputChange={handleSaveInputChange}
+              handleSubmit={handleSubmitAuth}
+              isMultiModal={currentModel?.multiModal || false}
+              files={files}
+              handleFileChange={handleFileChange}
+            >
+              <ChatPicker
+                templates={templates}
+                selectedTemplate={selectedTemplate}
+                onSelectedTemplateChange={setSelectedTemplate}
+                models={filteredModels}
+                languageModel={languageModel}
+                onLanguageModelChange={handleLanguageModelChange}
+              />
+              <ChatSettings
+                languageModel={languageModel}
+                onLanguageModelChange={handleLanguageModelChange}
+                apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
+                baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
+                useMorphApply={useMorphApply}
+                onUseMorphApplyChange={setUseMorphApply}
+              />
+            </ChatInput>
+          </div>
+          <Preview
+            teamID={userTeam?.id}
+            accessToken={session?.access_token}
+            selectedTab={currentTab}
+            onSelectedTabChange={setCurrentTab}
+            isChatLoading={isLoading}
+            isPreviewLoading={isPreviewLoading}
+            fragment={fragment}
+            result={result as ExecutionResult}
+            onClose={() => setFragment(undefined)}
+          />
+        </div>
+      )}
     </main>
   )
 }

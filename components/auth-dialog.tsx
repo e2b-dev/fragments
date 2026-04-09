@@ -25,17 +25,17 @@ export function AuthDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <VisuallyHidden>
-          <DialogTitle>Sign in to Fragments</DialogTitle>
+          <DialogTitle>Sign in to Staycy</DialogTitle>
           <DialogDescription>
-            Sign in or create an account to access Fragments
+            Sign in or create an account to access Staycy
           </DialogDescription>
         </VisuallyHidden>
         <div className="flex justify-center items-center flex-col">
-          <h1 className="flex items-center gap-4 text-xl font-bold mb-6 w-full">
-            <div className="flex items-center justify-center rounded-md shadow-md bg-black p-2">
-              <Logo className="text-white w-6 h-6" />
+          <h1 className="flex items-center gap-4 text-xl font-bold mb-6 w-full font-display">
+            <div className="flex items-center justify-center rounded-md shadow-md bg-primary p-2">
+              <Logo className="text-primary-foreground w-6 h-6" />
             </div>
-            Sign in to Fragments
+            Sign in to Staycy
           </h1>
           <div className="w-full">
             <Auth

@@ -24,10 +24,11 @@ const templates = {
       'Runs code as a Jupyter notebook cell. Strong data analysis angle. Can use complex visualisation to explain results.',
     port: null,
   },
-  [getTemplateIdSuffix('nextjs-developer')]: {
-    name: 'Next.js developer',
+  [getTemplateIdSuffix('edible-developer')]: {
+    name: 'Edible developer',
     lib: [
-      'nextjs@14.2.5',
+      'nextjs@14.2.33',
+      'react@18',
       'typescript',
       '@types/node',
       '@types/react',
@@ -35,50 +36,13 @@ const templates = {
       'postcss',
       'tailwindcss',
       'shadcn',
+      '@tanstack/react-query',
+      'bun',
     ],
     file: 'pages/index.tsx',
     instructions:
-      'A Next.js 13+ app that reloads automatically. Using the pages router.',
+      'A Next.js 14 booking site template with Bun runtime, Tailwind CSS, shadcn/ui, and TanStack Query. Uses the pages router with a 3-layer architecture: engine/ (PROTECTED adapter layer with hooks, transforms, SDK stubs — DO NOT MODIFY), components/ (presentation layer — freely modify), pages/ (page routes — freely modify). Pre-built pages: index, search, listing/[id], checkout, confirmation. Pre-built hooks: useListingSearch, useListing, useAvailability, useCreateReservation, useReviews. Import display types and hooks from @/engine only. Read .agent-rules.md for full constraints. Use bun to install additional dependencies.',
     port: 3000,
-  },
-  [getTemplateIdSuffix('vue-developer')]: {
-    name: 'Vue.js developer',
-    lib: ['vue@latest', 'nuxt@3.13.0', 'tailwindcss'],
-    file: 'app/app.vue',
-    instructions:
-      'A Vue.js 3+ app that reloads automatically. Only when asked specifically for a Vue app.',
-    port: 3000,
-  },
-  [getTemplateIdSuffix('streamlit-developer')]: {
-    name: 'Streamlit developer',
-    lib: [
-      'streamlit',
-      'pandas',
-      'numpy',
-      'matplotlib',
-      'requests',
-      'seaborn',
-      'plotly',
-    ],
-    file: 'app.py',
-    instructions: 'A streamlit app that reloads automatically.',
-    port: 8501,
-  },
-  [getTemplateIdSuffix('gradio-developer')]: {
-    name: 'Gradio developer',
-    lib: [
-      'gradio',
-      'pandas',
-      'numpy',
-      'matplotlib',
-      'requests',
-      'seaborn',
-      'plotly',
-    ],
-    file: 'app.py',
-    instructions:
-      'A gradio app. Gradio Blocks/Interface should be called demo.',
-    port: 7860,
   },
 }
 

@@ -12,33 +12,61 @@ export async function POST(req: Request) {
     userID,
     teamID,
     accessToken,
+    sbxId: existingSbxId,
   }: {
     fragment: FragmentSchema
     userID: string | undefined
     teamID: string | undefined
     accessToken: string | undefined
+    sbxId: string | undefined
   } = await req.json()
   console.log('fragment', fragment)
   console.log('userID', userID)
-  // console.log('apiKey', apiKey)
+  console.log('existingSbxId', existingSbxId)
 
-  // Create an interpreter or a sandbox
-  const sbx = await Sandbox.create(fragment.template, {
-    metadata: {
-      template: fragment.template,
-      userID: userID ?? '',
-      teamID: teamID ?? '',
-    },
-    timeoutMs: sandboxTimeout,
-    ...(teamID && accessToken
-      ? {
-          headers: {
-            'X-Supabase-Team': teamID,
-            'X-Supabase-Token': accessToken,
-          },
-        }
-      : {}),
-  })
+  // Reuse existing sandbox if provided, otherwise create a new one
+  let sbx: Sandbox
+  if (existingSbxId) {
+    try {
+      sbx = await Sandbox.connect(existingSbxId)
+      console.log(`Reconnected to sandbox ${sbx.sandboxId}`)
+    } catch (e) {
+      console.log(`Failed to reconnect to ${existingSbxId}, creating new sandbox`)
+      sbx = await Sandbox.create(fragment.template, {
+        metadata: {
+          template: fragment.template,
+          userID: userID ?? '',
+          teamID: teamID ?? '',
+        },
+        timeoutMs: sandboxTimeout,
+        ...(teamID && accessToken
+          ? {
+              headers: {
+                'X-Supabase-Team': teamID,
+                'X-Supabase-Token': accessToken,
+              },
+            }
+          : {}),
+      })
+    }
+  } else {
+    sbx = await Sandbox.create(fragment.template, {
+      metadata: {
+        template: fragment.template,
+        userID: userID ?? '',
+        teamID: teamID ?? '',
+      },
+      timeoutMs: sandboxTimeout,
+      ...(teamID && accessToken
+        ? {
+            headers: {
+              'X-Supabase-Team': teamID,
+              'X-Supabase-Token': accessToken,
+            },
+          }
+        : {}),
+    })
+  }
 
   // Install packages
   if (fragment.has_additional_dependencies) {
@@ -75,11 +103,38 @@ export async function POST(req: Request) {
     )
   }
 
+  // Derive the preview path from the file_path so the iframe shows the right page
+  const baseUrl = `https://${sbx?.getHost(fragment.port || 80)}`
+  const pagePath = toPageRoute(fragment.file_path)
+
   return new Response(
     JSON.stringify({
       sbxId: sbx?.sandboxId,
       template: fragment.template,
-      url: `https://${sbx?.getHost(fragment.port || 80)}`,
+      url: pagePath ? `${baseUrl}${pagePath}` : baseUrl,
     } as ExecutionResultWeb),
   )
+}
+
+/**
+ * Convert a file path like "pages/about.tsx" to a route like "/about".
+ * Returns null for non-page files (components, lib, etc).
+ */
+function toPageRoute(filePath: string): string | null {
+  if (!filePath.startsWith('pages/')) return null
+
+  const route = filePath
+    .replace(/^pages\//, '/')          // pages/about.tsx → /about.tsx
+    .replace(/\.(tsx|ts|jsx|js)$/, '') // /about.tsx → /about
+    .replace(/\/index$/, '/')          // /index → /
+
+  // _app, _document, _error etc are not navigable routes
+  if (route.startsWith('/_')) return null
+
+  // Normalize: remove trailing slash except for root
+  if (route !== '/' && route.endsWith('/')) {
+    return route.slice(0, -1)
+  }
+
+  return route
 }

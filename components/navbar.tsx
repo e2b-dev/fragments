@@ -1,4 +1,5 @@
 import Logo from './logo'
+import Image from 'next/image'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,9 +18,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import {
-  DiscordLogoIcon,
   GitHubLogoIcon,
-  TwitterLogoIcon,
 } from '@radix-ui/react-icons'
 import { Session } from '@supabase/supabase-js'
 import { ArrowRight, LogOut, Trash, Undo } from 'lucide-react'
@@ -47,16 +46,23 @@ export function NavBar({
   return (
     <nav className="w-full flex bg-background py-4">
       <div className="flex flex-1 items-center">
-        <Link href="/" className="flex items-center gap-2" target="_blank">
-          <Logo width={24} height={24} />
-          <h1 className="whitespace-pre">Fragments by </h1>
-        </Link>
-        <Link
-          href="https://e2b.dev"
-          className="underline decoration-[rgba(229,123,0,.3)] decoration-2 text-[#ff8800]"
-          target="_blank"
-        >
-          E2B
+        <Link href="/" className="flex items-center" target="_blank">
+          <Image
+            src="/staycy-only-dark.svg"
+            alt="Staycy"
+            width={100}
+            height={14}
+            className="dark:hidden"
+            priority
+          />
+          <Image
+            src="/staycy-only-light.svg"
+            alt="Staycy"
+            width={100}
+            height={14}
+            className="hidden dark:block"
+            priority
+          />
         </Link>
       </div>
       <div className="flex items-center gap-1 md:gap-4">
@@ -128,23 +134,15 @@ export function NavBar({
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
-                  window.open('https://e2b.dev', '_blank')
+                  window.open('https://onseason.ai', '_blank')
                 }}
               >
-                <Logo className="mr-2 h-4 w-4 text-muted-foreground" />
-                About E2B
+                <Logo className="mr-2 h-4 w-4 text-primary" />
+                About OnSeason
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onSocialClick('github')}>
                 <GitHubLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 Star on GitHub
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onSocialClick('discord')}>
-                <DiscordLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                Join us on Discord
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onSocialClick('x')}>
-                <TwitterLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                Follow us on X
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut}>
@@ -154,7 +152,7 @@ export function NavBar({
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <Button variant="default" onClick={showLogin}>
+          <Button variant="default" onClick={showLogin} className="rounded-full px-5">
             Sign in
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

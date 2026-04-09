@@ -3,13 +3,18 @@ import { PostHogProvider, ThemeProvider } from './providers'
 import { Toaster } from '@/components/ui/toaster'
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Bricolage_Grotesque } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-bricolage',
+  weight: ['400', '500', '600', '700', '800'],
+})
 
 export const metadata: Metadata = {
-  title: 'Fragments by E2B',
-  description: "Open-source version of Anthropic's Artifacts",
+  title: 'Staycy by OnSeason — AI Gen Studio',
+  description: 'Direct Booking Websites for the AI Era. Build stunning hospitality websites with AI.',
 }
 
 export default function RootLayout({
@@ -20,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <PostHogProvider>
-        <body className={inter.className}>
+        <body className={`${inter.variable} ${bricolage.variable} font-sans`}>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

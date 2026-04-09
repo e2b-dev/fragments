@@ -1,0 +1,15 @@
+{
+  "engine": {
+    "provider": "mock",
+    "apiBase": "https://api.example.com"
+  },
+  "branding": {
+    "name": "Vacation Rentals",
+    "primaryColor": "#1a365d"
+  },
+  "features": {
+    "search": true,
+    "checkout": true,
+    "reviews": true
+  }
+}
