@@ -47,9 +47,11 @@ PM sends prompt
 │                                                  │
 │  1. Save message pair to conversations DB        │
 │  2. Generate + store embedding for user message  │
-│  3. Extract any new PM facts (LLM call, async)   │
-│  4. If session ending: generate session summary   │
-│  5. Update Stacy's notes if preferences shifted   │
+│  3. Fetch git diff → generate change_summary     │
+│  4. Store commit_sha + files_changed + summary   │
+│  5. Every 5th msg: extract PM facts (LLM, async) │
+│  6. If session ending: generate session summary   │
+│  7. Update Stacy's notes if preferences shifted   │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -104,6 +106,7 @@ CREATE TABLE messages (
   -- Git linkage
   commit_sha        TEXT,                       -- Links to git when code changed
   files_changed     TEXT[],                     -- Which files this message affected
+  change_summary    TEXT,                       -- LLM-generated summary of code diff (human-readable)
   
   -- Vector embedding for semantic search (Tier 3)
   embedding         vector(1536),               -- text-embedding-3-small produces 1536 dims
@@ -159,6 +162,8 @@ CREATE INDEX idx_pm_facts_pm ON pm_facts(pm_id, fact_type) WHERE is_active = tru
 ### 2.3 Why this schema works
 
 **Messages carry their own embeddings.** No separate vector table to sync. When a message is saved, its embedding is stored in the same row. The HNSW index on `embedding` column gives sub-100ms approximate nearest neighbor search over millions of rows.
+
+**Change summaries bridge conversation and code.** The conversation DB captures what was said (“make the hero more dramatic”). Git captures what changed in the code (the actual diff). The `change_summary` column bridges these — it’s an LLM-generated, human-readable description of what actually changed: “Changed Hero.tsx: overlay 40%→70%, font Inter→Playfair Display, added bottom gradient #1a365d.” This is what Stacy references when the PM asks “what did we do last time?” or when she needs to understand the impact of a past decision. Raw diffs are never stored — they’re verbose, token-heavy, and git already has them. Only the summarized change matters for memory.
 
 **PM facts are simple rows, not a graph.** Each fact is a self-contained statement with a type, a confidence score, and provenance (which conversation/message it was extracted from). When a new fact contradicts an old one, the old fact is soft-deleted and linked to its replacement via `superseded_by`. This gives you a complete history of how Stacy’s understanding of each PM evolved over time.
 
@@ -218,7 +223,122 @@ This means the very first prompt of a session won’t be searchable by vector si
 
 -----
 
-## 4. Memory orchestrator
+## 4. Git diff integration
+
+The conversation DB captures **what was said.** Git captures **what actually changed in the code.** Stacy needs both. Rather than storing raw diffs (verbose, token-heavy, not embeddable), we generate a concise **change summary** for each commit that describes the actual visual/functional change from the PM’s perspective.
+
+### 4.1 Change summary generation
+
+After Claude generates code and the files are committed to git, the async pipeline fetches the diff and summarizes it:
+
+```typescript
+// lib/memory/git-integration.ts
+
+import { Octokit } from '@octokit/rest';
+
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+
+const CHANGE_SUMMARY_PROMPT = `Summarize the code changes in this git diff in 1-2 sentences. 
+Focus on what visually or functionally changed from the PM's perspective, not implementation details.
+
+Good example: "Changed Hero.tsx: background overlay from 40% to 70% opacity, switched heading 
+font from Inter to Playfair Display, added bottom gradient using brand color #1a365d."
+
+Bad example: "Modified className prop on div element in Hero component to use different Tailwind classes."
+
+Files changed: {files}
+Diff:
+{diff}
+
+Summary:`;
+
+export async function generateChangeSummary(params: {
+  repoOwner: string;
+  repoName: string;
+  commitSha: string;
+}): Promise<{ summary: string; filesChanged: string[] }> {
+  // Fetch the commit diff from GitHub
+  const { data: commit } = await octokit.repos.getCommit({
+    owner: params.repoOwner,
+    repo: params.repoName,
+    ref: params.commitSha,
+  });
+  
+  const filesChanged = commit.files?.map(f => f.filename) || [];
+  
+  // Build a truncated diff (max ~2000 tokens to keep summary call cheap)
+  const diffText = commit.files
+    ?.map(f => `--- ${f.filename}\n${f.patch || '(binary)'}`)
+    .join('\n\n')
+    .slice(0, 8000) || ''; // ~2000 tokens
+  
+  const prompt = CHANGE_SUMMARY_PROMPT
+    .replace('{files}', filesChanged.join(', '))
+    .replace('{diff}', diffText);
+  
+  const response = await claude.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 200,
+    messages: [{ role: 'user', content: prompt }],
+  });
+  
+  return {
+    summary: response.content[0].text.trim(),
+    filesChanged,
+  };
+}
+```
+
+### 4.2 What gets summarized vs. what doesn’t
+
+Only commits tied to PM prompts get summarized. Filter by:
+
+- **Summarize:** Commits with an `ai:` prefix (generated from PM prompts)
+- **Skip:** Provisioning commits (initial template fork), dependency updates (`chore:` prefix), CI/config changes
+
+This scoping is already enforced by the `commit_sha` field on messages — only assistant messages that produced code changes have a commit SHA. Orphan commits (not linked to a conversation message) are never summarized.
+
+### 4.3 How change summaries are used in retrieval
+
+Change summaries enrich three retrieval paths:
+
+**Working memory (Tier 1):** Recent messages in the current session now include what actually changed, not just what was requested.
+
+```
+PM: "make the hero more dramatic"
+Stacy: "I've darkened the overlay and switched to a serif font..."
+→ Changed Hero.tsx: overlay 40%→70%, font Inter→Playfair Display, added bottom gradient #1a365d
+```
+
+**Vector search (Tier 3):** When the PM says “go back to the font we used before,” vector search finds past messages. The change summary tells Stacy exactly which font was used (Playfair Display) without needing to fetch the git diff at query time.
+
+**Session summaries (Tier 2):** The session summary generator receives change summaries as input alongside conversational messages, producing more precise summaries: “Redesigned homepage hero (overlay 70%, Playfair Display heading, brand gradient) and added a 3-card testimonials section” instead of “Made some changes to the homepage.”
+
+### 4.4 Undo support via git linkage
+
+When a PM requests an undo (“go back to how the search page looked before yesterday”), Stacy:
+
+1. Queries messages for the relevant conversation by vector similarity or date
+1. Finds the `commit_sha` of the change to revert
+1. Fetches the file state at the parent commit from GitHub
+1. Provides Claude with the before-state as context for generating the revert
+
+The conversation DB tells Stacy **when and why** a change was made. Git tells her **what to revert to.** Both are needed.
+
+### 4.5 Cost
+
+Change summary generation adds one cheap LLM call per code-producing message:
+
+|Operation                                      |Cost                     |When                        |
+|-----------------------------------------------|-------------------------|----------------------------|
+|GitHub API: fetch commit diff                  |Free (within rate limits)|Every code-producing message|
+|Change summary (Claude Sonnet, ~200 tokens out)|~$0.001                  |Every code-producing message|
+
+At ~10 code-producing messages per session: **~$0.01 per session.** Combined with the rest of the memory system, total per-session overhead is ~$0.022.
+
+-----
+
+## 5. Memory orchestrator
 
 This is the core retrieval function that runs before every Claude call. All queries run in parallel.
 
@@ -254,9 +374,9 @@ export async function retrieveMemoryContext(
     stacyNotes,
   ] = await Promise.all([
     
-    // Tier 1: Last 10 messages from current session
+    // Tier 1: Last 10 messages from current session (includes change summaries)
     sql`
-      SELECT role, content, commit_sha, files_changed, created_at
+      SELECT role, content, commit_sha, files_changed, change_summary, created_at
       FROM messages
       WHERE conversation_id = ${conversationId}
       ORDER BY created_at DESC
@@ -274,9 +394,9 @@ export async function retrieveMemoryContext(
       LIMIT 5
     `,
     
-    // Tier 3: Top 5 semantically similar past messages
+    // Tier 3: Top 5 semantically similar past messages (with their change summaries)
     sql`
-      SELECT content, commit_sha, created_at, 
+      SELECT content, commit_sha, change_summary, created_at, 
              1 - (embedding <=> ${JSON.stringify(promptEmbedding)}::vector) as similarity
       FROM messages
       WHERE pm_id = ${pmId}
@@ -319,7 +439,7 @@ export async function retrieveMemoryContext(
 }
 ```
 
-### 4.1 Assembling the context block
+### 5.1 Assembling the context block
 
 The memory context is injected into Claude’s system prompt. Budget: **~1,500 tokens for memory context** out of a ~100K context window. This leaves the vast majority for the current codebase, agent rules, and Claude’s working space.
 
@@ -384,7 +504,7 @@ export function buildMemoryBlock(ctx: MemoryContext): string {
     );
   }
   
-  // Relevant past moments (from vector search)
+  // Relevant past moments (from vector search, enriched with change summaries)
   if (ctx.relevantMemories.length > 0) {
     const relevant = ctx.relevantMemories.filter(m => m.similarity > 0.75);
     if (relevant.length > 0) {
@@ -392,7 +512,9 @@ export function buildMemoryBlock(ctx: MemoryContext): string {
         `## Relevant past requests\n` +
         relevant.map(m => {
           const date = new Date(m.created_at).toLocaleDateString();
-          return `- (${date}) "${m.content}"${m.commit_sha ? ' → applied' : ' → no change'}`;
+          const status = m.commit_sha ? ' → applied' : ' → no change';
+          const change = m.change_summary ? `\n  Result: ${m.change_summary}` : '';
+          return `- (${date}) "${m.content}"${status}${change}`;
         }).join('\n')
       );
     }
@@ -402,7 +524,7 @@ export function buildMemoryBlock(ctx: MemoryContext): string {
 }
 ```
 
-### 4.2 Token budget management
+### 5.2 Token budget management
 
 The context builder should count tokens and truncate if the memory block exceeds the budget. Oldest session summaries get dropped first, then relevant memories, then lower-confidence facts. PM constraints and Stacy’s notes are never truncated — they’re the highest-value context.
 
@@ -434,14 +556,17 @@ export function buildMemoryBlockWithBudget(ctx: MemoryContext): string {
 
 -----
 
-## 5. Post-response pipeline (write path)
+## 6. Post-response pipeline (write path)
 
 After Claude responds and the PM sees their preview update, the write pipeline runs asynchronously.
 
-### 5.1 Save message pair + generate embedding
+### 6.1 Save message pair + generate embedding + git change summary
 
 ```typescript
 // lib/memory/write.ts
+
+import { generateEmbedding } from './embeddings';
+import { generateChangeSummary } from './git-integration';
 
 export async function saveInteraction(params: {
   conversationId: string;
@@ -449,11 +574,21 @@ export async function saveInteraction(params: {
   userMessage: string;
   assistantMessage: string;
   commitSha?: string;
-  filesChanged?: string[];
+  repoOwner?: string;
+  repoName?: string;
   metadata?: Record<string, any>;
 }) {
-  // Generate embedding for user message (async but fast)
-  const embedding = await generateEmbedding(params.userMessage);
+  // Run embedding generation and git diff summary in parallel
+  const [embedding, gitInfo] = await Promise.all([
+    generateEmbedding(params.userMessage),
+    params.commitSha && params.repoOwner
+      ? generateChangeSummary({
+          repoOwner: params.repoOwner,
+          repoName: params.repoName!,
+          commitSha: params.commitSha,
+        })
+      : Promise.resolve(null),
+  ]);
   
   // Save both messages in a transaction
   await sql.begin(async (tx) => {
@@ -464,12 +599,13 @@ export async function saveInteraction(params: {
               ${JSON.stringify(embedding)}::vector, ${params.metadata || {}}, now())
     `;
     
-    // Assistant message (no embedding — we don't search assistant responses)
+    // Assistant message with git linkage and change summary
     await tx`
       INSERT INTO messages (conversation_id, pm_id, role, content, commit_sha, 
-                           files_changed, metadata, created_at)
+                           files_changed, change_summary, metadata, created_at)
       VALUES (${params.conversationId}, ${params.pmId}, 'assistant', ${params.assistantMessage},
-              ${params.commitSha}, ${params.filesChanged || null}, ${params.metadata || {}}, now())
+              ${params.commitSha}, ${gitInfo?.filesChanged || null}, 
+              ${gitInfo?.summary || null}, ${params.metadata || {}}, now())
     `;
     
     // Increment conversation message count
@@ -480,7 +616,7 @@ export async function saveInteraction(params: {
 }
 ```
 
-### 5.2 Fact extraction (runs periodically, not every message)
+### 6.2 Fact extraction (runs periodically, not every message)
 
 Extracting PM facts on every single message would be expensive (an extra Claude call per prompt). Instead, run fact extraction:
 
@@ -557,23 +693,24 @@ export async function extractFacts(
 }
 ```
 
-### 5.3 Session summary generation
+### 6.3 Session summary generation
 
-When a session ends (PM closes tab, idle timeout, or explicit “done for now”), generate a session summary.
+When a session ends (PM closes tab, idle timeout, or explicit “done for now”), generate a session summary. Change summaries from git are included as input so the summary captures actual code changes, not just conversational intent.
 
 ```typescript
 // lib/memory/session-summary.ts
 
 const SESSION_SUMMARY_PROMPT = `Summarize this editing session between a property manager and Stacy.
 Write 2-3 sentences capturing: what the PM worked on, what decisions were made, what was tried 
-and rejected. Also list the key actions as a JSON array.
+and rejected. Use the change summaries (marked with →) to be specific about what actually changed.
+Also list the key actions as a JSON array.
 
 Conversation:
 {messages}
 
 Return JSON:
 {
-  "summary": "The PM redesigned the homepage hero...",
+  "summary": "The PM redesigned the homepage hero (overlay 70%, Playfair Display heading, brand gradient)...",
   "key_actions": ["redesigned homepage hero", "added testimonials section", "rejected dark color scheme"]
 }`;
 
@@ -581,13 +718,17 @@ export async function generateSessionSummary(
   conversationId: string
 ): Promise<void> {
   const messages = await sql`
-    SELECT role, content FROM messages 
+    SELECT role, content, change_summary FROM messages 
     WHERE conversation_id = ${conversationId} 
     ORDER BY created_at
   `;
   
   const prompt = SESSION_SUMMARY_PROMPT
-    .replace('{messages}', messages.rows.map(m => `${m.role}: ${m.content}`).join('\n'));
+    .replace('{messages}', messages.rows.map(m => {
+      let line = `${m.role}: ${m.content}`;
+      if (m.change_summary) line += `\n→ ${m.change_summary}`;
+      return line;
+    }).join('\n'));
   
   const response = await claude.messages.create({
     model: 'claude-sonnet-4-20250514',
@@ -607,7 +748,7 @@ export async function generateSessionSummary(
 }
 ```
 
-### 5.4 Stacy’s self-notes
+### 6.4 Stacy’s self-notes
 
 After session summary, Stacy writes a note about the PM. This runs only at session end.
 
@@ -677,7 +818,7 @@ export async function generateStacyNote(
 
 -----
 
-## 6. Stacy’s system prompt structure
+## 7. Stacy’s system prompt structure
 
 Here’s how memory integrates into Stacy’s overall system prompt:
 
@@ -723,27 +864,30 @@ ${params.currentFileTree}
 
 -----
 
-## 7. Cost estimate
+## 8. Cost estimate
 
 ### Per-message costs (memory system only)
 
 |Operation                      |Cost                          |When                           |
 |-------------------------------|------------------------------|-------------------------------|
 |Embedding generation           |~$0.00002                     |Every user message             |
+|Change summary (Claude Sonnet) |~$0.001                       |Every code-producing message   |
+|GitHub API: fetch diff         |Free (within rate limits)     |Every code-producing message   |
 |Fact extraction (Claude Sonnet)|~$0.003                       |Every 5th message + session end|
 |Session summary (Claude Sonnet)|~$0.002                       |Session end only               |
 |Stacy note (Claude Sonnet)     |~$0.001                       |Session end only               |
 |pgvector query                 |~$0 (included in Neon compute)|Every prompt                   |
 
-### Per-session costs (assuming 15 prompts per session)
+### Per-session costs (assuming 15 prompts per session, ~10 producing code)
 
 - Embeddings: 15 × $0.00002 = **$0.0003**
+- Change summaries: 10 × $0.001 = **$0.01**
 - Fact extraction: 3 runs × $0.003 = **$0.009**
 - Session summary: 1 × $0.002 = **$0.002**
 - Stacy note: 1 × $0.001 = **$0.001**
-- **Total memory overhead per session: ~$0.012**
+- **Total memory overhead per session: ~$0.022**
 
-At 100 PMs with 4 sessions/month each: **~$4.80/month** for the entire memory system. Negligible.
+At 100 PMs with 4 sessions/month each: **~$8.80/month** for the entire memory system. Negligible.
 
 ### Storage
 
@@ -754,38 +898,44 @@ At 100 PMs with 4 sessions/month each: **~$4.80/month** for the entire memory sy
 
 -----
 
-## 8. Implementation sequence
+## 9. Implementation sequence
 
-### Week 1: Foundation (Tier 1 + Tier 2)
+### Week 1: Foundation (Tier 1 + Tier 2 + Git integration)
 
-**Goal: Conversations persist across sessions, Stacy remembers recent history**
+**Goal: Conversations persist across sessions, code changes are tracked with summaries**
 
 - [ ] Create Neon shared project for builder infrastructure
 - [ ] Enable pgvector extension
-- [ ] Run schema migrations (conversations, messages, pm_facts tables)
+- [ ] Run schema migrations (conversations, messages with change_summary column, pm_facts tables)
 - [ ] Implement message save on every prompt/response exchange
+- [ ] Implement GitHub API integration: fetch commit diff by SHA
+- [ ] Implement change summary generation (LLM summarizes diff → stores in change_summary column)
+- [ ] Wire change summary into saveInteraction pipeline (parallel with embedding generation)
 - [ ] Implement session lifecycle (create on first prompt, close on idle/tab close)
-- [ ] Implement session summary generation on session end
-- [ ] Wire Tier 1 retrieval (last N messages from current session)
+- [ ] Implement session summary generation on session end (fed by change summaries)
+- [ ] Wire Tier 1 retrieval (last N messages from current session, including change summaries)
 - [ ] Wire Tier 2 retrieval (past session summaries)
 - [ ] Build memory context block and inject into Claude system prompt
-- [ ] Test: PM opens builder → chats → closes → returns → sees summary of last session in Stacy’s context
+- [ ] Test: PM opens builder → prompts changes → change summaries appear in message history → closes → returns → sees summary of last session with specific code changes referenced
 
 ### Week 2: Intelligence (Tier 3 + Tier 4)
 
-**Goal: Stacy remembers preferences and can recall any past moment**
+**Goal: Stacy remembers preferences, can recall any past moment, and supports git-backed undo**
 
 - [ ] Integrate OpenAI embedding API (text-embedding-3-small)
 - [ ] Generate and store embeddings on every user message (async post-response)
 - [ ] Build HNSW index on messages.embedding
-- [ ] Implement vector similarity search (Tier 3 retrieval)
+- [ ] Implement vector similarity search (Tier 3 retrieval, results include change summaries)
 - [ ] Implement fact extraction pipeline (every 5th message + session end)
 - [ ] Implement fact contradiction detection and superseding
 - [ ] Wire Tier 4 retrieval (active PM facts)
 - [ ] Implement Stacy’s self-note generation at session end
 - [ ] Update memory orchestrator to run all 4 tiers in parallel
 - [ ] Update context builder with token budget management
+- [ ] Implement undo via git linkage: query messages for commit_sha → fetch parent commit state from GitHub → provide to Claude as revert context
 - [ ] Test: PM says “I don’t like dark themes” → fact extracted → next session, Stacy avoids suggesting dark designs
+- [ ] Test: PM says “go back to the font we had before” → vector search finds relevant past message → change_summary tells Stacy the exact font (Playfair Display) → Stacy reverts with precision
+- [ ] Test: PM says “undo the hero change from yesterday” → Stacy finds the commit, fetches parent state, generates revert
 
 ### Week 3: Polish + Stacy persona
 
@@ -801,22 +951,24 @@ At 100 PMs with 4 sessions/month each: **~$4.80/month** for the entire memory sy
 
 -----
 
-## 9. Monitoring and observability
+## 10. Monitoring and observability
 
 Track these metrics from day one:
 
-|Metric                      |Target                                           |Why it matters                                  |
-|----------------------------|-------------------------------------------------|------------------------------------------------|
-|Memory retrieval p95 latency|< 200ms                                          |Stacy must feel instant                         |
-|Fact extraction accuracy    |> 85% (spot-check)                               |Wrong facts are worse than no facts             |
-|Vector search relevance     |Top-3 results should be relevant 80%+ of the time|Irrelevant memories waste context tokens        |
-|Session summary quality     |Spot-check weekly                                |Summaries that miss key decisions degrade Tier 2|
-|Context block token usage   |< 1,500 tokens average                           |Over-budget = other context gets crowded out    |
-|Embedding storage growth    |Monitor monthly                                  |Plan Neon storage tier accordingly              |
+|Metric                      |Target                                           |Why it matters                                     |
+|----------------------------|-------------------------------------------------|---------------------------------------------------|
+|Memory retrieval p95 latency|< 200ms                                          |Stacy must feel instant                            |
+|Fact extraction accuracy    |> 85% (spot-check)                               |Wrong facts are worse than no facts                |
+|Vector search relevance     |Top-3 results should be relevant 80%+ of the time|Irrelevant memories waste context tokens           |
+|Session summary quality     |Spot-check weekly                                |Summaries that miss key decisions degrade Tier 2   |
+|Change summary accuracy     |Spot-check weekly                                |Inaccurate change summaries cause wrong undo/recall|
+|Change summary coverage     |> 95% of code-producing messages have a summary  |Missing summaries = blind spots in Stacy’s memory  |
+|Context block token usage   |< 1,500 tokens average                           |Over-budget = other context gets crowded out       |
+|Embedding storage growth    |Monitor monthly                                  |Plan Neon storage tier accordingly                 |
 
 -----
 
-## 10. Future enhancements (post-v1)
+## 11. Future enhancements (post-v1)
 
 **Cross-PM pattern learning.** When 50+ PMs have accumulated preferences, analyze patterns: “PMs who manage luxury villas in Dubrovnik prefer serif fonts 73% of the time.” This doesn’t require a knowledge graph — it’s an analytics query over pm_facts. But it enables Stacy to make smarter default suggestions for new PMs based on their segment.
 
