@@ -531,7 +531,7 @@ function Auth({
   magicLink = false,
   onSignUpValidate,
   metadata,
-}: AuthProps): JSX.Element | null {
+}: AuthProps): React.JSX.Element | null {
   const [authView, setAuthView] = useState<ViewType>(view)
   const { loading, error, message, setLoading, setError, setMessage, clearMessages } = useAuthForm()
 
