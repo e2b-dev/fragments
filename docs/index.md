@@ -25,5 +25,6 @@
 
 ### Reference
 - [agent-rules-template.md](agent-rules-template.md) — The `.agent-rules.md` that ships inside every PM's website
+- [staycy-memory-system-plan.md](staycy-memory-system-plan.md) — Full implementation plan for Staycy's 4-tier memory system (Domain A)
 - [e2b-template-guide.md](e2b-template-guide.md) — How to build E2B sandbox templates
 - [neon-auth-migration.md](neon-auth-migration.md) — Neon auth migration notes

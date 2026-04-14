@@ -4,6 +4,26 @@
 
 ---
 
+## Contract Map
+
+```mermaid
+graph LR
+    A["Domain A<br/>Builder Experience"] ---|".agent-rules.md<br/>E2B template image<br/>file writes to sandbox"| B["Domain B<br/>Template + Booking"]
+    B ---|"Display types<br/>cross-module blocks<br/>Payload block schemas"| C["Domain C<br/>CMS + Content"]
+    B ---|"@onseason/zepl-client<br/>SDK types → transforms<br/>semver pinning"| D["Domain D<br/>ZEPL + Integration"]
+    A ---|"PM config API<br/>auth token<br/>deploy trigger"| D
+    C -.-|"DB URI provisioned by D"| D
+
+    style A fill:#e3f2fd,stroke:#1565c0
+    style B fill:#e8f5e9,stroke:#2e7d32
+    style C fill:#fff3e0,stroke:#ef6c00
+    style D fill:#f3e5f5,stroke:#7b1fa2
+```
+
+> Solid lines = active runtime contracts. Dotted line = provisioning-time dependency.
+
+---
+
 ## A <-> B: Builder <-> Template
 
 **Contract owner:** Jointly owned. Domain B proposes, Domain A validates.
