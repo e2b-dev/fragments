@@ -1,15 +1,15 @@
-import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
-import { Duration } from '@/lib/duration'
-import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
+import { createRateLimitResponse, handleAPIError } from '@/lib/api-errors'
+import type { Duration } from '@/lib/duration'
+import { type LLMModel, type LLMModelConfig, getModelClient } from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
 import ratelimit from '@/lib/ratelimit'
-import { FragmentSchema, morphEditSchema, MorphEditSchema } from '@/lib/schema'
-import { generateObject, LanguageModel, CoreMessage } from 'ai'
+import { type FragmentSchema, morphEditSchema } from '@/lib/schema'
+import { type CoreMessage, type LanguageModel, generateObject } from 'ai'
 
 export const maxDuration = 300
 
 const rateLimitMaxRequests = process.env.RATE_LIMIT_MAX_REQUESTS
-  ? parseInt(process.env.RATE_LIMIT_MAX_REQUESTS)
+  ? Number.parseInt(process.env.RATE_LIMIT_MAX_REQUESTS)
   : 10
 const ratelimitWindow = process.env.RATE_LIMIT_WINDOW
   ? (process.env.RATE_LIMIT_WINDOW as Duration)
@@ -32,11 +32,7 @@ export async function POST(req: Request) {
 
   // Rate limiting (same as chat route)
   const limit = !config.apiKey
-    ? await ratelimit(
-        req.headers.get('x-forwarded-for'),
-        rateLimitMaxRequests,
-        ratelimitWindow,
-      )
+    ? await ratelimit(req.headers.get('x-forwarded-for'), rateLimitMaxRequests, ratelimitWindow)
     : false
 
   if (limit) {
@@ -105,7 +101,7 @@ ${currentFragment.code}
         'Content-Type': 'text/plain; charset=utf-8',
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return handleAPIError(error, { hasOwnApiKey: !!config.apiKey })
   }
 }

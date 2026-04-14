@@ -1,17 +1,12 @@
 'use client'
 
-import { RepoBanner } from './repo-banner'
 import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { isFileInArray } from '@/lib/utils'
 import { ArrowRight, Paperclip, Square, X } from 'lucide-react'
-import { SetStateAction, useEffect, useMemo, useState } from 'react'
+import { type SetStateAction, useEffect, useMemo, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
+import { RepoBanner } from './repo-banner'
 
 export function LandingHero({
   input,
@@ -104,9 +99,7 @@ export function LandingHero({
     )
     if (droppedFiles.length > 0) {
       handleFileChange((prev) => {
-        const uniqueFiles = droppedFiles.filter(
-          (file) => !isFileInArray(file, prev),
-        )
+        const uniqueFiles = droppedFiles.filter((file) => !isFileInArray(file, prev))
         return [...prev, ...uniqueFiles]
       })
     }
@@ -145,9 +138,9 @@ export function LandingHero({
           Direct Booking Websites for the AI Era
         </h2>
         <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-          <span className="font-semibold text-foreground">Stop losing 15-20% to OTAs.</span>{' '}
-          Staycy creates stunning websites for hotels and vacation rentals,
-          integrates booking engines and makes them discoverable by Google and ChatGPT.
+          <span className="font-semibold text-foreground">Stop losing 15-20% to OTAs.</span> Staycy
+          creates stunning websites for hotels and vacation rentals, integrates booking engines and
+          makes them discoverable by Google and ChatGPT.
         </p>
       </div>
 
@@ -155,7 +148,9 @@ export function LandingHero({
       <div className="w-full max-w-2xl mt-8">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-2 h-2 rounded-full bg-primary" />
-          <span className="font-semibold text-sm text-foreground">Tell Staycy About Your Business</span>
+          <span className="font-semibold text-sm text-foreground">
+            Tell Staycy About Your Business
+          </span>
         </div>
 
         <form
@@ -170,13 +165,12 @@ export function LandingHero({
           {isErrored && (
             <div
               className={`flex items-center p-1.5 text-sm font-medium mb-4 rounded-xl ${
-                isRateLimited
-                  ? 'bg-yellow-500/10 text-yellow-600'
-                  : 'bg-red-400/10 text-red-400'
+                isRateLimited ? 'bg-yellow-500/10 text-yellow-600' : 'bg-red-400/10 text-red-400'
               }`}
             >
               <span className="flex-1 px-1.5">{errorMessage}</span>
               <button
+                type="button"
                 className={`px-2 py-1 rounded-sm ${
                   isRateLimited ? 'bg-yellow-500/20' : 'bg-red-400/20'
                 }`}
@@ -287,7 +281,9 @@ export function LandingHero({
 
       {/* Powered by logos */}
       <div className="flex flex-col items-center mt-10 gap-4">
-        <span className="text-xs text-muted-foreground uppercase tracking-widest font-medium">Powered by</span>
+        <span className="text-xs text-muted-foreground uppercase tracking-widest font-medium">
+          Powered by
+        </span>
         <div className="flex items-center justify-center gap-10">
           {/* OnSeason - logomark + wordmark */}
           <a
@@ -308,7 +304,9 @@ export function LandingHero({
             className="flex items-center gap-1.5 opacity-60 hover:opacity-100 transition-opacity"
           >
             <AnthropicIcon className="h-5 w-5 text-foreground" />
-            <span className="font-semibold text-base text-foreground tracking-tight">Anthropic</span>
+            <span className="font-semibold text-base text-foreground tracking-tight">
+              Anthropic
+            </span>
           </a>
 
           {/* E2B - star logo + orange "E2B" */}
@@ -329,11 +327,13 @@ export function LandingHero({
 
 /* ── Logo components ── */
 
-
 function AnthropicIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z" fill="currentColor" />
+      <path
+        d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"
+        fill="currentColor"
+      />
     </svg>
   )
 }
@@ -354,12 +354,7 @@ function OnSeasonLogomark({ className }: { className?: string }) {
 
 function E2BStarLogo({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 224 232"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg className={className} viewBox="0 0 224 232" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"

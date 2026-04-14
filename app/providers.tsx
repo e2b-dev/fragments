@@ -1,7 +1,7 @@
 'use client'
 
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
-import { type ThemeProviderProps } from 'next-themes/dist/types'
+import type { ThemeProviderProps } from 'next-themes/dist/types'
 import posthog from 'posthog-js'
 import { PostHogProvider as PostHogProviderJS } from 'posthog-js/react'
 
@@ -11,7 +11,7 @@ if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_ENABLE_POSTHOG) {
     person_profiles: 'identified_only',
     session_recording: {
       recordCrossOriginIframes: true,
-    }
+    },
   })
 }
 

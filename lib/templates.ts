@@ -10,15 +10,7 @@ export function getTemplateId(id: string) {
 const templates = {
   'code-interpreter-v1': {
     name: 'Python data analyst',
-    lib: [
-      'python',
-      'jupyter',
-      'numpy',
-      'pandas',
-      'matplotlib',
-      'seaborn',
-      'plotly',
-    ],
+    lib: ['python', 'jupyter', 'numpy', 'pandas', 'matplotlib', 'seaborn', 'plotly'],
     file: 'script.py',
     instructions:
       'Runs code as a Jupyter notebook cell. Strong data analysis angle. Can use complex visualisation to explain results.',

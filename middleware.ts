@@ -9,9 +9,8 @@ export async function middleware(req: NextRequest) {
 
     if (url) {
       return NextResponse.redirect(url as string)
-    } else {
-      return NextResponse.redirect(new URL('/', req.url))
     }
+    return NextResponse.redirect(new URL('/', req.url))
   }
 
   return NextResponse.redirect(new URL('/', req.url))

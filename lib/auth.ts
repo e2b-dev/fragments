@@ -1,8 +1,8 @@
-import { supabase } from './supabase'
-import { ViewType } from '@/components/auth'
-import { Session } from '@supabase/supabase-js'
+import type { ViewType } from '@/components/auth'
+import type { Session } from '@supabase/supabase-js'
 import { usePostHog } from 'posthog-js/react'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { supabase } from './supabase'
 
 type UserTeam = {
   email: string
@@ -11,9 +11,7 @@ type UserTeam = {
   tier: string
 }
 
-export async function getUserTeam(
-  session: Session,
-): Promise<UserTeam | undefined> {
+export async function getUserTeam(session: Session): Promise<UserTeam | undefined> {
   const { data: defaultTeam } = await supabase!
     .from('users_teams')
     .select('teams (id, name, tier, email)')

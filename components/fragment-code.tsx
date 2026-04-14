@@ -1,14 +1,9 @@
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Download, FileText } from 'lucide-react'
+import { useState } from 'react'
 import { CodeView } from './code-view'
 import { Button } from './ui/button'
 import { CopyButton } from './ui/copy-button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { Download, FileText } from 'lucide-react'
-import { useState } from 'react'
 
 export function FragmentCode({
   files,
@@ -16,9 +11,7 @@ export function FragmentCode({
   files: { name: string; content: string }[]
 }) {
   const [currentFile, setCurrentFile] = useState(files[0].name)
-  const currentFileContent = files.find(
-    (file) => file.name === currentFile,
-  )?.content
+  const currentFileContent = files.find((file) => file.name === currentFile)?.content
 
   function download(filename: string, content: string) {
     const blob = new Blob([content], { type: 'text/plain' })
@@ -54,10 +47,7 @@ export function FragmentCode({
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <CopyButton
-                  content={currentFileContent || ''}
-                  className="text-muted-foreground"
-                />
+                <CopyButton content={currentFileContent || ''} className="text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent side="bottom">Copy</TooltipContent>
             </Tooltip>
@@ -69,9 +59,7 @@ export function FragmentCode({
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground"
-                  onClick={() =>
-                    download(currentFile, currentFileContent || '')
-                  }
+                  onClick={() => download(currentFile, currentFileContent || '')}
                 >
                   <Download className="h-4 w-4" />
                 </Button>
@@ -82,10 +70,7 @@ export function FragmentCode({
         </div>
       </div>
       <div className="flex flex-col flex-1 overflow-x-auto">
-        <CodeView
-          code={currentFileContent || ''}
-          lang={currentFile.split('.').pop() || ''}
-        />
+        <CodeView code={currentFileContent || ''} lang={currentFile.split('.').pop() || ''} />
       </div>
     </div>
   )

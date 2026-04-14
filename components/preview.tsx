@@ -1,20 +1,15 @@
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import type { FragmentSchema } from '@/lib/schema'
+import { getTemplateId } from '@/lib/templates'
+import type { ExecutionResult, ExecutionResultWeb } from '@/lib/types'
+import type { DeepPartial } from 'ai'
+import { ChevronsRight, LoaderCircle } from 'lucide-react'
+import type { Dispatch, SetStateAction } from 'react'
 import { DeployDialog } from './deploy-dialog'
 import { FragmentCode } from './fragment-code'
 import { FragmentPreview } from './fragment-preview'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { FragmentSchema } from '@/lib/schema'
-import { getTemplateId } from '@/lib/templates'
-import { ExecutionResult, ExecutionResultWeb } from '@/lib/types'
-import { DeepPartial } from 'ai'
-import { ChevronsRight, LoaderCircle } from 'lucide-react'
-import { Dispatch, SetStateAction } from 'react'
 
 export function Preview({
   teamID,
@@ -42,16 +37,13 @@ export function Preview({
   }
 
   const isLinkAvailable =
-    result?.template &&
-    getTemplateId(result?.template!) !== 'code-interpreter-v1'
+    result?.template && getTemplateId(result?.template!) !== 'code-interpreter-v1'
 
   return (
     <div className="absolute md:relative z-10 top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover h-full w-full overflow-auto">
       <Tabs
         value={selectedTab}
-        onValueChange={(value) =>
-          onSelectedTabChange(value as 'code' | 'fragment')
-        }
+        onValueChange={(value) => onSelectedTabChange(value as 'code' | 'fragment')}
         className="h-full flex flex-col items-start justify-start"
       >
         <div className="w-full p-2 grid grid-cols-3 items-center border-b">
@@ -76,12 +68,7 @@ export function Preview({
                 className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
                 value="code"
               >
-                {isChatLoading && (
-                  <LoaderCircle
-                    strokeWidth={3}
-                    className="h-3 w-3 animate-spin"
-                  />
-                )}
+                {isChatLoading && <LoaderCircle strokeWidth={3} className="h-3 w-3 animate-spin" />}
                 Code
               </TabsTrigger>
               <TabsTrigger
@@ -91,10 +78,7 @@ export function Preview({
               >
                 Preview
                 {isPreviewLoading && (
-                  <LoaderCircle
-                    strokeWidth={3}
-                    className="h-3 w-3 animate-spin"
-                  />
+                  <LoaderCircle strokeWidth={3} className="h-3 w-3 animate-spin" />
                 )}
               </TabsTrigger>
             </TabsList>

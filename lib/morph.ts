@@ -1,5 +1,5 @@
 import { createOpenAI } from '@ai-sdk/openai'
-import { generateText, LanguageModel } from 'ai'
+import { type LanguageModel, generateText } from 'ai'
 
 export async function applyPatch({
   targetFile,
@@ -42,10 +42,15 @@ export async function applyPatch({
       filePath: targetFile,
       code: mergedCode,
     }
-  } catch (error: any) {
-    if (error.message.includes('Invalid API key') || error.status === 401) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error)
+    const status =
+      typeof error === 'object' && error !== null && 'status' in error
+        ? (error as { status: number }).status
+        : undefined
+    if (message.includes('Invalid API key') || status === 401) {
       throw new Error('Invalid Morph API key. Please check your settings.')
     }
-    throw new Error(`Failed to apply morph: ${error.message}`)
+    throw new Error(`Failed to apply morph: ${message}`)
   }
 }

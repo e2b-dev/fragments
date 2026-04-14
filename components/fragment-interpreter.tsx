@@ -1,5 +1,5 @@
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
-import { ExecutionResultInterpreter } from '@/lib/types'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import type { ExecutionResultInterpreter } from '@/lib/types'
 import { Terminal } from 'lucide-react'
 import Image from 'next/image'
 
@@ -49,9 +49,7 @@ export function FragmentInterpreter({
           <AlertTitle>
             {name}: {value}
           </AlertTitle>
-          <AlertDescription className="font-mono whitespace-pre-wrap">
-            {traceback}
-          </AlertDescription>
+          <AlertDescription className="font-mono whitespace-pre-wrap">{traceback}</AlertDescription>
         </Alert>
       </div>
     )

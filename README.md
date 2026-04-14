@@ -1,13 +1,8 @@
-![E2B Fragments Preview Light](/readme-assets/fragments-light.png#gh-light-mode-only)
-![E2B Fragments Preview Dark](/readme-assets/fragments-dark.png#gh-dark-mode-only)
+# Flamingo
 
-# Fragments by E2B
-
-This is an open-source version of apps like [Anthropic's Claude Artifacts](https://www.anthropic.com/news/claude-3-5-sonnet), Vercel [v0](https://v0.dev), or [GPT Engineer](https://gptengineer.app).
+AI-powered website generation platform for property managers. Built on a fork of [E2B Fragments](https://github.com/e2b-dev/fragments) (Apache 2.0).
 
 Powered by the [E2B SDK](https://github.com/e2b-dev/code-interpreter).
-
-[→ Try on fragments.e2b.dev](https://fragments.e2b.dev)
 
 ## Features
 
@@ -32,10 +27,6 @@ Powered by the [E2B SDK](https://github.com/e2b-dev/code-interpreter).
   - 🔸 Ollama
 - Integrates with [Morph](https://morphllm.com/) Apply model for token efficient, accurate and faster code editing.
 
-**Make sure to give us a star!**
-
-<img width="165" alt="Screenshot 2024-04-20 at 22 13 32" src="https://github.com/mishushakov/llm-scraper/assets/10400064/11e2a79f-a835-48c4-9f85-5c104ca7bb49">
-
 ## Get started
 
 ### Prerequisites
@@ -50,7 +41,7 @@ Powered by the [E2B SDK](https://github.com/e2b-dev/code-interpreter).
 In your terminal:
 
 ```
-git clone https://github.com/e2b-dev/fragments.git
+git clone https://github.com/Flataway/flamingo.git
 ```
 
 ### 2. Install the dependencies
@@ -58,7 +49,7 @@ git clone https://github.com/e2b-dev/fragments.git
 Enter the repository:
 
 ```
-cd fragments
+cd flamingo
 ```
 
 Run the following to install the required dependencies:
@@ -248,6 +239,3 @@ npm run build
 
 4. Optionally, add a new logo under [public/thirdparty/logos](public/thirdparty/logos)
 
-## Contributing
-
-As an open-source project, we welcome contributions from the community. If you are experiencing any bugs or want to add some improvements, please feel free to open an issue or pull request.

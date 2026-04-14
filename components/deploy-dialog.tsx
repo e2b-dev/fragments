@@ -1,3 +1,14 @@
+import { publish } from '@/app/actions/publish'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import type { Duration } from '@/lib/duration'
+import { usePostHog } from 'posthog-js/react'
+import { useEffect, useState } from 'react'
 import Logo from './logo'
 import { CopyButton } from './ui/copy-button'
 import {
@@ -9,17 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select'
-import { publish } from '@/app/actions/publish'
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { Duration } from '@/lib/duration'
-import { usePostHog } from 'posthog-js/react'
-import { useEffect, useState } from 'react'
 
 export function DeployDialog({
   url,
@@ -67,16 +67,16 @@ export function DeployDialog({
       <DropdownMenuContent className="p-4 w-80 flex flex-col gap-2">
         <div className="text-sm font-semibold">Deploy your site</div>
         <div className="text-sm text-muted-foreground">
-          Deploying the fragment will make it publicly accessible to others via
-          link.
+          Deploying the fragment will make it publicly accessible to others via link.
         </div>
         <div className="text-sm text-muted-foreground">
-          The fragment will be available up until the expiration date you choose
-          and you&apos;ll be billed based on our{' '}
+          The fragment will be available up until the expiration date you choose and you&apos;ll be
+          billed based on our{' '}
           <a
             href="https://e2b.dev/docs/pricing"
             target="_blank"
             className="underline"
+            rel="noreferrer"
           >
             Compute pricing
           </a>
@@ -88,6 +88,7 @@ export function DeployDialog({
             href="https://e2b.dev/dashboard?tab=billing"
             target="_blank"
             className="underline"
+            rel="noreferrer"
           >
             Pro tier
           </a>{' '}
@@ -116,11 +117,7 @@ export function DeployDialog({
               </SelectContent>
             </Select>
           )}
-          <Button
-            type="submit"
-            variant="default"
-            disabled={publishedURL !== null}
-          >
+          <Button type="submit" variant="default" disabled={publishedURL !== null}>
             {publishedURL ? 'Deployed' : 'Accept and deploy'}
           </Button>
         </form>

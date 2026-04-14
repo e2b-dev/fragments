@@ -1,14 +1,9 @@
-import Auth, { ViewType } from './auth'
-import Logo from './logo'
 import { validateEmail } from '@/app/actions/validate-email'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import Auth, { type ViewType } from './auth'
+import Logo from './logo'
 
 export function AuthDialog({
   open,
@@ -26,9 +21,7 @@ export function AuthDialog({
       <DialogContent>
         <VisuallyHidden>
           <DialogTitle>Sign in to Staycy</DialogTitle>
-          <DialogDescription>
-            Sign in or create an account to access Staycy
-          </DialogDescription>
+          <DialogDescription>Sign in or create an account to access Staycy</DialogDescription>
         </VisuallyHidden>
         <div className="flex justify-center items-center flex-col">
           <h1 className="flex items-center gap-4 text-xl font-bold mb-6 w-full font-display">

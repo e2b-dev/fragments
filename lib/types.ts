@@ -1,4 +1,4 @@
-import { ExecutionError, Result } from '@e2b/code-interpreter'
+import type { ExecutionError, Result } from '@e2b/code-interpreter'
 
 type ExecutionResultBase = {
   sbxId: string

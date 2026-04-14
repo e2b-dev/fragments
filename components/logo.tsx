@@ -1,14 +1,7 @@
 // OnSeason logomark - the toggle with light rays asterisk, sourced from onseason.ai
-export default function Logo({
-  ...props
-}: React.SVGProps<SVGSVGElement>) {
+export default function Logo({ ...props }: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      {...props}
-      viewBox="0 0 139 74"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg {...props} viewBox="0 0 139 74" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="139" height="74" rx="37" fill="#003306" />
       <path
         fillRule="evenodd"

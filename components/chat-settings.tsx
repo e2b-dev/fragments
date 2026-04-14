@@ -1,3 +1,5 @@
+import type { LLMModelConfig } from '@/lib/models'
+import { ExternalLink, Settings2 } from 'lucide-react'
 import { Button } from './ui/button'
 import {
   DropdownMenu,
@@ -8,14 +10,7 @@ import {
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Switch } from './ui/switch'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from './ui/tooltip'
-import { LLMModelConfig } from '@/lib/models'
-import { ExternalLink, Settings2 } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 
 export function ChatSettings({
   apiKeyConfigurable,
@@ -66,6 +61,7 @@ export function ChatSettings({
             className="text-sm text-muted-foreground flex items-center gap-1 hover:underline"
             target="_blank"
             href="https://morphllm.com"
+            rel="noreferrer"
           >
             Learn more about Morph Apply <ExternalLink className="h-4 w-4" />
             <span className="sr-only">Learn more about Morph Apply</span>
@@ -84,8 +80,7 @@ export function ChatSettings({
                 defaultValue={languageModel.apiKey}
                 onChange={(e) =>
                   onLanguageModelChange({
-                    apiKey:
-                      e.target.value.length > 0 ? e.target.value : undefined,
+                    apiKey: e.target.value.length > 0 ? e.target.value : undefined,
                   })
                 }
                 className="text-sm"
@@ -106,8 +101,7 @@ export function ChatSettings({
                 defaultValue={languageModel.baseURL}
                 onChange={(e) =>
                   onLanguageModelChange({
-                    baseURL:
-                      e.target.value.length > 0 ? e.target.value : undefined,
+                    baseURL: e.target.value.length > 0 ? e.target.value : undefined,
                   })
                 }
                 className="text-sm"
@@ -119,9 +113,7 @@ export function ChatSettings({
         <div className="flex flex-col gap-1.5 px-2 py-2">
           <span className="text-sm font-medium">Parameters</span>
           <div className="flex space-x-4 items-center">
-            <span className="text-sm flex-1 text-muted-foreground">
-              Output tokens
-            </span>
+            <span className="text-sm flex-1 text-muted-foreground">Output tokens</span>
             <Input
               type="number"
               defaultValue={languageModel.maxTokens}
@@ -132,15 +124,13 @@ export function ChatSettings({
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
-                  maxTokens: parseFloat(e.target.value) || undefined,
+                  maxTokens: Number.parseFloat(e.target.value) || undefined,
                 })
               }
             />
           </div>
           <div className="flex space-x-4 items-center">
-            <span className="text-sm flex-1 text-muted-foreground">
-              Temperature
-            </span>
+            <span className="text-sm flex-1 text-muted-foreground">Temperature</span>
             <Input
               type="number"
               defaultValue={languageModel.temperature}
@@ -151,7 +141,7 @@ export function ChatSettings({
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
-                  temperature: parseFloat(e.target.value) || undefined,
+                  temperature: Number.parseFloat(e.target.value) || undefined,
                 })
               }
             />
@@ -168,7 +158,7 @@ export function ChatSettings({
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
-                  topP: parseFloat(e.target.value) || undefined,
+                  topP: Number.parseFloat(e.target.value) || undefined,
                 })
               }
             />
@@ -185,15 +175,13 @@ export function ChatSettings({
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
-                  topK: parseFloat(e.target.value) || undefined,
+                  topK: Number.parseFloat(e.target.value) || undefined,
                 })
               }
             />
           </div>
           <div className="flex space-x-4 items-center">
-            <span className="text-sm flex-1 text-muted-foreground">
-              Frequence penalty
-            </span>
+            <span className="text-sm flex-1 text-muted-foreground">Frequence penalty</span>
             <Input
               type="number"
               defaultValue={languageModel.frequencyPenalty}
@@ -204,15 +192,13 @@ export function ChatSettings({
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
-                  frequencyPenalty: parseFloat(e.target.value) || undefined,
+                  frequencyPenalty: Number.parseFloat(e.target.value) || undefined,
                 })
               }
             />
           </div>
           <div className="flex space-x-4 items-center">
-            <span className="text-sm flex-1 text-muted-foreground">
-              Presence penalty
-            </span>
+            <span className="text-sm flex-1 text-muted-foreground">Presence penalty</span>
             <Input
               type="number"
               defaultValue={languageModel.presencePenalty}
@@ -223,7 +209,7 @@ export function ChatSettings({
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
-                  presencePenalty: parseFloat(e.target.value) || undefined,
+                  presencePenalty: Number.parseFloat(e.target.value) || undefined,
                 })
               }
             />

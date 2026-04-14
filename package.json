@@ -1,12 +1,17 @@
 {
-  "name": "e2b-fragments",
+  "name": "flamingo",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
+    "format": "biome format --write",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepare": "husky"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.1.6",
@@ -56,23 +61,24 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@biomejs/biome": "1.9.4",
     "@types/node": "^22.2.0",
     "@types/prismjs": "^1.26.4",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.35",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.20.3",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^4.1.4"
   },
-  "overrides": {
-    "eslint-config-next": {
-      "@next/eslint-plugin-next": {
-        "glob": "10.5.0"
-      }
-    }
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "biome check --write --no-errors-on-unmatched",
+      "bash -c 'tsc --noEmit --pretty'"
+    ],
+    "*.{json,md}": ["biome format --write --no-errors-on-unmatched"]
   }
 }

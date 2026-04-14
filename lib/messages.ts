@@ -1,6 +1,6 @@
-import { FragmentSchema } from './schema'
-import { ExecutionResult } from './types'
-import { DeepPartial } from 'ai'
+import type { DeepPartial } from 'ai'
+import type { FragmentSchema } from './schema'
+import type { ExecutionResult } from './types'
 
 export type MessageText = {
   type: 'text'

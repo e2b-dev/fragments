@@ -1,5 +1,3 @@
-import Logo from './logo'
-import Image from 'next/image'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,18 +9,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import {
-  GitHubLogoIcon,
-} from '@radix-ui/react-icons'
-import { Session } from '@supabase/supabase-js'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { GitHubLogoIcon } from '@radix-ui/react-icons'
+import type { Session } from '@supabase/supabase-js'
 import { ArrowRight, LogOut, Trash, Undo } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
+import Logo from './logo'
 
 export function NavBar({
   session,
@@ -69,12 +62,7 @@ export function NavBar({
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onUndo}
-                disabled={!canUndo}
-              >
+              <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo}>
                 <Undo className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </TooltipTrigger>
@@ -84,12 +72,7 @@ export function NavBar({
         <TooltipProvider>
           <Tooltip delayDuration={0}>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClear}
-                disabled={!canClear}
-              >
+              <Button variant="ghost" size="icon" onClick={onClear} disabled={!canClear}>
                 <Trash className="h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </TooltipTrigger>
@@ -114,7 +97,7 @@ export function NavBar({
                       <AvatarImage
                         src={
                           session.user.user_metadata?.avatar_url ||
-                          'https://avatar.vercel.sh/' + session.user.email
+                          `https://avatar.vercel.sh/${session.user.email}`
                         }
                         alt={session.user.email}
                       />
@@ -127,9 +110,7 @@ export function NavBar({
             <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuLabel className="flex flex-col">
                 <span className="text-sm">My Account</span>
-                <span className="text-xs text-muted-foreground">
-                  {session.user.email}
-                </span>
+                <span className="text-xs text-muted-foreground">{session.user.email}</span>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem

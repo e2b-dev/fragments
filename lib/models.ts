@@ -32,8 +32,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
   const providerConfigs = {
     anthropic: () => createAnthropic({ apiKey, baseURL })(modelNameString),
     openai: () => createOpenAI({ apiKey, baseURL })(modelNameString),
-    google: () =>
-      createGoogleGenerativeAI({ apiKey, baseURL })(modelNameString),
+    google: () => createGoogleGenerativeAI({ apiKey, baseURL })(modelNameString),
     mistral: () => createMistral({ apiKey, baseURL })(modelNameString),
     groq: () =>
       createOpenAI({
@@ -54,9 +53,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
     vertex: () =>
       createVertex({
         googleAuthOptions: {
-          credentials: JSON.parse(
-            process.env.GOOGLE_VERTEX_CREDENTIALS || '{}',
-          ),
+          credentials: JSON.parse(process.env.GOOGLE_VERTEX_CREDENTIALS || '{}'),
         },
       })(modelNameString),
     xai: () =>
@@ -71,8 +68,7 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
       })(modelNameString),
   }
 
-  const createClient =
-    providerConfigs[providerId as keyof typeof providerConfigs]
+  const createClient = providerConfigs[providerId as keyof typeof providerConfigs]
 
   if (!createClient) {
     throw new Error(`Unsupported provider: ${providerId}`)

@@ -7,40 +7,38 @@ export interface APIError {
   message: string
 }
 
-/**
- * Checks if an error is a rate limit error
- */
-export function isRateLimitError(error: any): boolean {
-  return (
-    error &&
-    (error.statusCode === 429 ||
-      error.message.toLowerCase().includes('limit') ||
-      error.message.toLowerCase().includes('billing'))
-  )
+function getStatusCode(error: unknown): number | undefined {
+  if (typeof error === 'object' && error !== null && 'statusCode' in error) {
+    return (error as APIError).statusCode
+  }
+  return undefined
 }
 
-/**
- * Checks if an error is an overloaded/unavailable error
- */
-export function isOverloadedError(error: any): boolean {
-  return error && (error.statusCode === 529 || error.statusCode === 503)
+function getMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    return String((error as APIError).message)
+  }
+  return 'An unexpected error has occurred.'
 }
 
-/**
- * Checks if an error is an access denied/unauthorized error
- */
-export function isAccessDeniedError(error: any): boolean {
-  return error && (error.statusCode === 403 || error.statusCode === 401)
+export function isRateLimitError(error: unknown): boolean {
+  const statusCode = getStatusCode(error)
+  const message = getMessage(error).toLowerCase()
+  return statusCode === 429 || message.includes('limit') || message.includes('billing')
 }
 
-/**
- * Handles API errors and returns appropriate Response objects
- */
-export function handleAPIError(
-  error: any,
-  context?: { hasOwnApiKey?: boolean },
-): Response {
-  // Log the error for debugging
+export function isOverloadedError(error: unknown): boolean {
+  const statusCode = getStatusCode(error)
+  return statusCode === 529 || statusCode === 503
+}
+
+export function isAccessDeniedError(error: unknown): boolean {
+  const statusCode = getStatusCode(error)
+  return statusCode === 403 || statusCode === 401
+}
+
+export function handleAPIError(error: unknown, context?: { hasOwnApiKey?: boolean }): Response {
   console.error('API Error:', error)
 
   if (isRateLimitError(error)) {
@@ -52,21 +50,16 @@ export function handleAPIError(
   }
 
   if (isOverloadedError(error)) {
-    return new Response(
-      'The provider is currently unavailable. Please try again later.',
-      { status: 529 },
-    )
+    return new Response('The provider is currently unavailable. Please try again later.', {
+      status: 529,
+    })
   }
 
   if (isAccessDeniedError(error)) {
-    return new Response(
-      'Access denied. Please make sure your API key is valid.',
-      { status: 403 },
-    )
+    return new Response('Access denied. Please make sure your API key is valid.', { status: 403 })
   }
 
-  // Generic error handling — surface the actual error message
-  const message = error?.message || 'An unexpected error has occurred.'
+  const message = getMessage(error)
   return new Response(message, { status: 500 })
 }
 

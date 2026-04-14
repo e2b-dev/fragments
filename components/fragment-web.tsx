@@ -1,14 +1,9 @@
-import { CopyButton } from './ui/copy-button'
 import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { ExecutionResultWeb } from '@/lib/types'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import type { ExecutionResultWeb } from '@/lib/types'
 import { RotateCw } from 'lucide-react'
 import { useState } from 'react'
+import { CopyButton } from './ui/copy-button'
 
 export function FragmentWeb({ result }: { result: ExecutionResultWeb }) {
   const [iframeKey, setIframeKey] = useState(0)
@@ -32,11 +27,7 @@ export function FragmentWeb({ result }: { result: ExecutionResultWeb }) {
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <Button
-                  variant="link"
-                  className="text-muted-foreground"
-                  onClick={refreshIframe}
-                >
+                <Button variant="link" className="text-muted-foreground" onClick={refreshIframe}>
                   <RotateCw className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -49,11 +40,7 @@ export function FragmentWeb({ result }: { result: ExecutionResultWeb }) {
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
-                <CopyButton
-                  variant="link"
-                  content={result.url}
-                  className="text-muted-foreground"
-                />
+                <CopyButton variant="link" content={result.url} className="text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent>Copy URL</TooltipContent>
             </Tooltip>

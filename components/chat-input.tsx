@@ -1,17 +1,12 @@
 'use client'
 
-import { RepoBanner } from './repo-banner'
 import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { isFileInArray } from '@/lib/utils'
 import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
-import { SetStateAction, useEffect, useMemo, useState } from 'react'
+import { type SetStateAction, useEffect, useMemo, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
+import { RepoBanner } from './repo-banner'
 
 export function ChatInput({
   retry,
@@ -97,9 +92,7 @@ export function ChatInput({
 
     if (droppedFiles.length > 0) {
       handleFileChange((prev) => {
-        const uniqueFiles = droppedFiles.filter(
-          (file) => !isFileInArray(file, prev),
-        )
+        const uniqueFiles = droppedFiles.filter((file) => !isFileInArray(file, prev))
         return [...prev, ...uniqueFiles]
       })
     }
@@ -156,13 +149,12 @@ export function ChatInput({
       {isErrored && (
         <div
           className={`flex items-center p-1.5 text-sm font-medium mx-4 mb-10 rounded-xl ${
-            isRateLimited
-              ? 'bg-yellow-500/10 text-yellow-600'
-              : 'bg-red-400/10 text-red-400'
+            isRateLimited ? 'bg-yellow-500/10 text-yellow-600' : 'bg-red-400/10 text-red-400'
           }`}
         >
           <span className="flex-1 px-1.5">{errorMessage}</span>
           <button
+            type="button"
             className={`px-2 py-1 rounded-sm ${
               isRateLimited ? 'bg-yellow-500/20' : 'bg-red-400/20'
             }`}
@@ -271,7 +263,12 @@ export function ChatInput({
       </div>
       <p className="text-xs text-muted-foreground mt-2 text-center">
         Powered by{' '}
-        <a href="https://onseason.ai" target="_blank" className="text-primary font-medium hover:underline">
+        <a
+          href="https://onseason.ai"
+          target="_blank"
+          className="text-primary font-medium hover:underline"
+          rel="noreferrer"
+        >
           OnSeason
         </a>
       </p>

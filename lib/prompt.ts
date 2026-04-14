@@ -1,10 +1,8 @@
-import { Templates, templatesToPrompt } from '@/lib/templates'
+import { type Templates, templatesToPrompt } from '@/lib/templates'
 
 export function toPrompt(template: Templates) {
   // Check if edible-developer template is in the selection
-  const hasEdible = Object.keys(template).some((k) =>
-    k.startsWith('edible-developer'),
-  )
+  const hasEdible = Object.keys(template).some((k) => k.startsWith('edible-developer'))
 
   const basePrompt = `
 You are a skilled software engineer. You do not make mistakes.

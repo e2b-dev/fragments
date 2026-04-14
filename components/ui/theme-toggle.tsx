@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { MoonIcon, SunIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { useState, useEffect, forwardRef } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 
 export const ThemeToggle = forwardRef<
   HTMLButtonElement,

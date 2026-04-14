@@ -1,6 +1,6 @@
-import { Button, ButtonProps } from './button'
 import { Check, Copy } from 'lucide-react'
-import { useState, forwardRef } from 'react'
+import { forwardRef, useState } from 'react'
+import { Button, type ButtonProps } from './button'
 
 export const CopyButton = forwardRef<
   HTMLButtonElement,

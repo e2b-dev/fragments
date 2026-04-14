@@ -7,8 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { LLMModel, LLMModelConfig } from '@/lib/models'
-import { getTemplateId, Templates } from '@/lib/templates'
+import type { LLMModel, LLMModelConfig } from '@/lib/models'
+import { type Templates, getTemplateId } from '@/lib/templates'
 import 'core-js/features/object/group-by.js'
 import { Sparkles } from 'lucide-react'
 import Image from 'next/image'
@@ -44,11 +44,7 @@ export function ChatPicker({
               <SelectLabel>Persona</SelectLabel>
               <SelectItem value="auto">
                 <div className="flex items-center space-x-2">
-                  <Sparkles
-                    className="flex text-[#a1a1aa]"
-                    width={14}
-                    height={14}
-                  />
+                  <Sparkles className="flex text-[#a1a1aa]" width={14} height={14} />
                   <span>Auto</span>
                 </div>
               </SelectItem>
@@ -57,9 +53,7 @@ export function ChatPicker({
                   <div className="flex items-center space-x-2">
                     <Image
                       className="flex"
-                      src={`/thirdparty/templates/${getTemplateId(
-                        templateId,
-                      )}.svg`}
+                      src={`/thirdparty/templates/${getTemplateId(templateId)}.svg`}
                       alt={templateId}
                       width={14}
                       height={14}
@@ -82,27 +76,27 @@ export function ChatPicker({
             <SelectValue placeholder="Language model" />
           </SelectTrigger>
           <SelectContent>
-            {Object.entries(
-              Object.groupBy(models, ({ provider }) => provider),
-            ).map(([provider, models]) => (
-              <SelectGroup key={provider}>
-                <SelectLabel>{provider}</SelectLabel>
-                {models?.map((model) => (
-                  <SelectItem key={model.id} value={model.id}>
-                    <div className="flex items-center space-x-2">
-                      <Image
-                        className="flex"
-                        src={`/thirdparty/logos/${model.providerId}.svg`}
-                        alt={model.provider}
-                        width={14}
-                        height={14}
-                      />
-                      <span>{model.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            ))}
+            {Object.entries(Object.groupBy(models, ({ provider }) => provider)).map(
+              ([provider, models]) => (
+                <SelectGroup key={provider}>
+                  <SelectLabel>{provider}</SelectLabel>
+                  {models?.map((model) => (
+                    <SelectItem key={model.id} value={model.id}>
+                      <div className="flex items-center space-x-2">
+                        <Image
+                          className="flex"
+                          src={`/thirdparty/logos/${model.providerId}.svg`}
+                          alt={model.provider}
+                          width={14}
+                          height={14}
+                        />
+                        <span>{model.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              ),
+            )}
           </SelectContent>
         </Select>
       </div>

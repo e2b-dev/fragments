@@ -1,5 +1,5 @@
-import { FragmentSchema } from '@/lib/schema'
-import { ExecutionResultInterpreter, ExecutionResultWeb } from '@/lib/types'
+import type { FragmentSchema } from '@/lib/schema'
+import type { ExecutionResultInterpreter, ExecutionResultWeb } from '@/lib/types'
 import { Sandbox } from '@e2b/code-interpreter'
 
 const sandboxTimeout = 10 * 60 * 1000 // 10 minute in ms
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     try {
       sbx = await Sandbox.connect(existingSbxId)
       console.log(`Reconnected to sandbox ${sbx.sandboxId}`)
-    } catch (e) {
+    } catch (_e) {
       console.log(`Failed to reconnect to ${existingSbxId}, creating new sandbox`)
       sbx = await Sandbox.create(fragment.template, {
         metadata: {
@@ -78,10 +78,10 @@ export async function POST(req: Request) {
 
   // Copy code to fs
   if (fragment.code && Array.isArray(fragment.code)) {
-    fragment.code.forEach(async (file) => {
+    for (const file of fragment.code) {
       await sbx.files.write(file.file_path, file.file_content)
       console.log(`Copied file to ${file.file_path} in ${sbx.sandboxId}`)
-    })
+    }
   } else {
     await sbx.files.write(fragment.file_path, fragment.code)
     console.log(`Copied file to ${fragment.file_path} in ${sbx.sandboxId}`)
@@ -124,9 +124,9 @@ function toPageRoute(filePath: string): string | null {
   if (!filePath.startsWith('pages/')) return null
 
   const route = filePath
-    .replace(/^pages\//, '/')          // pages/about.tsx → /about.tsx
+    .replace(/^pages\//, '/') // pages/about.tsx → /about.tsx
     .replace(/\.(tsx|ts|jsx|js)$/, '') // /about.tsx → /about
-    .replace(/\/index$/, '/')          // /index → /
+    .replace(/\/index$/, '/') // /index → /
 
   // _app, _document, _error etc are not navigable routes
   if (route.startsWith('/_')) return null

@@ -1,6 +1,6 @@
 'use client'
 
-import { ViewType } from '@/components/auth'
+import type { ViewType } from '@/components/auth'
 import { AuthDialog } from '@/components/auth-dialog'
 import { Chat } from '@/components/chat'
 import { ChatInput } from '@/components/chat-input'
@@ -10,31 +10,26 @@ import { LandingHero } from '@/components/landing-hero'
 import { NavBar } from '@/components/navbar'
 import { Preview } from '@/components/preview'
 import { useAuth } from '@/lib/auth'
-import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
-import { LLMModelConfig } from '@/lib/models'
+import { type Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
+import type { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
-import { FragmentSchema, fragmentSchema as schema } from '@/lib/schema'
+import { type FragmentSchema, fragmentSchema as schema } from '@/lib/schema'
 import { supabase } from '@/lib/supabase'
 import templates from '@/lib/templates'
-import { ExecutionResult } from '@/lib/types'
-import { DeepPartial } from 'ai'
+import type { ExecutionResult } from '@/lib/types'
+import type { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
 import { usePostHog } from 'posthog-js/react'
-import { SetStateAction, useEffect, useState } from 'react'
+import { type SetStateAction, useEffect, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
 export default function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
   const [files, setFiles] = useState<File[]>([])
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(
-    'auto',
-  )
-  const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>(
-    'languageModel',
-    {
-      model: 'claude-sonnet-4-20250514',
-    },
-  )
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('auto')
+  const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
+    model: 'claude-sonnet-4-20250514',
+  })
 
   const posthog = usePostHog()
 
@@ -60,13 +55,11 @@ export default function Home() {
     return true
   })
 
-  const defaultModel = filteredModels.find(
-    (model) => model.id === 'claude-sonnet-4-20250514',
-  ) || filteredModels[0]
+  const defaultModel =
+    filteredModels.find((model) => model.id === 'claude-sonnet-4-20250514') || filteredModels[0]
 
-  const currentModel = filteredModels.find(
-    (model) => model.id === languageModel.model,
-  ) || defaultModel
+  const currentModel =
+    filteredModels.find((model) => model.id === languageModel.model) || defaultModel
 
   // Update localStorage if stored model no longer exists
   useEffect(() => {
@@ -75,14 +68,11 @@ export default function Home() {
     }
   }, [languageModel.model])
   const currentTemplate =
-    selectedTemplate === 'auto'
-      ? templates
-      : { [selectedTemplate]: templates[selectedTemplate] }
+    selectedTemplate === 'auto' ? templates : { [selectedTemplate]: templates[selectedTemplate] }
   const lastMessage = messages[messages.length - 1]
 
   // Determine which API to use based on morph toggle and existing fragment
-  const shouldUseMorph =
-    useMorphApply && fragment && fragment.code && fragment.file_path
+  const shouldUseMorph = useMorphApply && fragment && fragment.code && fragment.file_path
   const apiEndpoint = shouldUseMorph ? '/api/morph-chat' : '/api/chat'
 
   const { object, submit, isLoading, stop, error } = useObject({
@@ -185,9 +175,9 @@ export default function Home() {
     const images = await toMessageImage(files)
 
     if (images.length > 0) {
-      images.forEach((image) => {
+      for (const image of images) {
         content.push({ type: 'image', image })
-      })
+      }
     }
 
     const updatedMessages = addMessage({
@@ -241,9 +231,7 @@ export default function Home() {
   }
 
   function logout() {
-    supabase
-      ? supabase.auth.signOut()
-      : console.warn('Supabase is not initialized')
+    supabase ? supabase.auth.signOut() : console.warn('Supabase is not initialized')
   }
 
   function handleLanguageModelChange(e: LLMModelConfig) {
@@ -362,11 +350,7 @@ export default function Home() {
               canUndo={messages.length > 1 && !isLoading}
               onUndo={handleUndo}
             />
-            <Chat
-              messages={messages}
-              isLoading={isLoading}
-              setCurrentPreview={setCurrentPreview}
-            />
+            <Chat messages={messages} isLoading={isLoading} setCurrentPreview={setCurrentPreview} />
             <ChatInput
               retry={retry}
               isErrored={error !== undefined}

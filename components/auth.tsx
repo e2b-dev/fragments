@@ -4,15 +4,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import { Provider, SupabaseClient } from '@supabase/supabase-js'
-import {
-  AlertCircle,
-  CheckCircle2,
-  KeyRound,
-  Loader2,
-  Mail,
-} from 'lucide-react'
-import React, { useCallback, useEffect, useState } from 'react'
+import type { Provider, SupabaseClient } from '@supabase/supabase-js'
+import { AlertCircle, CheckCircle2, KeyRound, Loader2, Mail } from 'lucide-react'
+import type React from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import * as SimpleIcons from 'simple-icons'
 
 const VIEWS = {
@@ -36,7 +31,7 @@ export interface AuthProps {
   onlyThirdPartyProviders?: boolean
   magicLink?: boolean
   onSignUpValidate?: (email: string, password: string) => Promise<boolean>
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 interface SubComponentProps {
@@ -65,7 +60,7 @@ interface EmailAuthProps extends SubComponentProps {
   view: typeof VIEWS.SIGN_IN | typeof VIEWS.SIGN_UP
   magicLink?: boolean
   onSignUpValidate?: (email: string, password: string) => Promise<boolean>
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 interface UseAuthFormReturn {
@@ -87,6 +82,7 @@ const ProviderIcons: {
       viewBox="0 0 24 24"
       className={className}
       fill="currentColor"
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: SVG from simple-icons library, removed in Story 1.3
       dangerouslySetInnerHTML={{ __html: SimpleIcons.siGithub.svg }}
     />
   ),
@@ -96,6 +92,7 @@ const ProviderIcons: {
       viewBox="0 0 24 24"
       className={className}
       fill="currentColor"
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: SVG from simple-icons library, removed in Story 1.3
       dangerouslySetInnerHTML={{ __html: SimpleIcons.siGoogle.svg }}
     />
   ),
@@ -153,16 +150,10 @@ function SocialAuth({
   }
 
   return (
-    <div
-      className={cn(
-        'space-y-3',
-        layout === 'horizontal' && 'flex space-y-0 space-x-3',
-      )}
-    >
+    <div className={cn('space-y-3', layout === 'horizontal' && 'flex space-y-0 space-x-3')}>
       {providers.map((provider) => {
         const IconComponent = ProviderIcons[provider]
-        const providerName =
-          provider.charAt(0).toUpperCase() + provider.slice(1)
+        const providerName = provider.charAt(0).toUpperCase() + provider.slice(1)
         return (
           <Button
             key={provider}
@@ -172,9 +163,7 @@ function SocialAuth({
             disabled={loading}
           >
             {IconComponent && <IconComponent className="h-4 w-4" />}
-            {layout === 'vertical'
-              ? `Continue with ${providerName}`
-              : providerName}
+            {layout === 'vertical' ? `Continue with ${providerName}` : providerName}
           </Button>
         )
       })}
@@ -208,8 +197,8 @@ function SignInForm({
         password,
       })
       if (error) throw error
-    } catch (error: any) {
-      setError(error.message || 'An unexpected error occurred.')
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred.')
     } finally {
       setLoading(false)
     }
@@ -270,7 +259,7 @@ function SignInForm({
 
 interface SignUpFormProps extends SubComponentProps {
   onSignUpValidate?: (email: string, password: string) => Promise<boolean>
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 function SignUpForm({
@@ -301,9 +290,7 @@ function SignUpForm({
       if (onSignUpValidate) {
         const isValid = await onSignUpValidate(email, password)
         if (!isValid) {
-          throw new Error(
-            'Invalid email address. Please use a different email.',
-          )
+          throw new Error('Invalid email address. Please use a different email.')
         }
       }
       const { data, error } = await supabaseClient.auth.signUp({
@@ -318,8 +305,8 @@ function SignUpForm({
       if (data.user && !data.session) {
         setMessage('Check your email for the confirmation link.')
       }
-    } catch (error: any) {
-      setError(error.message || 'An unexpected error occurred.')
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred.')
     } finally {
       setLoading(false)
     }
@@ -412,11 +399,7 @@ function MagicLink({
   }
 
   return (
-    <form
-      id="auth-magic-link"
-      onSubmit={handleMagicLinkSignIn}
-      className="space-y-4"
-    >
+    <form id="auth-magic-link" onSubmit={handleMagicLinkSignIn} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email address</Label>
         <div className="relative">
@@ -465,11 +448,7 @@ function ForgottenPassword({
   }
 
   return (
-    <form
-      id="auth-forgot-password"
-      onSubmit={handlePasswordReset}
-      className="space-y-4"
-    >
+    <form id="auth-forgot-password" onSubmit={handlePasswordReset} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">Email address</Label>
         <div className="relative">
@@ -501,10 +480,7 @@ function UpdatePassword({
   setMessage,
   clearMessages,
   loading,
-}: Omit<
-  SubComponentProps,
-  'setAuthView' | 'redirectTo' | 'email' | 'setEmail'
->) {
+}: Omit<SubComponentProps, 'setAuthView' | 'redirectTo' | 'email' | 'setEmail'>) {
   const [password, setPassword] = useState('')
 
   const handlePasswordUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -519,11 +495,7 @@ function UpdatePassword({
   }
 
   return (
-    <form
-      id="auth-update-password"
-      onSubmit={handlePasswordUpdate}
-      className="space-y-4"
-    >
+    <form id="auth-update-password" onSubmit={handlePasswordUpdate} className="space-y-4">
       <h3 className="text-lg font-semibold">Update Password</h3>
       <div className="space-y-2">
         <Label htmlFor="new-password">New Password</Label>
@@ -561,15 +533,7 @@ function Auth({
   metadata,
 }: AuthProps): JSX.Element | null {
   const [authView, setAuthView] = useState<ViewType>(view)
-  const {
-    loading,
-    error,
-    message,
-    setLoading,
-    setError,
-    setMessage,
-    clearMessages,
-  } = useAuthForm()
+  const { loading, error, message, setLoading, setError, setMessage, clearMessages } = useAuthForm()
 
   useEffect(() => {
     setAuthView(view)
@@ -605,11 +569,7 @@ function Auth({
       break
     case VIEWS.SIGN_UP:
       viewComponent = (
-        <SignUpForm
-          {...commonProps}
-          onSignUpValidate={onSignUpValidate}
-          metadata={metadata}
-        />
+        <SignUpForm {...commonProps} onSignUpValidate={onSignUpValidate} metadata={metadata} />
       )
       break
     case VIEWS.FORGOTTEN_PASSWORD:
@@ -652,9 +612,7 @@ function Auth({
                 <Separator />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
               </div>
             </div>
           )}

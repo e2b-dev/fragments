@@ -1,9 +1,9 @@
 import './globals.css'
-import { PostHogProvider, ThemeProvider } from './providers'
 import { Toaster } from '@/components/ui/toaster'
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
-import { Inter, Bricolage_Grotesque } from 'next/font/google'
+import { Bricolage_Grotesque, Inter } from 'next/font/google'
+import { PostHogProvider, ThemeProvider } from './providers'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const bricolage = Bricolage_Grotesque({
@@ -14,7 +14,8 @@ const bricolage = Bricolage_Grotesque({
 
 export const metadata: Metadata = {
   title: 'Staycy by OnSeason — AI Gen Studio',
-  description: 'Direct Booking Websites for the AI Era. Build stunning hospitality websites with AI.',
+  description:
+    'Direct Booking Websites for the AI Era. Build stunning hospitality websites with AI.',
 }
 
 export default function RootLayout({
