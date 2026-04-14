@@ -43,9 +43,19 @@ If a change needs to cross from presentation into the adapter layer, it requires
 - Named exports for components. Default exports only for Next.js page files.
 - File naming: kebab-case for files, PascalCase for components, camelCase for hooks/utils.
 - Tailwind CSS for all styling. No CSS modules, styled-components, or inline styles.
-- TanStack Query for all server state. No manual `fetch` + `useState`.
+- TanStack Query for all server state in the generated template. Vercel AI SDK for builder streaming.
 - Zod for runtime validation at API boundaries.
 - shadcn/ui as the base component library.
+
+### API Conventions
+
+- Route segments: kebab-case (`/api/morph-chat`, `/api/rate-limit`)
+- Dynamic segments: `[paramName]` camelCase (`/api/sandbox/[sandboxId]`)
+- Non-streaming responses: `{ data: T }` on success, `{ error: { code: string; message: string } }` on failure
+- Streaming responses (chat, generation): use Vercel AI SDK format, no wrapper
+- HTTP status codes: 200 success, 400 validation, 401 auth, 403 rate limit, 500 internal
+- Date/time in API responses: ISO 8601 strings. In database: `timestamp with time zone`.
+- JSON field naming: camelCase in API request/response, snake_case in database.
 
 ## Git Conventions
 
@@ -55,10 +65,20 @@ If a change needs to cross from presentation into the adapter layer, it requires
 - Within your domain: merge directly, CI must pass.
 - Crossing a boundary: PR required, reviewed by affected domain owner + Coherence Manager.
 
+## Code Quality & CI
+
+- **Linting & formatting:** Biome (single tool, replaces ESLint + Prettier). Config in `biome.json`.
+- **Pre-commit hooks:** Husky + lint-staged. Runs `biome check --write` + `tsc --noEmit` on staged files.
+- **Testing:** Vitest. Tests co-located with implementation (`feature.test.ts` next to `feature.ts`).
+- **CI pipeline (GitHub Actions):** On every PR: `biome check` → `tsc --noEmit` → `vitest run` → `next build`.
+- **No tests in pre-commit** — too slow. Tests run in CI only.
+
 ## Technology Stack
 
 ### Builder UI (this repo — Fragments fork)
-- Next.js 14 (App Router), Vercel AI SDK, Claude Sonnet, Morph, E2B SDK, Upstash KV
+- Next.js 14 (App Router), Vercel AI SDK, Claude Sonnet, Morph, E2B SDK
+- Drizzle ORM, Neon Postgres + pgvector (Staycy memory), Upstash Redis (rate limiting)
+- Zustand (client state), Sentry (error tracking), Biome (lint/format), Vitest (testing)
 
 ### Generated Website Template
 - Next.js 15, React 19, Tailwind v4, shadcn/ui, TanStack Query v5, Bun, Payload CMS 3.x, Zod
@@ -84,3 +104,4 @@ If a change needs to cross from presentation into the adapter layer, it requires
 - ZEPL API errors: catch at hook level, surface user-friendly messages.
 - AI generation errors: never show a broken preview. Fall back to last working state.
 - Payload errors: fail gracefully. Blog down should not break booking.
+- All errors use the shared `AppError` class (`lib/errors/`). Never throw raw `Error` or string.

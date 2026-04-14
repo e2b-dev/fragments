@@ -109,7 +109,54 @@ Fork Fragments, strip to single persona ("Booking website"), boot an E2B sandbox
 - Claude Sonnet (code generation + fact extraction + session summaries)
 - Morph (token-efficient diff apply)
 - E2B SDK (sandbox management)
-- Neon Postgres + pgvector (Staycy memory — shared builder database)
+- Drizzle ORM (type-safe queries, schema-as-code migrations)
+- Neon Postgres + pgvector (Staycy memory — shared builder database, via `@neondatabase/serverless`)
 - OpenAI text-embedding-3-small (embedding generation)
-- Upstash KV (rate limiting)
+- Zustand (client state management)
+- Upstash Redis (rate limiting via `@upstash/ratelimit` sliding window)
+- Sentry (error tracking, pipeline monitoring)
 - GitHub API (Octokit — commits, repo management, diff fetching)
+
+## Domain A Implementation Conventions
+
+These conventions are specific to Domain A. Shared conventions are in `CLAUDE.md`.
+
+### Database Naming (Drizzle)
+
+- Tables: snake_case, plural (`conversations`, `messages`, `pm_facts`)
+- Columns: snake_case (`pm_id`, `commit_sha`, `created_at`)
+- Foreign keys: `{referenced_table_singular}_id` (`conversation_id`)
+- Indexes: `idx_{table}_{columns}` (`idx_messages_conversation_id`)
+- All tables have `created_at` and `updated_at` timestamps.
+
+### Zustand Store Conventions
+
+- Store file: `use-{name}-store.ts` (kebab-case file, camelCase hook)
+- Actions: verb-first camelCase (`bootSandbox`, `pushFiles`)
+- Selectors: `select{Thing}` (`selectPreviewUrl`)
+- Stores never import other stores. Cross-store coordination happens in components or Server Actions.
+- All async state uses `AsyncState<T>`: `{ status: 'idle' | 'loading' | 'success' | 'error'; data?: T; error?: AppError }`
+
+### Subsystem Structure
+
+Domain A subsystems live under `lib/`. Each follows the same pattern:
+
+```
+lib/{subsystem}/
+├── index.ts              # Public API (named exports only)
+├── types.ts              # Subsystem-specific types
+├── {feature}.ts          # Implementation
+├── {feature}.test.ts     # Co-located tests
+```
+
+**Import rule:** Other subsystems import only from `lib/{subsystem}/index.ts`, never from internal files.
+
+Subsystems: `chat/`, `sandbox/`, `generation/`, `staycy/`, `git/`, `session/`, `rate-limit/`, `publish/`, `errors/`
+
+### Error Recovery (Pipeline-Specific)
+
+- Shadow TS validation failure → auto-retry once with error context injected into Claude prompt.
+- Render-breaking output → auto-rollback to last working state in sandbox; surface "try rephrasing" to PM.
+- Git commit failure → non-blocking. Sandbox state is source of truth; retry async with exponential backoff.
+- Staycy memory tier timeout → continue with available tiers; missing context is better than no response.
+- Rate limit Redis unavailable → fail open (allow request), log alert to Sentry.
