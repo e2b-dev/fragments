@@ -7,6 +7,7 @@ import { ChatSettings } from '@/components/chat-settings'
 import { LandingHero } from '@/components/landing-hero'
 import { NavBar, type SessionInfo } from '@/components/navbar'
 import { Preview } from '@/components/preview'
+import { PromptGateOverlay } from '@/components/prompt-gate-overlay'
 import { type Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import type { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
@@ -15,11 +16,12 @@ import templates from '@/lib/templates'
 import type { ExecutionResult } from '@/lib/types'
 import type { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
+import { useSearchParams } from 'next/navigation'
 import { usePostHog } from 'posthog-js/react'
-import { type SetStateAction, useEffect, useState } from 'react'
+import { type SetStateAction, Suspense, useEffect, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
-export default function Home() {
+function Home() {
   const [chatInput, setChatInput] = useLocalStorage('chat', '')
   const [files, setFiles] = useState<File[]>([])
   const [selectedTemplate, setSelectedTemplate] = useState<string>('auto')
@@ -37,6 +39,8 @@ export default function Home() {
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [session, setSession] = useState<SessionInfo | null>(null)
+  const [showAuthGate, setShowAuthGate] = useState(false)
+  const searchParams = useSearchParams()
 
   // Fetch session on mount for auth-aware UI
   useEffect(() => {
@@ -51,6 +55,23 @@ export default function Home() {
         // Silently fail — user stays unauthenticated
       })
   }, [])
+
+  // Resume flow: auto-submit saved prompt after SSO redirect
+  useEffect(() => {
+    if (searchParams.get('resume') === 'true' && session) {
+      const savedPrompt = sessionStorage.getItem('flamingo_pending_prompt')
+      if (savedPrompt) {
+        sessionStorage.removeItem('flamingo_pending_prompt')
+        setChatInput(savedPrompt)
+        // Auto-submit after a tick to let the input populate
+        setTimeout(() => {
+          const form = document.querySelector('form')
+          if (form) form.requestSubmit()
+        }, 100)
+      }
+    }
+  }, [searchParams, session, setChatInput])
+
   const [useMorphApply, setUseMorphApply] = useLocalStorage(
     'useMorphApply',
     process.env.NEXT_PUBLIC_USE_MORPH_APPLY === 'true',
@@ -167,6 +188,13 @@ export default function Home() {
 
   async function handleSubmitAuth(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    // Auth gate: if not authenticated, save prompt and show overlay
+    if (!session) {
+      sessionStorage.setItem('flamingo_pending_prompt', chatInput)
+      setShowAuthGate(true)
+      return
+    }
 
     if (isLoading) {
       stop()
@@ -360,6 +388,25 @@ export default function Home() {
           />
         </div>
       )}
+
+      {showAuthGate && (
+        <PromptGateOverlay
+          onSignIn={() => {
+            const onseasonUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
+            const clientId = process.env.NEXT_PUBLIC_ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
+            window.location.href = `${onseasonUrl}/api/sso/authorize?client_id=${clientId}&returnTo=${encodeURIComponent('/?resume=true')}`
+          }}
+          onDismiss={() => setShowAuthGate(false)}
+        />
+      )}
     </main>
+  )
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <Home />
+    </Suspense>
   )
 }
