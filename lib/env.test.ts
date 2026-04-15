@@ -7,6 +7,7 @@ const validEnv = {
   ONSEASON_BASE_URL: 'https://app.onseason.ai',
   ONSEASON_SSO_SECRET: 'a]3Fk9$mP!xL7qR2vN8wT#hY5jB0cD4e',
   NEXT_PUBLIC_ONSEASON_BASE_URL: 'https://app.onseason.ai',
+  FLAMINGO_SESSION_SECRET: 'f'.repeat(32),
 }
 
 describe('envSchema', () => {
@@ -40,6 +41,7 @@ describe('envSchema', () => {
       expect(paths).toContain('ONSEASON_BASE_URL')
       expect(paths).toContain('ONSEASON_SSO_SECRET')
       expect(paths).toContain('NEXT_PUBLIC_ONSEASON_BASE_URL')
+      expect(paths).toContain('FLAMINGO_SESSION_SECRET')
     }
   })
 

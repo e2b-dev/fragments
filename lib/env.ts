@@ -26,8 +26,13 @@ export const envSchema = z.object({
 
   // Onseason SSO
   ONSEASON_BASE_URL: emptyToUndefined(z.string().url()),
-  ONSEASON_SSO_SECRET: emptyToUndefined(z.string().min(32)),
+  ONSEASON_SSO_SECRET: emptyToUndefined(z.string().min(32)), // Shared with Onseason product registry
+  ONSEASON_SSO_CLIENT_ID: emptyToUndefined(z.string().min(1).default('flamingo')),
   NEXT_PUBLIC_ONSEASON_BASE_URL: emptyToUndefined(z.string().url()),
+  NEXT_PUBLIC_ONSEASON_SSO_CLIENT_ID: emptyToUndefined(z.string().min(1).default('flamingo')),
+
+  // Flamingo session signing (separate from Onseason SSO secret)
+  FLAMINGO_SESSION_SECRET: emptyToUndefined(z.string().min(32)),
 
   // Sentry (optional — dev environments may not have it)
   SENTRY_DSN: emptyToUndefined(z.string().url().optional()),
