@@ -5,7 +5,7 @@ import { ChatInput } from '@/components/chat-input'
 import { ChatPicker } from '@/components/chat-picker'
 import { ChatSettings } from '@/components/chat-settings'
 import { LandingHero } from '@/components/landing-hero'
-import { NavBar } from '@/components/navbar'
+import { NavBar, type SessionInfo } from '@/components/navbar'
 import { Preview } from '@/components/preview'
 import { type Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import type { LLMModelConfig } from '@/lib/models'
@@ -36,6 +36,21 @@ export default function Home() {
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [session, setSession] = useState<SessionInfo | null>(null)
+
+  // Fetch session on mount for auth-aware UI
+  useEffect(() => {
+    fetch('/api/auth/session')
+      .then((res) => res.json())
+      .then((data: { authenticated: boolean; session?: SessionInfo }) => {
+        if (data.authenticated && data.session) {
+          setSession(data.session)
+        }
+      })
+      .catch(() => {
+        // Silently fail — user stays unauthenticated
+      })
+  }, [])
   const [useMorphApply, setUseMorphApply] = useLocalStorage(
     'useMorphApply',
     process.env.NEXT_PUBLIC_USE_MORPH_APPLY === 'true',
@@ -212,24 +227,8 @@ export default function Home() {
     setFiles(change)
   }
 
-  function logout() {
-    window.location.href = '/api/auth/logout'
-  }
-
   function handleLanguageModelChange(e: LLMModelConfig) {
     setLanguageModel({ ...languageModel, ...e })
-  }
-
-  function handleSocialClick(target: 'github' | 'x' | 'discord') {
-    if (target === 'github') {
-      window.open('https://github.com/onseason-ai/staycy', '_blank')
-    } else if (target === 'x') {
-      window.open('https://x.com/onseason_ai', '_blank')
-    } else if (target === 'discord') {
-      window.open('https://discord.gg/onseason', '_blank')
-    }
-
-    posthog.capture(`${target}_click`)
   }
 
   function handleClearChat() {
@@ -265,8 +264,7 @@ export default function Home() {
         <div className="flex flex-col w-full max-h-full overflow-auto">
           <div className="max-w-[900px] w-full mx-auto px-4">
             <NavBar
-              signOut={logout}
-              onSocialClick={handleSocialClick}
+              session={session}
               onClear={handleClearChat}
               canClear={false}
               canUndo={false}
@@ -312,8 +310,7 @@ export default function Home() {
             className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
           >
             <NavBar
-              signOut={logout}
-              onSocialClick={handleSocialClick}
+              session={session}
               onClear={handleClearChat}
               canClear={messages.length > 0}
               canUndo={messages.length > 1 && !isLoading}
