@@ -20,7 +20,27 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json()
-    return NextResponse.json(data)
+    // Map snake_case API response to camelCase for client
+    const workspaces = (data.workspaces ?? []).map(
+      (ws: {
+        id: string
+        name: string
+        slug: string
+        role: string
+        logo_url?: string | null
+        subscription_status: string
+        mode: string
+      }) => ({
+        id: ws.id,
+        name: ws.name,
+        slug: ws.slug,
+        role: ws.role,
+        logoUrl: ws.logo_url ?? null,
+        subscriptionStatus: ws.subscription_status,
+        mode: ws.mode,
+      }),
+    )
+    return NextResponse.json({ workspaces })
   } catch (error) {
     if (error instanceof AppError) {
       return error.toHTTPResponse()
