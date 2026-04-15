@@ -1,3 +1,4 @@
+import { env } from '@/lib/env'
 import { AppError } from '@/lib/errors'
 import { logger } from '@/lib/logger'
 import { setSessionCookie } from '@/lib/session'
@@ -7,71 +8,63 @@ import type { NextRequest } from 'next/server'
 import { z } from 'zod'
 
 /** Schema for Onseason /api/sso/token response */
-const onseasonTokenResponseSchema = z.object({
-  valid: z.literal(true),
+const tokenResponseSchema = z.object({
+  access_token: z.string(),
+  expires_in: z.number(),
+  token_type: z.literal('Bearer'),
   user: z.object({
     id: z.string(),
     email: z.string(),
-    name: z.string(),
+    name: z.string().nullable(),
+    image: z.string().nullable(),
   }),
   workspace: z.object({
     id: z.string(),
+    name: z.string(),
     subscription_status: z.enum(['active', 'inactive']),
     mode: z.enum(['active', 'preview']),
+    subdomain: z.string().nullable(),
+    custom_domain: z.string().nullable(),
+    tenant_id: z.string().nullable(),
+    currency: z.string(),
   }),
 })
 
-/**
- * Server-side SSO callback handler.
- * Receives the token from Onseason's redirect, validates it server-to-server,
- * sets the Flamingo JWT cookie, and redirects to the builder.
- */
 export async function GET(request: NextRequest): Promise<Response> {
-  const token = request.nextUrl.searchParams.get('token')
+  const code = request.nextUrl.searchParams.get('code')
   const rawReturnTo = request.nextUrl.searchParams.get('returnTo') || '/'
-  // Prevent open redirect — only allow relative paths
   const returnTo = rawReturnTo.startsWith('/') && !rawReturnTo.startsWith('//') ? rawReturnTo : '/'
 
-  if (!token) {
-    logger.warn('SSO callback missing token parameter')
-    return NextResponse.redirect(new URL('/callback?error=missing_token', request.url))
-  }
-
-  const onseasonBaseUrl = process.env.ONSEASON_BASE_URL
-  if (!onseasonBaseUrl) {
-    logger.error('ONSEASON_BASE_URL is not configured')
-    return NextResponse.redirect(new URL('/callback?error=config_error', request.url))
+  if (!code) {
+    logger.warn('SSO callback missing code parameter')
+    return NextResponse.redirect(new URL('/?error=missing_code', request.url))
   }
 
   try {
-    // Server-to-server token validation with Onseason
-    const validateResponse = await fetch(`${onseasonBaseUrl}/api/sso/token`, {
+    // Exchange authorization code for access token (server-to-server)
+    const tokenResponse = await fetch(`${env.ONSEASON_BASE_URL}/api/sso/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
+      body: JSON.stringify({
+        client_id: env.ONSEASON_SSO_CLIENT_ID,
+        client_secret: env.ONSEASON_SSO_SECRET,
+        code,
+      }),
     })
 
-    if (!validateResponse.ok) {
-      const errorBody = await validateResponse.json().catch(() => ({ error: 'unknown' }))
-      logger.warn('SSO token validation failed', {
-        pipeline: 'memory-retrieval',
-        pmId: 'unknown',
-      })
-      const errorMsg = typeof errorBody.error === 'string' ? errorBody.error : 'token_invalid'
-      return NextResponse.redirect(
-        new URL(`/callback?error=${encodeURIComponent(errorMsg)}`, request.url),
-      )
+    if (!tokenResponse.ok) {
+      const errorBody = await tokenResponse.json().catch(() => ({ error: 'unknown' }))
+      logger.warn('SSO code exchange failed', { status: tokenResponse.status })
+      const errorMsg = typeof errorBody.error === 'string' ? errorBody.error : 'exchange_failed'
+      return NextResponse.redirect(new URL(`/?error=${encodeURIComponent(errorMsg)}`, request.url))
     }
 
-    const rawData = await validateResponse.json()
-    const parseResult = onseasonTokenResponseSchema.safeParse(rawData)
+    const rawData = await tokenResponse.json()
+    const parseResult = tokenResponseSchema.safeParse(rawData)
 
     if (!parseResult.success) {
-      logger.error('Onseason token response failed schema validation', {
-        pipeline: 'memory-retrieval',
-        pmId: 'unknown',
-      })
-      return NextResponse.redirect(new URL('/callback?error=invalid_response', request.url))
+      logger.error('Token response failed schema validation')
+      return NextResponse.redirect(new URL('/?error=invalid_response', request.url))
     }
 
     const data = parseResult.data
@@ -80,37 +73,28 @@ export async function GET(request: NextRequest): Promise<Response> {
       pmId: data.user.id,
       workspaceId: data.workspace.id,
       email: data.user.email,
-      name: data.user.name,
-      image: null, // Populated after Task 18 code exchange
+      name: data.user.name ?? '',
+      image: data.user.image ?? null,
       subscriptionStatus: data.workspace.subscription_status,
       mode: data.workspace.mode,
-      subdomain: null, // Populated from userinfo in Story 1.4
-      customDomain: null, // Populated after Task 18 code exchange
-      tenantId: null, // Populated from userinfo in Story 1.4
-      currency: 'EUR', // Default, updated from userinfo in Story 1.4
-      impersonatedBy: null, // Populated after Task 18 code exchange
-      accessToken: '', // Populated after Task 18 code exchange
+      subdomain: data.workspace.subdomain ?? null,
+      customDomain: data.workspace.custom_domain ?? null,
+      tenantId: data.workspace.tenant_id ?? null,
+      currency: data.workspace.currency,
+      impersonatedBy: null,
+      accessToken: data.access_token,
     }
 
-    // Redirect to the returnTo URL with the session cookie
     const redirectUrl = new URL(returnTo, request.url)
     const response = NextResponse.redirect(redirectUrl)
-
     await setSessionCookie(response, session)
 
-    logger.info('SSO login successful', {
-      pipeline: 'memory-retrieval',
-      pmId: session.pmId,
-    })
-
+    logger.info('SSO login successful', { pmId: session.pmId })
     return response
   } catch (error: unknown) {
     const appError = AppError.fromUnknown(error)
-    logger.error('SSO callback error', {
-      pipeline: 'memory-retrieval',
-      pmId: 'unknown',
-    })
+    logger.error('SSO callback error')
     await appError.report()
-    return NextResponse.redirect(new URL('/callback?error=server_error', request.url))
+    return NextResponse.redirect(new URL('/?error=server_error', request.url))
   }
 }
