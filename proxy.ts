@@ -8,10 +8,8 @@ import type { NextRequest } from 'next/server'
 /** Public routes that do NOT require auth */
 const PUBLIC_ROUTES = [
   '/', // Landing page
-  '/login', // Login redirect page
   '/api/auth/callback', // SSO callback
   '/api/auth/logout', // Logout endpoint
-  '/callback', // SSO error display page
 ]
 
 /** Seconds remaining before we trigger a proactive refresh (30 min) */
@@ -54,8 +52,11 @@ export async function proxy(request: NextRequest) {
         { status: 401 },
       )
     }
-    // Page routes redirect to login
-    const loginUrl = new URL('/login', request.url)
+    // Page routes redirect to Onseason SSO
+    const onseasonUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
+    const clientId = process.env.ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
+    const loginUrl = new URL(`${onseasonUrl}/api/sso/authorize`)
+    loginUrl.searchParams.set('client_id', clientId)
     loginUrl.searchParams.set('returnTo', pathname)
     return NextResponse.redirect(loginUrl)
   }
@@ -65,7 +66,7 @@ export async function proxy(request: NextRequest) {
   const timeRemaining = cookieData.expiresAt - now
 
   if (timeRemaining < REFRESH_THRESHOLD_SECONDS) {
-    const refreshed = await refreshSession(cookieData.session, cookieData.rawToken)
+    const refreshed = await refreshSession(cookieData.session)
     if (!refreshed) {
       // PM lost Onseason access — invalidate immediately
       logger.warn('Proactive refresh failed — clearing session', {
@@ -82,7 +83,10 @@ export async function proxy(request: NextRequest) {
         return response
       }
 
-      const loginUrl = new URL('/login', request.url)
+      const onseasonUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
+      const clientId = process.env.ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
+      const loginUrl = new URL(`${onseasonUrl}/api/sso/authorize`)
+      loginUrl.searchParams.set('client_id', clientId)
       loginUrl.searchParams.set('returnTo', pathname)
       const response = NextResponse.redirect(loginUrl)
       clearSessionCookie(response)
@@ -114,7 +118,7 @@ async function handleFragmentRedirect(req: NextRequest) {
 }
 
 /** Attempt to refresh the session via Onseason */
-async function refreshSession(session: PMSession, rawToken: string): Promise<PMSession | null> {
+async function refreshSession(session: PMSession): Promise<PMSession | null> {
   const onseasonBaseUrl = process.env.ONSEASON_BASE_URL
   if (!onseasonBaseUrl) return null
 
@@ -123,20 +127,19 @@ async function refreshSession(session: PMSession, rawToken: string): Promise<PMS
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${rawToken}`,
+        Authorization: `Bearer ${session.accessToken}`,
       },
+      body: JSON.stringify({ client_id: process.env.ONSEASON_SSO_CLIENT_ID ?? 'flamingo' }),
     })
 
-    if (!response.ok) {
-      return null
-    }
-
+    if (!response.ok) return null
     const data = await response.json()
 
     return {
       ...session,
       subscriptionStatus: data.subscription_status ?? session.subscriptionStatus,
       mode: data.mode ?? session.mode,
+      accessToken: data.token ?? session.accessToken,
     }
   } catch {
     return null

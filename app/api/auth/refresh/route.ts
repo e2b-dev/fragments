@@ -30,21 +30,13 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
 
   try {
-    // Get the raw JWT token from the cookie for the Authorization header
-    const rawToken = request.cookies.get(COOKIE_NAME)?.value
-    if (!rawToken) {
-      return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'No session token' } },
-        { status: 401 },
-      )
-    }
-
     const refreshResponse = await fetch(`${onseasonBaseUrl}/api/sso/refresh`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${rawToken}`,
+        Authorization: `Bearer ${session.accessToken}`,
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ client_id: process.env.ONSEASON_SSO_CLIENT_ID ?? 'flamingo' }),
     })
 
     if (!refreshResponse.ok) {
@@ -82,6 +74,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       ...session,
       subscriptionStatus: data.subscription_status ?? session.subscriptionStatus,
       mode: data.mode ?? session.mode,
+      accessToken: data.token ?? session.accessToken,
     }
 
     const newToken = await signJwt(updatedSession, COOKIE_MAX_AGE)
