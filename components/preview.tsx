@@ -12,8 +12,6 @@ import { FragmentCode } from './fragment-code'
 import { FragmentPreview } from './fragment-preview'
 
 export function Preview({
-  teamID,
-  accessToken,
   selectedTab,
   onSelectedTabChange,
   isChatLoading,
@@ -22,8 +20,6 @@ export function Preview({
   result,
   onClose,
 }: {
-  teamID: string | undefined
-  accessToken: string | undefined
   selectedTab: 'code' | 'fragment'
   onSelectedTabChange: Dispatch<SetStateAction<'code' | 'fragment'>>
   isChatLoading: boolean
@@ -86,12 +82,7 @@ export function Preview({
           {result && (
             <div className="flex items-center justify-end gap-2">
               {isLinkAvailable && (
-                <DeployDialog
-                  url={(result as ExecutionResultWeb).url!}
-                  sbxId={result.sbxId!}
-                  teamID={teamID}
-                  accessToken={accessToken}
-                />
+                <DeployDialog url={(result as ExecutionResultWeb).url!} sbxId={result.sbxId!} />
               )}
             </div>
           )}

@@ -1,7 +1,5 @@
 'use client'
 
-import type { ViewType } from '@/components/auth'
-import { AuthDialog } from '@/components/auth-dialog'
 import { Chat } from '@/components/chat'
 import { ChatInput } from '@/components/chat-input'
 import { ChatPicker } from '@/components/chat-picker'
@@ -9,12 +7,10 @@ import { ChatSettings } from '@/components/chat-settings'
 import { LandingHero } from '@/components/landing-hero'
 import { NavBar } from '@/components/navbar'
 import { Preview } from '@/components/preview'
-import { useAuth } from '@/lib/auth'
 import { type Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import type { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 import { type FragmentSchema, fragmentSchema as schema } from '@/lib/schema'
-import { supabase } from '@/lib/supabase'
 import templates from '@/lib/templates'
 import type { ExecutionResult } from '@/lib/types'
 import type { DeepPartial } from 'ai'
@@ -38,11 +34,8 @@ export default function Home() {
   const [fragment, setFragment] = useState<DeepPartial<FragmentSchema>>()
   const [currentTab, setCurrentTab] = useState<'code' | 'fragment'>('code')
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
-  const [isAuthDialogOpen, setAuthDialog] = useState(false)
-  const [authView, setAuthView] = useState<ViewType>('sign_in')
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const { session, userTeam } = useAuth(setAuthDialog, setAuthView)
   const [useMorphApply, setUseMorphApply] = useLocalStorage(
     'useMorphApply',
     process.env.NEXT_PUBLIC_USE_MORPH_APPLY === 'true',
@@ -99,9 +92,6 @@ export default function Home() {
           method: 'POST',
           body: JSON.stringify({
             fragment,
-            userID: session?.user?.id,
-            teamID: userTeam?.id,
-            accessToken: session?.access_token,
             sbxId: result?.sbxId,
           }),
         })
@@ -163,10 +153,6 @@ export default function Home() {
   async function handleSubmitAuth(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    if (!session) {
-      return setAuthDialog(true)
-    }
-
     if (isLoading) {
       stop()
     }
@@ -186,8 +172,6 @@ export default function Home() {
     })
 
     submit({
-      userID: session?.user?.id,
-      teamID: userTeam?.id,
       messages: toAISDKMessages(updatedMessages),
       template: currentTemplate,
       model: currentModel,
@@ -207,8 +191,6 @@ export default function Home() {
 
   function retry() {
     submit({
-      userID: session?.user?.id,
-      teamID: userTeam?.id,
       messages: toAISDKMessages(messages),
       template: currentTemplate,
       model: currentModel,
@@ -231,7 +213,7 @@ export default function Home() {
   }
 
   function logout() {
-    supabase ? supabase.auth.signOut() : console.warn('Supabase is not initialized')
+    window.location.href = '/api/auth/logout'
   }
 
   function handleLanguageModelChange(e: LLMModelConfig) {
@@ -278,22 +260,11 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen max-h-screen">
-      {supabase && (
-        <AuthDialog
-          open={isAuthDialogOpen}
-          setOpen={setAuthDialog}
-          view={authView}
-          supabase={supabase}
-        />
-      )}
-
       {isLanding ? (
-        /* ── Landing page layout ── */
+        /* -- Landing page layout -- */
         <div className="flex flex-col w-full max-h-full overflow-auto">
           <div className="max-w-[900px] w-full mx-auto px-4">
             <NavBar
-              session={session}
-              showLogin={() => setAuthDialog(true)}
               signOut={logout}
               onSocialClick={handleSocialClick}
               onClear={handleClearChat}
@@ -335,14 +306,12 @@ export default function Home() {
           </LandingHero>
         </div>
       ) : (
-        /* ── Chat + Preview split layout ── */
+        /* -- Chat + Preview split layout -- */
         <div className="grid w-full md:grid-cols-2">
           <div
             className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
           >
             <NavBar
-              session={session}
-              showLogin={() => setAuthDialog(true)}
               signOut={logout}
               onSocialClick={handleSocialClick}
               onClear={handleClearChat}
@@ -384,8 +353,6 @@ export default function Home() {
             </ChatInput>
           </div>
           <Preview
-            teamID={userTeam?.id}
-            accessToken={session?.access_token}
             selectedTab={currentTab}
             onSelectedTabChange={setCurrentTab}
             isChatLoading={isLoading}

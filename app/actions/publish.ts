@@ -7,13 +7,7 @@ import { customAlphabet } from 'nanoid'
 
 const nanoid = customAlphabet('1234567890abcdef', 7)
 
-export async function publish(
-  url: string,
-  sbxId: string,
-  duration: Duration,
-  teamID: string | undefined,
-  accessToken: string | undefined,
-) {
+export async function publish(url: string, sbxId: string, duration: Duration) {
   const parsedUrl = new URL(url)
   if (!parsedUrl.hostname.endsWith('.e2b.app')) {
     throw new Error('URL must be on *.e2b.app domain')
@@ -24,16 +18,7 @@ export async function publish(
     throw new Error('Expiration must be 24 hours or less')
   }
 
-  await Sandbox.setTimeout(sbxId, expiration, {
-    ...(teamID && accessToken
-      ? {
-          headers: {
-            'X-Supabase-Team': teamID,
-            'X-Supabase-Token': accessToken,
-          },
-        }
-      : {}),
-  })
+  await Sandbox.setTimeout(sbxId, expiration)
 
   if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
     const id = nanoid()

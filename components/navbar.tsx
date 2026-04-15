@@ -11,15 +11,12 @@ import {
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { GitHubLogoIcon } from '@radix-ui/react-icons'
-import type { Session } from '@supabase/supabase-js'
-import { ArrowRight, LogOut, Trash, Undo } from 'lucide-react'
+import { LogOut, Trash, Undo } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import Logo from './logo'
 
 export function NavBar({
-  session,
-  showLogin,
   signOut,
   onClear,
   canClear,
@@ -27,8 +24,6 @@ export function NavBar({
   onUndo,
   canUndo,
 }: {
-  session: Session | null
-  showLogin: () => void
   signOut: () => void
   onClear: () => void
   canClear: boolean
@@ -87,57 +82,43 @@ export function NavBar({
             <TooltipContent>Toggle theme</TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        {session ? (
-          <DropdownMenu>
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <DropdownMenuTrigger asChild>
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage
-                        src={
-                          session.user.user_metadata?.avatar_url ||
-                          `https://avatar.vercel.sh/${session.user.email}`
-                        }
-                        alt={session.user.email}
-                      />
-                    </Avatar>
-                  </DropdownMenuTrigger>
-                </TooltipTrigger>
-                <TooltipContent>My Account</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <DropdownMenuContent className="w-56" align="end">
-              <DropdownMenuLabel className="flex flex-col">
-                <span className="text-sm">My Account</span>
-                <span className="text-xs text-muted-foreground">{session.user.email}</span>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  window.open('https://onseason.ai', '_blank')
-                }}
-              >
-                <Logo className="mr-2 h-4 w-4 text-primary" />
-                About OnSeason
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onSocialClick('github')}>
-                <GitHubLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                Star on GitHub
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut}>
-                <LogOut className="mr-2 h-4 w-4 text-muted-foreground" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <Button variant="default" onClick={showLogin} className="rounded-full px-5">
-            Sign in
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        )}
+        <DropdownMenu>
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="w-8 h-8 cursor-pointer">
+                    <AvatarImage src="https://avatar.vercel.sh/pm" alt="PM" />
+                  </Avatar>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>My Account</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <DropdownMenuContent className="w-56" align="end">
+            <DropdownMenuLabel className="flex flex-col">
+              <span className="text-sm">My Account</span>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                window.open('https://onseason.ai', '_blank')
+              }}
+            >
+              <Logo className="mr-2 h-4 w-4 text-primary" />
+              About OnSeason
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSocialClick('github')}>
+              <GitHubLogoIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+              Star on GitHub
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={signOut}>
+              <LogOut className="mr-2 h-4 w-4 text-muted-foreground" />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </nav>
   )

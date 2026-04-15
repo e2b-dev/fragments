@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# brainstorming visual companion
+.superpowers/
+
 # dependencies
 node_modules
 /.pnp

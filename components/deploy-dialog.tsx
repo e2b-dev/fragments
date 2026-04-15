@@ -24,13 +24,9 @@ import {
 export function DeployDialog({
   url,
   sbxId,
-  teamID,
-  accessToken,
 }: {
   url: string
   sbxId: string
-  teamID: string | undefined
-  accessToken: string | undefined
 }) {
   const posthog = usePostHog()
 
@@ -43,13 +39,7 @@ export function DeployDialog({
 
   async function publishURL(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const { url: publishedURL } = await publish(
-      url,
-      sbxId,
-      duration as Duration,
-      teamID,
-      accessToken,
-    )
+    const { url: publishedURL } = await publish(url, sbxId, duration as Duration)
     setPublishedURL(publishedURL)
     posthog.capture('publish_url', {
       url: publishedURL,

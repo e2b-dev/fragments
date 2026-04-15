@@ -4,6 +4,9 @@ import { envSchema } from './env'
 const validEnv = {
   E2B_API_KEY: 'test-e2b-key',
   ANTHROPIC_API_KEY: 'test-anthropic-key',
+  ONSEASON_BASE_URL: 'https://app.onseason.ai',
+  ONSEASON_SSO_SECRET: 'a]3Fk9$mP!xL7qR2vN8wT#hY5jB0cD4e',
+  NEXT_PUBLIC_ONSEASON_BASE_URL: 'https://app.onseason.ai',
 }
 
 describe('envSchema', () => {
@@ -34,6 +37,9 @@ describe('envSchema', () => {
       const paths = result.error.issues.map((i) => i.path[0])
       expect(paths).toContain('E2B_API_KEY')
       expect(paths).toContain('ANTHROPIC_API_KEY')
+      expect(paths).toContain('ONSEASON_BASE_URL')
+      expect(paths).toContain('ONSEASON_SSO_SECRET')
+      expect(paths).toContain('NEXT_PUBLIC_ONSEASON_BASE_URL')
     }
   })
 
@@ -43,25 +49,32 @@ describe('envSchema', () => {
     if (result.success) {
       expect(result.data.OPENAI_API_KEY).toBeUndefined()
       expect(result.data.SENTRY_DSN).toBeUndefined()
-      expect(result.data.SUPABASE_URL).toBeUndefined()
     }
   })
 
   it('treats empty strings as undefined for optional fields', () => {
     const result = envSchema.safeParse({
       ...validEnv,
-      SUPABASE_URL: '',
       SENTRY_DSN: '',
       NEXT_PUBLIC_SITE_URL: '',
       KV_REST_API_URL: '',
     })
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.SUPABASE_URL).toBeUndefined()
       expect(result.data.SENTRY_DSN).toBeUndefined()
       expect(result.data.NEXT_PUBLIC_SITE_URL).toBeUndefined()
       expect(result.data.KV_REST_API_URL).toBeUndefined()
     }
+  })
+
+  it('fails when required Onseason SSO vars are empty strings', () => {
+    const result = envSchema.safeParse({
+      ...validEnv,
+      ONSEASON_BASE_URL: '',
+      ONSEASON_SSO_SECRET: '',
+      NEXT_PUBLIC_ONSEASON_BASE_URL: '',
+    })
+    expect(result.success).toBe(false)
   })
 
   it('applies default values for rate limit config', () => {
@@ -116,15 +129,19 @@ describe('envSchema', () => {
     }
   })
 
-  it('rejects invalid SUPABASE_URL (not a URL)', () => {
-    const result = envSchema.safeParse({ ...validEnv, SUPABASE_URL: 'not-a-url' })
+  it('rejects invalid ONSEASON_BASE_URL (not a URL)', () => {
+    const result = envSchema.safeParse({ ...validEnv, ONSEASON_BASE_URL: 'not-a-url' })
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects ONSEASON_SSO_SECRET shorter than 32 chars', () => {
+    const result = envSchema.safeParse({ ...validEnv, ONSEASON_SSO_SECRET: 'short' })
     expect(result.success).toBe(false)
   })
 
   it('accepts valid optional URL vars', () => {
     const result = envSchema.safeParse({
       ...validEnv,
-      SUPABASE_URL: 'https://myproject.supabase.co',
       SENTRY_DSN: 'https://abc@sentry.io/123',
       NEXT_PUBLIC_SITE_URL: 'https://example.com',
     })

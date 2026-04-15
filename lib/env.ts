@@ -24,9 +24,10 @@ export const envSchema = z.object({
   XAI_API_KEY: emptyToUndefined(z.string().optional()),
   MORPH_API_KEY: emptyToUndefined(z.string().optional()),
 
-  // Supabase (still used until Story 1.3 removes it)
-  SUPABASE_URL: emptyToUndefined(z.string().url().optional()),
-  SUPABASE_ANON_KEY: emptyToUndefined(z.string().optional()),
+  // Onseason SSO
+  ONSEASON_BASE_URL: emptyToUndefined(z.string().url()),
+  ONSEASON_SSO_SECRET: emptyToUndefined(z.string().min(32)),
+  NEXT_PUBLIC_ONSEASON_BASE_URL: emptyToUndefined(z.string().url()),
 
   // Sentry (optional — dev environments may not have it)
   SENTRY_DSN: emptyToUndefined(z.string().url().optional()),
