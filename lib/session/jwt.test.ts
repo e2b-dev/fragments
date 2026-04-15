@@ -11,17 +11,21 @@ const validSession: PMSession = {
   workspaceId: 'ws-456',
   email: 'pm@example.com',
   name: 'Test PM',
+  image: null,
   subscriptionStatus: 'active',
   mode: 'active',
   subdomain: 'test-villa',
+  customDomain: null,
   tenantId: 'tenant-789',
   currency: 'EUR',
+  impersonatedBy: null,
+  accessToken: 'mock-access-token',
 }
 
 describe('jwt', () => {
   beforeEach(() => {
     _resetSecretKey()
-    vi.stubEnv('ONSEASON_SSO_SECRET', TEST_SECRET)
+    vi.stubEnv('FLAMINGO_SESSION_SECRET', TEST_SECRET)
   })
 
   afterEach(() => {
@@ -94,7 +98,7 @@ describe('jwt', () => {
       const token = await new SignJWT({ pmId: 'user-123', workspaceId: 'ws-456', email: 'a@b.com' })
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuer('flamingo')
-        .setAudience('staycy')
+        .setAudience('flamingo')
         .setExpirationTime('1h')
         .sign(wrongKey)
 
@@ -139,7 +143,7 @@ describe('jwt', () => {
       })
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuer('flamingo')
-        .setAudience('staycy')
+        .setAudience('flamingo')
         .setExpirationTime('1h')
         .sign(SECRET_KEY)
 
@@ -157,7 +161,7 @@ describe('jwt', () => {
       const token = await new SignJWT({ pmId: 'user-123', workspaceId: 'ws-456', email: 'a@b.com' })
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuer('not-flamingo')
-        .setAudience('staycy')
+        .setAudience('flamingo')
         .setExpirationTime('1h')
         .sign(SECRET_KEY)
 
@@ -187,12 +191,12 @@ describe('jwt', () => {
   })
 
   describe('signJwt', () => {
-    it('should throw if ONSEASON_SSO_SECRET is not set', async () => {
+    it('should throw if FLAMINGO_SESSION_SECRET is not set', async () => {
       _resetSecretKey()
-      vi.stubEnv('ONSEASON_SSO_SECRET', '')
+      vi.stubEnv('FLAMINGO_SESSION_SECRET', '')
 
       await expect(signJwt(validSession, 3600)).rejects.toThrow(
-        'ONSEASON_SSO_SECRET is not configured',
+        'FLAMINGO_SESSION_SECRET is not configured',
       )
     })
   })

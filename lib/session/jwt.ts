@@ -6,9 +6,9 @@ let _secretKey: Uint8Array | undefined
 
 function getSecretKey(): Uint8Array {
   if (!_secretKey) {
-    const secret = process.env.ONSEASON_SSO_SECRET
+    const secret = process.env.FLAMINGO_SESSION_SECRET
     if (!secret) {
-      throw new Error('ONSEASON_SSO_SECRET is not configured')
+      throw new Error('FLAMINGO_SESSION_SECRET is not configured')
     }
     _secretKey = new TextEncoder().encode(secret)
   }
@@ -21,7 +21,7 @@ export function _resetSecretKey(): void {
 }
 
 const JWT_ISSUER = 'flamingo'
-const JWT_AUDIENCE = 'staycy'
+const JWT_AUDIENCE = 'flamingo'
 
 export interface VerifyResult {
   valid: true
@@ -48,11 +48,15 @@ export async function verifyJwt(token: string): Promise<VerifyResult | VerifyErr
       workspaceId: payload.workspaceId as string,
       email: payload.email as string,
       name: payload.name as string,
+      image: (payload.image as string | null) ?? null,
       subscriptionStatus: payload.subscriptionStatus as 'active' | 'inactive',
       mode: payload.mode as 'active' | 'preview',
       subdomain: (payload.subdomain as string | null) ?? null,
+      customDomain: (payload.customDomain as string | null) ?? null,
       tenantId: (payload.tenantId as string | null) ?? null,
       currency: payload.currency as string,
+      impersonatedBy: (payload.impersonatedBy as string | null) ?? null,
+      accessToken: payload.accessToken as string,
     }
 
     // Validate required fields
@@ -82,11 +86,15 @@ export async function signJwt(session: PMSession, maxAgeSeconds: number): Promis
     workspaceId: session.workspaceId,
     email: session.email,
     name: session.name,
+    image: session.image,
     subscriptionStatus: session.subscriptionStatus,
     mode: session.mode,
     subdomain: session.subdomain,
+    customDomain: session.customDomain,
     tenantId: session.tenantId,
     currency: session.currency,
+    impersonatedBy: session.impersonatedBy,
+    accessToken: session.accessToken,
   })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuer(JWT_ISSUER)

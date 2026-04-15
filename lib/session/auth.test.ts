@@ -12,11 +12,15 @@ const validSession: PMSession = {
   workspaceId: 'ws-456',
   email: 'pm@example.com',
   name: 'Test PM',
+  image: null,
   subscriptionStatus: 'active',
   mode: 'active',
   subdomain: 'test-villa',
+  customDomain: null,
   tenantId: 'tenant-789',
   currency: 'EUR',
+  impersonatedBy: null,
+  accessToken: 'mock-access-token',
 }
 
 function createRequest(cookieValue?: string): NextRequest {
@@ -31,7 +35,7 @@ function createRequest(cookieValue?: string): NextRequest {
 describe('getSession', () => {
   beforeEach(() => {
     _resetSecretKey()
-    vi.stubEnv('ONSEASON_SSO_SECRET', TEST_SECRET)
+    vi.stubEnv('FLAMINGO_SESSION_SECRET', TEST_SECRET)
   })
 
   afterEach(() => {

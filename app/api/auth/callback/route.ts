@@ -81,11 +81,15 @@ export async function GET(request: NextRequest): Promise<Response> {
       workspaceId: data.workspace.id,
       email: data.user.email,
       name: data.user.name,
+      image: null, // Populated after Task 18 code exchange
       subscriptionStatus: data.workspace.subscription_status,
       mode: data.workspace.mode,
       subdomain: null, // Populated from userinfo in Story 1.4
+      customDomain: null, // Populated after Task 18 code exchange
       tenantId: null, // Populated from userinfo in Story 1.4
       currency: 'EUR', // Default, updated from userinfo in Story 1.4
+      impersonatedBy: null, // Populated after Task 18 code exchange
+      accessToken: '', // Populated after Task 18 code exchange
     }
 
     // Redirect to the returnTo URL with the session cookie
