@@ -119,16 +119,63 @@ export const errorDimReduced: MotionVariantSet = {
   transition: INSTANT,
 }
 
+// --- Landing Exit: content slides up and fades out, 400ms easeIn ---
+
+export const landingExit: MotionVariantSet = {
+  initial: { opacity: 1, y: 0 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -30 },
+  transition: { duration: 0.4, ease: 'easeIn' },
+}
+
+export const landingExitReduced: MotionVariantSet = {
+  initial: opacityOnly(1),
+  animate: opacityOnly(1),
+  exit: opacityOnly(0),
+  transition: INSTANT,
+}
+
+// --- Builder Enter Left: chat pane slides from left, 500ms easeOut ---
+
+export const builderEnterLeft: MotionVariantSet = {
+  initial: { opacity: 0, x: -40 },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 0.5, ease: 'easeOut' },
+}
+
+export const builderEnterLeftReduced: MotionVariantSet = {
+  initial: opacityOnly(0),
+  animate: opacityOnly(1),
+  transition: INSTANT,
+}
+
+// --- Builder Enter Right: preview pane slides from right, 500ms easeOut ---
+
+export const builderEnterRight: MotionVariantSet = {
+  initial: { opacity: 0, x: 40 },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 0.5, ease: 'easeOut' },
+}
+
+export const builderEnterRightReduced: MotionVariantSet = {
+  initial: opacityOnly(0),
+  animate: opacityOnly(1),
+  transition: INSTANT,
+}
+
 // --- Variant names for programmatic access ---
 
 const variants = {
   authModal: { standard: authModal, reduced: authModalReduced },
-  landingToBuilder: { standard: landingToBuilder, reduced: landingToBuilderReduced },
-  previewPulse: { standard: previewPulse, reduced: previewPulseReduced },
-  undoCrossfade: { standard: undoCrossfade, reduced: undoCrossfadeReduced },
-  publishCard: { standard: publishCard, reduced: publishCardReduced },
+  builderEnterLeft: { standard: builderEnterLeft, reduced: builderEnterLeftReduced },
+  builderEnterRight: { standard: builderEnterRight, reduced: builderEnterRightReduced },
   chatMessage: { standard: chatMessage, reduced: chatMessageReduced },
   errorDim: { standard: errorDim, reduced: errorDimReduced },
+  landingExit: { standard: landingExit, reduced: landingExitReduced },
+  landingToBuilder: { standard: landingToBuilder, reduced: landingToBuilderReduced },
+  previewPulse: { standard: previewPulse, reduced: previewPulseReduced },
+  publishCard: { standard: publishCard, reduced: publishCardReduced },
+  undoCrossfade: { standard: undoCrossfade, reduced: undoCrossfadeReduced },
 } as const
 
 export type VariantName = keyof typeof variants

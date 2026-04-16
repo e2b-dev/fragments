@@ -2,11 +2,17 @@ import { describe, expect, it } from 'vitest'
 import {
   authModal,
   authModalReduced,
+  builderEnterLeft,
+  builderEnterLeftReduced,
+  builderEnterRight,
+  builderEnterRightReduced,
   chatMessage,
   chatMessageReduced,
   errorDim,
   errorDimReduced,
   getVariant,
+  landingExit,
+  landingExitReduced,
   landingToBuilder,
   landingToBuilderReduced,
   previewPulse,
@@ -20,36 +26,45 @@ import type { MotionVariantSet, VariantName } from './transitions'
 
 const ALL_VARIANT_NAMES: VariantName[] = [
   'authModal',
-  'landingToBuilder',
-  'previewPulse',
-  'undoCrossfade',
-  'publishCard',
+  'builderEnterLeft',
+  'builderEnterRight',
   'chatMessage',
   'errorDim',
+  'landingExit',
+  'landingToBuilder',
+  'previewPulse',
+  'publishCard',
+  'undoCrossfade',
 ]
 
 const standardVariants: Record<string, MotionVariantSet> = {
   authModal,
-  landingToBuilder,
-  previewPulse,
-  undoCrossfade,
-  publishCard,
+  builderEnterLeft,
+  builderEnterRight,
   chatMessage,
   errorDim,
+  landingExit,
+  landingToBuilder,
+  previewPulse,
+  publishCard,
+  undoCrossfade,
 }
 
 const reducedVariants: Record<string, MotionVariantSet> = {
   authModal: authModalReduced,
-  landingToBuilder: landingToBuilderReduced,
-  previewPulse: previewPulseReduced,
-  undoCrossfade: undoCrossfadeReduced,
-  publishCard: publishCardReduced,
+  builderEnterLeft: builderEnterLeftReduced,
+  builderEnterRight: builderEnterRightReduced,
   chatMessage: chatMessageReduced,
   errorDim: errorDimReduced,
+  landingExit: landingExitReduced,
+  landingToBuilder: landingToBuilderReduced,
+  previewPulse: previewPulseReduced,
+  publishCard: publishCardReduced,
+  undoCrossfade: undoCrossfadeReduced,
 }
 
 describe('transitions', () => {
-  describe('all 7 variant names are exported', () => {
+  describe('all 10 variant names are exported', () => {
     it.each(ALL_VARIANT_NAMES)('exports standard variant for %s', (name) => {
       expect(standardVariants[name]).toBeDefined()
     })
@@ -102,6 +117,56 @@ describe('transitions', () => {
       expect(errorDim.animate).toBeDefined()
       expect(errorDim.transition).toBeDefined()
     })
+
+    it('landingExit has initial, animate, exit, and transition', () => {
+      expect(landingExit.initial).toBeDefined()
+      expect(landingExit.animate).toBeDefined()
+      expect(landingExit.exit).toBeDefined()
+      expect(landingExit.transition).toBeDefined()
+    })
+
+    it('landingExit exit slides up (y: -30) and fades out', () => {
+      expect(landingExit.exit).toMatchObject({ opacity: 0, y: -30 })
+    })
+
+    it('landingExit initial and animate are visible and at rest', () => {
+      expect(landingExit.initial).toMatchObject({ opacity: 1, y: 0 })
+      expect(landingExit.animate).toMatchObject({ opacity: 1, y: 0 })
+    })
+
+    it('landingExit transition is 400ms easeIn', () => {
+      expect(landingExit.transition).toMatchObject({ duration: 0.4, ease: 'easeIn' })
+    })
+
+    it('builderEnterLeft has initial, animate, and transition', () => {
+      expect(builderEnterLeft.initial).toBeDefined()
+      expect(builderEnterLeft.animate).toBeDefined()
+      expect(builderEnterLeft.transition).toBeDefined()
+    })
+
+    it('builderEnterLeft slides from left (x: -40)', () => {
+      expect(builderEnterLeft.initial).toMatchObject({ opacity: 0, x: -40 })
+      expect(builderEnterLeft.animate).toMatchObject({ opacity: 1, x: 0 })
+    })
+
+    it('builderEnterLeft transition is 500ms easeOut', () => {
+      expect(builderEnterLeft.transition).toMatchObject({ duration: 0.5, ease: 'easeOut' })
+    })
+
+    it('builderEnterRight has initial, animate, and transition', () => {
+      expect(builderEnterRight.initial).toBeDefined()
+      expect(builderEnterRight.animate).toBeDefined()
+      expect(builderEnterRight.transition).toBeDefined()
+    })
+
+    it('builderEnterRight slides from right (x: 40)', () => {
+      expect(builderEnterRight.initial).toMatchObject({ opacity: 0, x: 40 })
+      expect(builderEnterRight.animate).toMatchObject({ opacity: 1, x: 0 })
+    })
+
+    it('builderEnterRight transition is 500ms easeOut', () => {
+      expect(builderEnterRight.transition).toMatchObject({ duration: 0.5, ease: 'easeOut' })
+    })
   })
 
   describe('reduced-motion variants use instant duration', () => {
@@ -124,7 +189,7 @@ describe('transitions', () => {
       expect(getVariant('errorDim', true)).toBe(errorDimReduced)
     })
 
-    it('returns correct variant for all 7 names', () => {
+    it('returns correct variant for all 10 names', () => {
       for (const name of ALL_VARIANT_NAMES) {
         const standard = getVariant(name, false)
         const reduced = getVariant(name, true)
