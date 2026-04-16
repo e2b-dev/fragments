@@ -1,15 +1,15 @@
-import type { Transition, Variant } from 'motion'
+import type { TargetAndTransition, Transition } from 'motion'
 
 export interface MotionVariantSet {
-  initial?: Variant
-  animate?: Variant
-  exit?: Variant
+  initial?: TargetAndTransition
+  animate?: TargetAndTransition
+  exit?: TargetAndTransition
   transition?: Transition
 }
 
 const INSTANT: Transition = { duration: 0 }
 
-function opacityOnly(opacity: number): Variant {
+function opacityOnly(opacity: number): TargetAndTransition {
   return { opacity }
 }
 

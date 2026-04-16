@@ -16,6 +16,7 @@ import templates from '@/lib/templates'
 import type { ExecutionResult } from '@/lib/types'
 import type { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
+import { AnimatePresence } from 'motion/react'
 import { useSearchParams } from 'next/navigation'
 import { usePostHog } from 'posthog-js/react'
 import { type SetStateAction, Suspense, useEffect, useRef, useState } from 'react'
@@ -409,16 +410,18 @@ function Home() {
         </div>
       )}
 
-      {showAuthGate && (
-        <PromptGateOverlay
-          onSignIn={() => {
-            const onseasonUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
-            const clientId = process.env.NEXT_PUBLIC_ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
-            window.location.href = `${onseasonUrl}/api/sso/authorize?client_id=${clientId}&returnTo=${encodeURIComponent('/?resume=true')}`
-          }}
-          onDismiss={() => setShowAuthGate(false)}
-        />
-      )}
+      <AnimatePresence>
+        {showAuthGate && (
+          <PromptGateOverlay
+            onSignIn={() => {
+              const onseasonUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
+              const clientId = process.env.NEXT_PUBLIC_ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
+              window.location.href = `${onseasonUrl}/api/sso/authorize?client_id=${clientId}&returnTo=${encodeURIComponent('/?resume=true')}`
+            }}
+            onDismiss={() => setShowAuthGate(false)}
+          />
+        )}
+      </AnimatePresence>
     </main>
   )
 }
