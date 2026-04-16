@@ -20,10 +20,7 @@ export function ChatBanner({
   const prefersReducedMotion = useReducedMotion()
   const bannerVariant = getVariant('chatBanner', prefersReducedMotion)
 
-  const variantStyles =
-    variant === 'warning'
-      ? 'bg-[var(--warning-bg)] text-[var(--warning)]'
-      : 'bg-[var(--error-bg)] text-[var(--error)]'
+  const variantStyles = variant === 'warning' ? 'text-[var(--warning)]' : 'text-[var(--error)]'
 
   return (
     <AnimatePresence>
@@ -33,6 +30,7 @@ export function ChatBanner({
           className={cn(
             'overflow-hidden px-3 py-1.5 rounded-t-2xl',
             'flex items-center gap-2 text-sm font-medium',
+            'bg-[var(--surface)] border border-b-0 border-border',
             variantStyles,
             className,
           )}
