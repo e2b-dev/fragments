@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,16 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import {
-  AlertTriangle,
-  Building2,
-  ChevronRight,
-  ExternalLink,
-  Loader2,
-  LogOut,
-  Trash,
-  Undo,
-} from 'lucide-react'
+import { AlertTriangle, ChevronRight, ExternalLink, LogOut, Trash, Undo } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
@@ -44,28 +35,27 @@ export interface SessionInfo {
 interface Workspace {
   id: string
   name: string
+  logoUrl?: string | null
 }
 
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((part) => part[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
+/** Get avatar URL — custom image or DiceBear fallback (matches Onseason's avatar logic) */
+function getAvatarUrl(user: { email: string; image: string | null }): string {
+  if (user.image) return user.image
+  const seed = user.email.toLowerCase().trim()
+  const params = new URLSearchParams({
+    seed,
+    radius: '12',
+    backgroundType: 'gradientLinear',
+    backgroundRotation: '315',
+    backgroundColor: 'd946ef,fdba74',
+  })
+  return `https://api.dicebear.com/9.x/avataaars/svg?${params.toString()}`
 }
 
 function getSignInUrl(): string {
   const baseUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
   const clientId = process.env.NEXT_PUBLIC_ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
   return `${baseUrl}/api/sso/authorize?client_id=${clientId}&returnTo=/`
-}
-
-function getWorkspaceSwitchUrl(workspaceId: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
-  const clientId = process.env.NEXT_PUBLIC_ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
-  return `${baseUrl}/api/sso/authorize?client_id=${clientId}&workspace_id=${workspaceId}&returnTo=/`
 }
 
 export function NavBar({
@@ -185,28 +175,23 @@ function AuthenticatedControls({
 }
 
 function ProfileDropdown({ session }: { session: SessionInfo }) {
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([])
-  const [isLoadingWorkspaces, setIsLoadingWorkspaces] = useState(false)
-  const [workspacesLoaded, setWorkspacesLoaded] = useState(false)
+  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null)
+  const [hasMultipleWorkspaces, setHasMultipleWorkspaces] = useState(false)
+  const [workspacesFetched, setWorkspacesFetched] = useState(false)
 
-  const fetchWorkspaces = useCallback(() => {
-    if (workspacesLoaded || isLoadingWorkspaces) return
-
-    setIsLoadingWorkspaces(true)
+  const fetchWorkspaceInfo = useCallback(() => {
+    if (workspacesFetched) return
+    setWorkspacesFetched(true)
     fetch('/api/auth/workspaces')
       .then((res) => res.json())
       .then((data: { workspaces?: Workspace[] }) => {
-        setWorkspaces(data.workspaces ?? [])
-        setWorkspacesLoaded(true)
+        const list = data.workspaces ?? []
+        const current = list.find((w) => w.id === session.workspaceId)
+        if (current) setCurrentWorkspace(current)
+        setHasMultipleWorkspaces(list.length > 1)
       })
-      .catch(() => {
-        setWorkspaces([])
-        setWorkspacesLoaded(true)
-      })
-      .finally(() => {
-        setIsLoadingWorkspaces(false)
-      })
-  }, [workspacesLoaded, isLoadingWorkspaces])
+      .catch(() => {})
+  }, [workspacesFetched, session.workspaceId])
 
   const handleSignOut = useCallback(() => {
     window.location.href = '/api/auth/logout'
@@ -217,26 +202,26 @@ function ProfileDropdown({ session }: { session: SessionInfo }) {
     window.open(baseUrl, '_blank')
   }, [])
 
-  const handleSwitchWorkspace = useCallback((workspaceId: string) => {
-    window.location.href = getWorkspaceSwitchUrl(workspaceId)
+  const handleSwitchWorkspace = useCallback(() => {
+    const baseUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
+    const clientId = process.env.NEXT_PUBLIC_ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
+    window.location.href = `${baseUrl}/workspace-picker?client_id=${clientId}&returnTo=/`
   }, [])
 
-  const initials = getInitials(session.name)
-  const otherWorkspaces = workspaces.filter((w) => w.id !== session.workspaceId)
+  const avatarUrl = getAvatarUrl(session)
 
   return (
     <DropdownMenu
       onOpenChange={(open) => {
-        if (open) fetchWorkspaces()
+        if (open) fetchWorkspaceInfo()
       }}
     >
       <TooltipProvider>
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
             <DropdownMenuTrigger asChild>
-              <Avatar className="w-8 h-8 cursor-pointer">
-                {session.image ? <AvatarImage src={session.image} alt={session.name} /> : null}
-                <AvatarFallback className="text-xs font-medium">{initials}</AvatarFallback>
+              <Avatar className="size-8 rounded-lg cursor-pointer">
+                <AvatarImage src={avatarUrl} alt={session.name} className="rounded-lg" />
               </Avatar>
             </DropdownMenuTrigger>
           </TooltipTrigger>
@@ -250,31 +235,28 @@ function ProfileDropdown({ session }: { session: SessionInfo }) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {/* Workspace switcher */}
-        {isLoadingWorkspaces && (
-          <DropdownMenuItem disabled>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin text-muted-foreground" />
-            Loading workspaces...
+        {/* Current workspace */}
+        <DropdownMenuLabel className="flex items-center gap-2 font-normal">
+          {currentWorkspace?.logoUrl ? (
+            <img
+              src={currentWorkspace.logoUrl}
+              alt={currentWorkspace.name}
+              className="size-6 rounded-sm object-cover"
+            />
+          ) : (
+            <div className="flex size-6 items-center justify-center rounded-sm bg-primary/10 text-[10px] font-semibold text-primary">
+              {(currentWorkspace?.name ?? 'W').charAt(0).toUpperCase()}
+            </div>
+          )}
+          <span className="flex-1 truncate text-sm">{currentWorkspace?.name ?? 'Workspace'}</span>
+        </DropdownMenuLabel>
+        {hasMultipleWorkspaces && (
+          <DropdownMenuItem onClick={handleSwitchWorkspace}>
+            <ChevronRight className="mr-2 h-4 w-4 text-muted-foreground" />
+            Switch workspace
           </DropdownMenuItem>
         )}
-        {workspacesLoaded && otherWorkspaces.length > 0 && (
-          <>
-            <DropdownMenuLabel className="text-xs text-muted-foreground font-normal">
-              Switch workspace
-            </DropdownMenuLabel>
-            {otherWorkspaces.map((workspace) => (
-              <DropdownMenuItem
-                key={workspace.id}
-                onClick={() => handleSwitchWorkspace(workspace.id)}
-              >
-                <Building2 className="mr-2 h-4 w-4 text-muted-foreground" />
-                <span className="flex-1 truncate">{workspace.name}</span>
-                <ChevronRight className="ml-auto h-3 w-3 text-muted-foreground" />
-              </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-          </>
-        )}
+        <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={handleOpenDashboard}>
           <ExternalLink className="mr-2 h-4 w-4 text-muted-foreground" />

@@ -32,98 +32,133 @@ Powered by the [E2B SDK](https://github.com/e2b-dev/code-interpreter).
 ### Prerequisites
 
 - [git](https://git-scm.com)
-- Recent version of [Node.js](https://nodejs.org) and npm package manager
+- Node.js 20+, npm
 - [E2B API Key](https://e2b.dev)
-- LLM Provider API Key
+- Anthropic API Key
+- Access to the [Onseason](https://github.com/Flataway/onseason-app) repo (SSO provider)
 
-### 1. Clone the repository
+### 1. Clone and install
 
-In your terminal:
-
-```
+```bash
 git clone https://github.com/Flataway/flamingo.git
-```
-
-### 2. Install the dependencies
-
-Enter the repository:
-
-```
 cd flamingo
-```
-
-Run the following to install the required dependencies:
-
-```
 npm i
 ```
 
-### 3. Set the environment variables
+### 2. Set up Onseason SSO
 
-Create a `.env.local` file and set the following:
+Flamingo authenticates users through Onseason's SSO. Both repos share a secret.
 
-```sh
-# Get your API key here - https://e2b.dev/
-E2B_API_KEY="your-e2b-api-key"
+#### Generate secrets
 
-# OpenAI API Key
-OPENAI_API_KEY=
+```bash
+# Shared SSO secret (goes in both repos)
+openssl rand -base64 32
 
-# Other providers
-ANTHROPIC_API_KEY=
-GROQ_API_KEY=
-FIREWORKS_API_KEY=
-TOGETHER_API_KEY=
-GOOGLE_AI_API_KEY=
-GOOGLE_VERTEX_CREDENTIALS=
-MISTRAL_API_KEY=
-XAI_API_KEY=
-
-### Optional env vars
-
-# (on by default) Get your MORPH key here - https://morphllm.com/dashboard/api-keys
-MORPH_API_KEY=
-
-# Domain of the site
-NEXT_PUBLIC_SITE_URL=
-
-# Rate limit
-RATE_LIMIT_MAX_REQUESTS=
-RATE_LIMIT_WINDOW=
-
-# Vercel/Upstash KV (short URLs, rate limiting)
-KV_REST_API_URL=
-KV_REST_API_TOKEN=
-
-# Supabase (auth)
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-
-# PostHog (analytics)
-NEXT_PUBLIC_POSTHOG_KEY=
-NEXT_PUBLIC_POSTHOG_HOST=
-
-### Disabling functionality (when uncommented)
-
-# Disable API key and base URL input in the chat
-# NEXT_PUBLIC_NO_API_KEY_INPUT=
-# NEXT_PUBLIC_NO_BASE_URL_INPUT=
-
-# Hide local models from the list of available models
-# NEXT_PUBLIC_HIDE_LOCAL_MODELS=
+# Flamingo session secret (Flamingo only)
+openssl rand -base64 32
 ```
 
-### 4. Start the development server
+#### Configure Onseason
 
-```
-npm run dev
+Add to Onseason's `.env.local`:
+
+```env
+FLAMINGO_SSO_SECRET=<shared-sso-secret>
+FLAMINGO_BASE_URL=http://localhost:3001
 ```
 
-### 5. Build the web app
+#### Run database migration and seed
 
+The SSO tables (`sso_products`, `sso_authorization_codes`) must exist in Onseason's database:
+
+```bash
+cd ~/Developer/Projects/Onseason/onseason-app
+pnpm --filter @onseason/db run db:generate
+pnpm --filter @onseason/db run db:migrate
 ```
+
+Seed the Flamingo product row. The seed hashes `FLAMINGO_SSO_SECRET` with bcrypt and registers Flamingo as an SSO client in the `sso_products` table:
+
+```bash
+# If seedSSOProducts() is wired into the main seed runner:
+pnpm --filter @onseason/db run db:seed
+
+# Otherwise run it directly:
+cd packages/db && npx tsx -e "
+  import { config } from 'dotenv';
+  config({ path: '../../.env.local' });
+  import { seedSSOProducts } from './src/seeds/sso-products';
+  seedSSOProducts().then(() => { console.log('done'); process.exit(0); });
+"
+```
+
+The seed uses `onConflictDoUpdate` — re-running is safe and updates the existing row.
+
+#### Configure Flamingo
+
+Create `.env.local` (see `.env.example` for all available vars):
+
+```env
+# Required
+E2B_API_KEY=<your-e2b-key>
+ANTHROPIC_API_KEY=<your-anthropic-key>
+
+# Flamingo session (signs the session cookie — separate from SSO secret)
+FLAMINGO_SESSION_SECRET=<flamingo-session-secret>
+
+# Onseason SSO (shared secret must match Onseason's FLAMINGO_SSO_SECRET)
+ONSEASON_BASE_URL=http://localhost:3000
+ONSEASON_SSO_SECRET=<shared-sso-secret>
+ONSEASON_SSO_CLIENT_ID=flamingo
+NEXT_PUBLIC_ONSEASON_BASE_URL=http://localhost:3000
+NEXT_PUBLIC_ONSEASON_SSO_CLIENT_ID=flamingo
+```
+
+**Two separate secrets:**
+
+| Secret | Purpose | Where |
+|---|---|---|
+| `ONSEASON_SSO_SECRET` / `FLAMINGO_SSO_SECRET` | Shared. Onseason signs SSO JWTs with it, Flamingo sends it during code exchange. | Both repos, same value |
+| `FLAMINGO_SESSION_SECRET` | Flamingo-only. Signs the `flamingo_session` cookie. | Flamingo only |
+
+### 3. Start both servers
+
+```bash
+# Terminal 1 — Onseason (port 3000)
+cd ~/Developer/Projects/Onseason/onseason-app && pnpm dev
+
+# Terminal 2 — Flamingo (port 3001)
+cd ~/Developer/Projects/Flamingo && npx next dev --turbo -p 3001
+```
+
+### 4. Build
+
+```bash
 npm run build
 ```
+
+## SSO Flow
+
+```
+User clicks "Sign In" on Flamingo
+  → Redirect to Onseason /api/sso/authorize?client_id=flamingo
+  → Onseason login page ("Sign in to continue to Staycy")
+  → User authenticates
+  → Onseason generates opaque auth code, redirects to Flamingo /api/auth/callback?code=<uuid>
+  → Flamingo exchanges code server-to-server with client_id + client_secret
+  → Session cookie set, user lands on landing page
+```
+
+## Troubleshooting
+
+**"Invalid client credentials" on code exchange** — The `ONSEASON_SSO_SECRET` in Flamingo doesn't match the bcrypt hash in Onseason's `sso_products` table. Re-run the seed with the correct `FLAMINGO_SSO_SECRET`.
+
+**Cookie not setting after redirect** — `sameSite: 'strict'` can block cookies on cross-port redirects during local dev. Temporarily change to `'lax'` in `lib/session/cookie.ts`.
+
+**Redirect loop** — Check that `/api/auth/callback` is in the public routes list in `proxy.ts`. Verify `NEXT_PUBLIC_ONSEASON_BASE_URL` is correct.
+
+**Avatar not loading** — User avatars come from Google/Apple OAuth via Onseason. If `image` is null, a DiceBear avatar is generated from their email.
 
 ## Customize
 
