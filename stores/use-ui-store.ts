@@ -4,14 +4,14 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 export interface UiState {
-  previewDevice: 'desktop' | 'mobile'
+  previewDevice: 'desktop' | 'tablet' | 'mobile'
   isBelowMinWidth: boolean
   chatInputFocused: boolean
 }
 
 export interface UiActions {
   togglePreviewDevice: () => void
-  setPreviewDevice: (device: 'desktop' | 'mobile') => void
+  setPreviewDevice: (device: 'desktop' | 'tablet' | 'mobile') => void
   setIsBelowMinWidth: (below: boolean) => void
   setChatInputFocused: (focused: boolean) => void
 }
@@ -28,9 +28,10 @@ export const useUiStore = create<UiState & UiActions>()(
       ...initialState,
 
       togglePreviewDevice: () => {
-        set((state) => ({
-          previewDevice: state.previewDevice === 'desktop' ? 'mobile' : 'desktop',
-        }))
+        set((state) => {
+          const cycle = { desktop: 'tablet', tablet: 'mobile', mobile: 'desktop' } as const
+          return { previewDevice: cycle[state.previewDevice] }
+        })
       },
 
       setPreviewDevice: (device) => {
@@ -52,4 +53,6 @@ export const useUiStore = create<UiState & UiActions>()(
 export const selectPreviewDevice = (state: UiState & UiActions) => state.previewDevice
 export const selectIsMobilePreview = (state: UiState & UiActions) =>
   state.previewDevice === 'mobile'
+export const selectIsTabletPreview = (state: UiState & UiActions) =>
+  state.previewDevice === 'tablet'
 export const selectIsBelowMinWidth = (state: UiState & UiActions) => state.isBelowMinWidth

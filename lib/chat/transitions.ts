@@ -179,6 +179,20 @@ export const builderEnterRightReduced: MotionVariantSet = {
   transition: INSTANT,
 }
 
+// --- Preview Slide In: slides from right edge, 500ms easeOut ---
+
+export const previewSlideIn: MotionVariantSet = {
+  initial: { opacity: 0, x: '100%' },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 0.5, ease: 'easeOut' },
+}
+
+export const previewSlideInReduced: MotionVariantSet = {
+  initial: opacityOnly(0),
+  animate: opacityOnly(1),
+  transition: INSTANT,
+}
+
 // --- Variant names for programmatic access ---
 
 const variants = {
@@ -191,6 +205,7 @@ const variants = {
   landingExit: { standard: landingExit, reduced: landingExitReduced },
   landingToBuilder: { standard: landingToBuilder, reduced: landingToBuilderReduced },
   previewPulse: { standard: previewPulse, reduced: previewPulseReduced },
+  previewSlideIn: { standard: previewSlideIn, reduced: previewSlideInReduced },
   publishCard: { standard: publishCard, reduced: publishCardReduced },
   undoCrossfade: { standard: undoCrossfade, reduced: undoCrossfadeReduced },
 } as const
