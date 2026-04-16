@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { isFileInArray } from '@/lib/utils'
 import { ArrowRight, Paperclip, Square, X } from 'lucide-react'
+import { motion } from 'motion/react'
 import { type SetStateAction, useEffect, useMemo, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import Logo from './logo'
@@ -134,7 +135,12 @@ export function LandingHero({
   return (
     <div className="flex flex-col items-center justify-center flex-1 px-4 pb-16">
       {/* Hero heading */}
-      <div className="text-center max-w-3xl mb-6">
+      <motion.div
+        className="text-center max-w-3xl mb-6"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+      >
         <h2 className="font-display font-bold text-4xl md:text-6xl tracking-tight text-foreground leading-[1.1] mb-6">
           Direct Booking Websites for the AI Era
         </h2>
@@ -143,10 +149,15 @@ export function LandingHero({
           creates stunning websites for hotels and vacation rentals, integrates booking engines and
           makes them discoverable by Google and ChatGPT.
         </p>
-      </div>
+      </motion.div>
 
       {/* Prompt section */}
-      <div className="w-full max-w-2xl mt-8">
+      <motion.div
+        className="w-full max-w-2xl mt-8"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.15, ease: 'easeOut' }}
+      >
         <div className="flex items-center gap-2 mb-3">
           <div className="w-2 h-2 rounded-full bg-primary" />
           <span className="font-semibold text-sm text-foreground">
@@ -280,10 +291,15 @@ export function LandingHero({
             </div>
           </div>
         </form>
-      </div>
+      </motion.div>
 
       {/* Powered by logos */}
-      <div className="flex flex-col items-center mt-10 gap-4">
+      <motion.div
+        className="flex flex-col items-center mt-10 gap-4"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.3, ease: 'easeOut' }}
+      >
         <span className="text-body-sm text-muted-foreground uppercase tracking-widest font-medium">
           Powered by
         </span>
@@ -334,7 +350,7 @@ export function LandingHero({
             <span className="font-bold text-base text-[#ff8800]">E2B</span>
           </a>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
