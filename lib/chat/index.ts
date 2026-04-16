@@ -4,6 +4,8 @@ export const CHAT_SUBSYSTEM = 'chat' as const
 
 export type {} from './types'
 
+export { useTypewriter } from './use-typewriter'
+
 export {
   authModal,
   authModalReduced,

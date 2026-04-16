@@ -1,12 +1,17 @@
 import { useReducedMotion } from '@/components/motion-provider'
-import { getVariant } from '@/lib/chat'
+import { getVariant, useTypewriter } from '@/lib/chat'
 import type { Message } from '@/lib/messages'
 import type { FragmentSchema } from '@/lib/schema'
 import type { ExecutionResult } from '@/lib/types'
 import type { DeepPartial } from 'ai'
 import { LoaderIcon, Terminal } from 'lucide-react'
 import { motion } from 'motion/react'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+
+function TypewriterText({ text, enabled }: { text: string; enabled: boolean }) {
+  const revealed = useTypewriter(text, enabled)
+  return <>{revealed}</>
+}
 
 export function Chat({
   messages,
@@ -22,6 +27,10 @@ export function Chat({
 }) {
   const prefersReducedMotion = useReducedMotion()
   const messageVariant = getVariant('chatMessage', prefersReducedMotion)
+  const lastAssistantIndex = useMemo(
+    () => messages.findLastIndex((m) => m.role === 'assistant'),
+    [messages],
+  )
 
   useEffect(() => {
     const chatContainer = document.getElementById('chat-container')
@@ -42,7 +51,14 @@ export function Chat({
         >
           {message.content.map((content, id) => {
             if (content.type === 'text') {
-              return content.text
+              const isLatestAssistant = message.role === 'assistant' && index === lastAssistantIndex
+              return (
+                <TypewriterText
+                  key={id}
+                  text={content.text}
+                  enabled={isLatestAssistant && !prefersReducedMotion}
+                />
+              )
             }
             if (content.type === 'image') {
               return (
