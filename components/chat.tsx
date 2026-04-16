@@ -1,8 +1,11 @@
+import { useReducedMotion } from '@/components/motion-provider'
+import { getVariant } from '@/lib/chat'
 import type { Message } from '@/lib/messages'
 import type { FragmentSchema } from '@/lib/schema'
 import type { ExecutionResult } from '@/lib/types'
 import type { DeepPartial } from 'ai'
 import { LoaderIcon, Terminal } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useEffect } from 'react'
 
 export function Chat({
@@ -17,6 +20,9 @@ export function Chat({
     result: ExecutionResult | undefined
   }) => void
 }) {
+  const prefersReducedMotion = useReducedMotion()
+  const messageVariant = getVariant('chatMessage', prefersReducedMotion)
+
   useEffect(() => {
     const chatContainer = document.getElementById('chat-container')
     if (chatContainer) {
@@ -27,9 +33,12 @@ export function Chat({
   return (
     <div id="chat-container" className="flex flex-col pb-12 gap-2 overflow-y-auto max-h-full">
       {messages.map((message: Message, index: number) => (
-        <div
+        <motion.div
           className={`flex flex-col px-4 shadow-sm whitespace-pre-wrap text-body ${message.role !== 'user' ? 'text-foreground py-4 gap-4 w-full md:pl-10' : 'bg-primary/10 dark:bg-primary/20 py-2 rounded-xl gap-2 w-fit'} font-sans`}
           key={index}
+          initial={messageVariant.initial}
+          animate={messageVariant.animate}
+          transition={messageVariant.transition}
         >
           {message.content.map((content, id) => {
             if (content.type === 'text') {
@@ -69,7 +78,7 @@ export function Chat({
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
       ))}
       {isLoading && (
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
