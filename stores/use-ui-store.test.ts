@@ -20,7 +20,10 @@ describe('useUiStore', () => {
     expect(state.chatInputFocused).toBe(false)
   })
 
-  it('togglePreviewDevice flips between desktop and mobile', () => {
+  it('togglePreviewDevice cycles desktop → tablet → mobile → desktop', () => {
+    useUiStore.getState().togglePreviewDevice()
+    expect(useUiStore.getState().previewDevice).toBe('tablet')
+
     useUiStore.getState().togglePreviewDevice()
     expect(useUiStore.getState().previewDevice).toBe('mobile')
 
