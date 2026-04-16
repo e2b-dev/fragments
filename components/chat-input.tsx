@@ -6,7 +6,7 @@ import { isFileInArray } from '@/lib/utils'
 import { ArrowUp, Paperclip, Square, X } from 'lucide-react'
 import { type SetStateAction, useEffect, useMemo, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
-import { RepoBanner } from './repo-banner'
+import { ChatBanner } from './chat-banner'
 
 export function ChatInput({
   retry,
@@ -14,6 +14,7 @@ export function ChatInput({
   errorMessage,
   isLoading,
   isRateLimited,
+  onDismissError,
   stop,
   input,
   handleInputChange,
@@ -28,6 +29,7 @@ export function ChatInput({
   errorMessage: string
   isLoading: boolean
   isRateLimited: boolean
+  onDismissError: () => void
   stop: () => void
   input: string
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
@@ -146,28 +148,14 @@ export function ChatInput({
       onDragOver={isMultiModal ? handleDrag : undefined}
       onDrop={isMultiModal ? handleDrop : undefined}
     >
-      {isErrored && (
-        <div
-          className={`flex items-center p-1.5 text-sm font-medium mx-4 mb-10 rounded-xl ${
-            isRateLimited
-              ? 'bg-[var(--warning-bg)] text-[var(--warning)]'
-              : 'bg-[var(--error-bg)] text-[var(--error)]'
-          }`}
-        >
-          <span className="flex-1 px-1.5">{errorMessage}</span>
-          <button
-            type="button"
-            className={`px-2 py-1 rounded-sm ${
-              isRateLimited ? 'bg-[var(--warning-bg)]' : 'bg-[var(--error-bg)]'
-            }`}
-            onClick={retry}
-          >
-            Try again
-          </button>
-        </div>
-      )}
       <div className="relative">
-        <RepoBanner className="absolute bottom-full inset-x-2 translate-y-1 z-0 pb-2" />
+        <ChatBanner
+          message={errorMessage}
+          variant={isRateLimited ? 'warning' : 'error'}
+          visible={isErrored}
+          onDismiss={onDismissError}
+          className="absolute bottom-full inset-x-2 translate-y-1 z-0"
+        />
         <div
           className={`shadow-md rounded-2xl relative z-10 bg-[var(--surface)] border border-border ${
             dragActive

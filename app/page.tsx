@@ -41,6 +41,7 @@ function Home() {
   const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [errorDismissed, setErrorDismissed] = useState(false)
   const [session, setSession] = useState<SessionInfo | null>(null)
   const [showAuthGate, setShowAuthGate] = useState(false)
   const [pendingAutoSubmit, setPendingAutoSubmit] = useState(false)
@@ -114,11 +115,13 @@ function Home() {
       }
 
       setErrorMessage(error.message)
+      setErrorDismissed(false)
     },
     onFinish: async ({ object: fragment, error }) => {
       if (error) {
         console.error('Fragment generation failed:', error)
         setErrorMessage(error.message || 'Failed to generate fragment')
+        setErrorDismissed(false)
         return
       }
 
@@ -140,6 +143,7 @@ function Home() {
       if (!response.ok) {
         console.error('Sandbox request failed:', response.status)
         setErrorMessage('Failed to create sandbox preview')
+        setErrorDismissed(false)
         setIsPreviewLoading(false)
         return
       }
@@ -396,10 +400,11 @@ function Home() {
               />
               <ChatInput
                 retry={retry}
-                isErrored={error !== undefined || !!errorMessage}
+                isErrored={!errorDismissed && (error !== undefined || !!errorMessage)}
                 errorMessage={errorMessage}
                 isLoading={isLoading}
                 isRateLimited={isRateLimited}
+                onDismissError={() => setErrorDismissed(true)}
                 stop={stop}
                 input={chatInput}
                 handleInputChange={handleSaveInputChange}

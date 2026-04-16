@@ -10,6 +10,8 @@ export {
   authModal,
   authModalReduced,
   builderEnterLeft,
+  chatBanner,
+  chatBannerReduced,
   builderEnterLeftReduced,
   builderEnterRight,
   builderEnterRightReduced,

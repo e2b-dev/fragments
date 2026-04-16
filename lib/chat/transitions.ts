@@ -93,6 +93,22 @@ export const publishCardReduced: MotionVariantSet = {
   transition: INSTANT,
 }
 
+// --- Chat Banner: slide up from below input, 250ms spring ---
+
+export const chatBanner: MotionVariantSet = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 8 },
+  transition: { type: 'spring', duration: 0.25, bounce: 0.15 },
+}
+
+export const chatBannerReduced: MotionVariantSet = {
+  initial: opacityOnly(0),
+  animate: opacityOnly(1),
+  exit: opacityOnly(0),
+  transition: INSTANT,
+}
+
 // --- Chat Message: slide up + fade in, 150ms ---
 
 export const chatMessage: MotionVariantSet = {
@@ -168,6 +184,7 @@ export const builderEnterRightReduced: MotionVariantSet = {
 const variants = {
   authModal: { standard: authModal, reduced: authModalReduced },
   builderEnterLeft: { standard: builderEnterLeft, reduced: builderEnterLeftReduced },
+  chatBanner: { standard: chatBanner, reduced: chatBannerReduced },
   builderEnterRight: { standard: builderEnterRight, reduced: builderEnterRightReduced },
   chatMessage: { standard: chatMessage, reduced: chatMessageReduced },
   errorDim: { standard: errorDim, reduced: errorDimReduced },

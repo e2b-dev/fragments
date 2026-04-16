@@ -8,7 +8,6 @@ import { motion } from 'motion/react'
 import { type SetStateAction, useEffect, useMemo, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import Logo from './logo'
-import { RepoBanner } from './repo-banner'
 
 export function LandingHero({
   input,
@@ -195,7 +194,6 @@ export function LandingHero({
             </div>
           )}
           <div className="relative">
-            <RepoBanner className="absolute bottom-full inset-x-2 translate-y-1 z-0 pb-2" />
             <div
               className={`shadow-md rounded-2xl relative z-10 bg-background border ${
                 dragActive
