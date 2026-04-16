@@ -43,3 +43,6 @@ next-env.d.ts
 .idea/
 _bmad/
 _edible-output/
+
+# superpowers docs
+docs/superpowers/
