@@ -1,10 +1,12 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useSandboxStore } from '@/stores/use-sandbox-store'
 import { useUiStore } from '@/stores/use-ui-store'
-import { RefreshCw } from 'lucide-react'
+import { ChevronsRight, RefreshCw } from 'lucide-react'
 import Image from 'next/image'
+import { useState } from 'react'
 import { CodeShimmer } from './code-shimmer'
 import { DeviceToggle } from './device-toggle'
 
@@ -23,13 +25,38 @@ export function PreviewPane({ streamingCode }: PreviewPaneProps) {
   const bootStatus = useSandboxStore((s) => s.boot.status)
   const bootSandbox = useSandboxStore((s) => s.bootSandbox)
   const previewDevice = useUiStore((s) => s.previewDevice)
+  const [collapsed, setCollapsed] = useState(false)
 
   const isBooting = bootStatus === 'loading'
   const isExpired = bootStatus === 'error' && !previewUrl
 
+  if (collapsed) {
+    return null
+  }
+
   return (
-    <div className="flex h-full flex-col bg-[var(--preview-bg)]">
-      <DeviceToggle />
+    <div className="flex h-full flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y border-[var(--preview-frame)] bg-[var(--preview-bg)] overflow-hidden">
+      <div className="grid grid-cols-3 items-center w-full px-2 py-1.5 border-b border-[var(--preview-frame)]">
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground h-7 w-7"
+                onClick={() => setCollapsed(true)}
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Close preview</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <div className="flex justify-center">
+          <DeviceToggle />
+        </div>
+        <div />
+      </div>
       <div className="relative flex-1 min-h-0">
         {isBooting ? (
           <CodeShimmer code={streamingCode} />

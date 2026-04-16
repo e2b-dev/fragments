@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { AlertTriangle, ChevronRight, ExternalLink, LogOut } from 'lucide-react'
 import Image from 'next/image'
@@ -116,6 +117,14 @@ function AuthenticatedControls({ session }: { session: SessionInfo }) {
             </Button>
           </TooltipTrigger>
           <TooltipContent>Publishing coming soon</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
+            <ThemeToggle />
+          </TooltipTrigger>
+          <TooltipContent>Toggle theme</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <ProfileDropdown session={session} />

@@ -17,9 +17,10 @@ import modelsList from '@/lib/models.json'
 import { type FragmentSchema, fragmentSchema as schema } from '@/lib/schema'
 import templates from '@/lib/templates'
 import type { ExecutionResult } from '@/lib/types'
+import { useSandboxStore } from '@/stores/use-sandbox-store'
 import type { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
-import { AnimatePresence, LayoutGroup, motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useSearchParams } from 'next/navigation'
 import { usePostHog } from 'posthog-js/react'
 import { type SetStateAction, Suspense, useEffect, useRef, useState } from 'react'
@@ -38,7 +39,8 @@ function Home() {
   const [result, setResult] = useState<ExecutionResult>()
   const [messages, setMessages] = useState<Message[]>([])
   const [fragment, setFragment] = useState<DeepPartial<FragmentSchema>>()
-  const [_isPreviewLoading, setIsPreviewLoading] = useState(false)
+  const [currentTab, setCurrentTab] = useState<'code' | 'fragment'>('code')
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [isRateLimited, setIsRateLimited] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [errorDismissed, setErrorDismissed] = useState(false)
@@ -128,6 +130,7 @@ function Home() {
       // send it to /api/sandbox
       console.log('fragment', fragment)
       setIsPreviewLoading(true)
+      useSandboxStore.getState().bootSandbox({ type: 'template' })
       posthog.capture('fragment_generated', {
         template: fragment?.template,
       })
@@ -155,7 +158,13 @@ function Home() {
       setResult(sandboxResult)
       setCurrentPreview({ fragment, result: sandboxResult })
       setMessage({ result: sandboxResult })
+      setCurrentTab('fragment')
       setIsPreviewLoading(false)
+
+      // Bridge: update sandbox store so PreviewPane shows the iframe
+      if (sandboxResult.url && sandboxResult.sbxId) {
+        useSandboxStore.getState().setSandboxReady(sandboxResult.sbxId, sandboxResult.url)
+      }
     },
   })
 
@@ -238,6 +247,7 @@ function Home() {
 
     setChatInput('')
     setFiles([])
+    setCurrentTab('code')
 
     posthog.capture('chat_submit', {
       template: selectedTemplate,
@@ -250,33 +260,12 @@ function Home() {
   const handleSubmitRef = useRef(handleSubmitAuth)
   handleSubmitRef.current = handleSubmitAuth
 
-  const isLanding = messages.length === 0 && !isLoading
-
   useEffect(() => {
     if (pendingAutoSubmit && chatInput) {
       setPendingAutoSubmit(false)
       handleSubmitRef.current({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>)
     }
   }, [pendingAutoSubmit, chatInput])
-
-  useEffect(() => {
-    if (isLanding) return
-
-    const dashboardUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? '/'
-
-    // Replace history entry so back button goes to Onseason dashboard
-    window.history.replaceState(null, '', window.location.pathname)
-
-    function handlePopState() {
-      window.location.href = dashboardUrl
-    }
-
-    // Push a dummy entry so we can intercept the back button
-    window.history.pushState(null, '', window.location.pathname)
-    window.addEventListener('popstate', handlePopState)
-
-    return () => window.removeEventListener('popstate', handlePopState)
-  }, [isLanding])
 
   function retry() {
     submit({
@@ -305,6 +294,17 @@ function Home() {
     setLanguageModel({ ...languageModel, ...e })
   }
 
+  function handleClearChat() {
+    stop()
+    setChatInput('')
+    setFiles([])
+    setMessages([])
+    setFragment(undefined)
+    setResult(undefined)
+    setCurrentTab('code')
+    setIsPreviewLoading(false)
+  }
+
   function setCurrentPreview(preview: {
     fragment: DeepPartial<FragmentSchema> | undefined
     result: ExecutionResult | undefined
@@ -313,37 +313,118 @@ function Home() {
     setResult(preview.result)
   }
 
+  function handleUndo() {
+    setMessages((previousMessages) => [...previousMessages.slice(0, -2)])
+    setCurrentPreview({ fragment: undefined, result: undefined })
+  }
+
+  const isLanding = messages.length === 0 && !isLoading
+
+  // SPA navigation: back button returns to Onseason dashboard
+  useEffect(() => {
+    if (isLanding) return
+
+    const dashboardUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? '/'
+    window.history.replaceState(null, '', window.location.pathname)
+
+    function handlePopState() {
+      window.location.href = dashboardUrl
+    }
+
+    window.history.pushState(null, '', window.location.pathname)
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [isLanding])
+
   const prefersReducedMotion = useReducedMotion()
-  const previewSlideVariant = getVariant('previewSlideIn', prefersReducedMotion)
+  const landingExitVariant = getVariant('landingExit', prefersReducedMotion)
+  const builderLeftVariant = getVariant('builderEnterLeft', prefersReducedMotion)
+  const builderRightVariant = getVariant('builderEnterRight', prefersReducedMotion)
 
   return (
     <DesktopGate>
       <main className="flex min-h-screen max-h-screen">
-        <LayoutGroup>
+        <AnimatePresence mode="wait">
           {isLanding ? (
             /* -- Landing page layout -- */
-            <div className="flex flex-col w-full max-h-full overflow-auto">
+            <motion.div
+              key="landing"
+              className="flex flex-col w-full max-h-full overflow-auto"
+              initial={landingExitVariant.initial}
+              animate={landingExitVariant.animate}
+              exit={landingExitVariant.exit}
+              transition={landingExitVariant.transition}
+            >
+              <div className="max-w-[900px] w-full mx-auto px-4">
+                <NavBar session={session} />
+              </div>
+              <LandingHero
+                input={chatInput}
+                onInputChange={handleSaveInputChange}
+                onSubmit={handleSubmitAuth}
+                isLoading={isLoading}
+                stop={stop}
+                isMultiModal={currentModel?.multiModal || false}
+                files={files}
+                handleFileChange={handleFileChange}
+                isErrored={error !== undefined || !!errorMessage}
+                errorMessage={errorMessage}
+                isRateLimited={isRateLimited}
+                retry={retry}
+              >
+                <ChatPicker
+                  templates={templates}
+                  selectedTemplate={selectedTemplate}
+                  onSelectedTemplateChange={setSelectedTemplate}
+                  models={filteredModels}
+                  languageModel={languageModel}
+                  onLanguageModelChange={handleLanguageModelChange}
+                />
+                <ChatSettings
+                  languageModel={languageModel}
+                  onLanguageModelChange={handleLanguageModelChange}
+                  apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
+                  baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
+                  useMorphApply={useMorphApply}
+                  onUseMorphApplyChange={setUseMorphApply}
+                />
+              </LandingHero>
+            </motion.div>
+          ) : (
+            /* -- Chat + Preview split layout -- */
+            <motion.div
+              key="builder"
+              className="grid w-full md:grid-cols-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.1 }}
+            >
               <motion.div
-                layoutId="navbar"
-                className="max-w-[900px] w-full mx-auto px-4"
-                transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: 'easeOut' }}
+                className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
+                initial={builderLeftVariant.initial}
+                animate={builderLeftVariant.animate}
+                transition={builderLeftVariant.transition}
               >
                 <NavBar session={session} />
-              </motion.div>
-              <AnimatePresence>
-                <LandingHero
-                  input={chatInput}
-                  onInputChange={handleSaveInputChange}
-                  onSubmit={handleSubmitAuth}
+                <Chat
+                  messages={messages}
                   isLoading={isLoading}
+                  setCurrentPreview={setCurrentPreview}
+                />
+                <ChatInput
+                  retry={retry}
+                  isErrored={!errorDismissed && (error !== undefined || !!errorMessage)}
+                  errorMessage={errorMessage}
+                  isLoading={isLoading}
+                  isRateLimited={isRateLimited}
+                  onDismissError={() => setErrorDismissed(true)}
                   stop={stop}
+                  input={chatInput}
+                  handleInputChange={handleSaveInputChange}
+                  handleSubmit={handleSubmitAuth}
                   isMultiModal={currentModel?.multiModal || false}
                   files={files}
                   handleFileChange={handleFileChange}
-                  isErrored={error !== undefined || !!errorMessage}
-                  errorMessage={errorMessage}
-                  isRateLimited={isRateLimited}
-                  retry={retry}
                 >
                   <ChatPicker
                     templates={templates}
@@ -361,73 +442,18 @@ function Home() {
                     useMorphApply={useMorphApply}
                     onUseMorphApplyChange={setUseMorphApply}
                   />
-                </LandingHero>
-              </AnimatePresence>
-            </div>
-          ) : (
-            /* -- Chat + Preview flex split layout -- */
-            <div className="flex w-full h-full">
-              <div className="flex flex-col w-[400px] shrink-0 max-h-screen overflow-hidden">
-                <motion.div
-                  layoutId="navbar"
-                  transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: 'easeOut' }}
-                >
-                  <NavBar session={session} />
-                </motion.div>
-                <Chat
-                  messages={messages}
-                  isLoading={isLoading}
-                  setCurrentPreview={setCurrentPreview}
-                />
-                <motion.div
-                  layoutId="prompt-input"
-                  transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: 'easeOut' }}
-                >
-                  <ChatInput
-                    retry={retry}
-                    isErrored={!errorDismissed && (error !== undefined || !!errorMessage)}
-                    errorMessage={errorMessage}
-                    isLoading={isLoading}
-                    isRateLimited={isRateLimited}
-                    onDismissError={() => setErrorDismissed(true)}
-                    stop={stop}
-                    input={chatInput}
-                    handleInputChange={handleSaveInputChange}
-                    handleSubmit={handleSubmitAuth}
-                    isMultiModal={currentModel?.multiModal || false}
-                    files={files}
-                    handleFileChange={handleFileChange}
-                  >
-                    <ChatPicker
-                      templates={templates}
-                      selectedTemplate={selectedTemplate}
-                      onSelectedTemplateChange={setSelectedTemplate}
-                      models={filteredModels}
-                      languageModel={languageModel}
-                      onLanguageModelChange={handleLanguageModelChange}
-                    />
-                    <ChatSettings
-                      languageModel={languageModel}
-                      onLanguageModelChange={handleLanguageModelChange}
-                      apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
-                      baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
-                      useMorphApply={useMorphApply}
-                      onUseMorphApplyChange={setUseMorphApply}
-                    />
-                  </ChatInput>
-                </motion.div>
-              </div>
+                </ChatInput>
+              </motion.div>
               <motion.div
-                className="flex-1 min-w-0"
-                initial={previewSlideVariant.initial}
-                animate={previewSlideVariant.animate}
-                transition={previewSlideVariant.transition}
+                initial={builderRightVariant.initial}
+                animate={builderRightVariant.animate}
+                transition={builderRightVariant.transition}
               >
                 <PreviewPane />
               </motion.div>
-            </div>
+            </motion.div>
           )}
-        </LayoutGroup>
+        </AnimatePresence>
 
         <AnimatePresence>
           {showAuthGate && (

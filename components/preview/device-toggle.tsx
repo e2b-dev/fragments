@@ -16,7 +16,7 @@ export function DeviceToggle() {
   const setPreviewDevice = useUiStore((s) => s.setPreviewDevice)
 
   return (
-    <div className="flex items-center gap-1 px-3 py-1.5 border-b border-[var(--preview-frame)]">
+    <div className="flex items-center gap-1">
       {devices.map(({ id, icon: Icon, label }) => (
         <TooltipProvider key={id}>
           <Tooltip delayDuration={0}>
