@@ -60,6 +60,9 @@ export const envSchema = z.object({
       .default('24h'),
   ),
 
+  // Neon Postgres — shared builder database
+  DATABASE_URL: emptyToUndefined(z.string().min(1).optional()),
+
   // Logging
   LOG_LEVEL: emptyToUndefined(z.enum(['debug', 'info', 'warn', 'error']).optional()),
 
