@@ -5,9 +5,11 @@ import { ChatInput } from '@/components/chat-input'
 import { ChatPicker } from '@/components/chat-picker'
 import { ChatSettings } from '@/components/chat-settings'
 import { LandingHero } from '@/components/landing-hero'
+import { useReducedMotion } from '@/components/motion-provider'
 import { NavBar, type SessionInfo } from '@/components/navbar'
 import { Preview } from '@/components/preview'
 import { PromptGateOverlay } from '@/components/prompt-gate-overlay'
+import { getVariant } from '@/lib/chat'
 import { type Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import type { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
@@ -16,7 +18,7 @@ import templates from '@/lib/templates'
 import type { ExecutionResult } from '@/lib/types'
 import type { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
-import { AnimatePresence } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useSearchParams } from 'next/navigation'
 import { usePostHog } from 'posthog-js/react'
 import { type SetStateAction, Suspense, useEffect, useRef, useState } from 'react'
@@ -306,79 +308,46 @@ function Home() {
 
   const isLanding = messages.length === 0 && !isLoading
 
+  const prefersReducedMotion = useReducedMotion()
+  const landingExitVariant = getVariant('landingExit', prefersReducedMotion)
+  const builderLeftVariant = getVariant('builderEnterLeft', prefersReducedMotion)
+  const builderRightVariant = getVariant('builderEnterRight', prefersReducedMotion)
+
   return (
     <main className="flex min-h-screen max-h-screen">
-      {isLanding ? (
-        /* -- Landing page layout -- */
-        <div className="flex flex-col w-full max-h-full overflow-auto">
-          <div className="max-w-[900px] w-full mx-auto px-4">
-            <NavBar
-              session={session}
-              onClear={handleClearChat}
-              canClear={false}
-              canUndo={false}
-              onUndo={handleUndo}
-            />
-          </div>
-          <LandingHero
-            input={chatInput}
-            onInputChange={handleSaveInputChange}
-            onSubmit={handleSubmitAuth}
-            isLoading={isLoading}
-            stop={stop}
-            isMultiModal={currentModel?.multiModal || false}
-            files={files}
-            handleFileChange={handleFileChange}
-            isErrored={error !== undefined || !!errorMessage}
-            errorMessage={errorMessage}
-            isRateLimited={isRateLimited}
-            retry={retry}
+      <AnimatePresence mode="wait">
+        {isLanding ? (
+          /* -- Landing page layout -- */
+          <motion.div
+            key="landing"
+            className="flex flex-col w-full max-h-full overflow-auto"
+            initial={landingExitVariant.initial}
+            animate={landingExitVariant.animate}
+            exit={landingExitVariant.exit}
+            transition={landingExitVariant.transition}
           >
-            <ChatPicker
-              templates={templates}
-              selectedTemplate={selectedTemplate}
-              onSelectedTemplateChange={setSelectedTemplate}
-              models={filteredModels}
-              languageModel={languageModel}
-              onLanguageModelChange={handleLanguageModelChange}
-            />
-            <ChatSettings
-              languageModel={languageModel}
-              onLanguageModelChange={handleLanguageModelChange}
-              apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
-              baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
-              useMorphApply={useMorphApply}
-              onUseMorphApplyChange={setUseMorphApply}
-            />
-          </LandingHero>
-        </div>
-      ) : (
-        /* -- Chat + Preview split layout -- */
-        <div className="grid w-full md:grid-cols-2">
-          <div
-            className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
-          >
-            <NavBar
-              session={session}
-              onClear={handleClearChat}
-              canClear={messages.length > 0}
-              canUndo={messages.length > 1 && !isLoading}
-              onUndo={handleUndo}
-            />
-            <Chat messages={messages} isLoading={isLoading} setCurrentPreview={setCurrentPreview} />
-            <ChatInput
-              retry={retry}
-              isErrored={error !== undefined || !!errorMessage}
-              errorMessage={errorMessage}
-              isLoading={isLoading}
-              isRateLimited={isRateLimited}
-              stop={stop}
+            <div className="max-w-[900px] w-full mx-auto px-4">
+              <NavBar
+                session={session}
+                onClear={handleClearChat}
+                canClear={false}
+                canUndo={false}
+                onUndo={handleUndo}
+              />
+            </div>
+            <LandingHero
               input={chatInput}
-              handleInputChange={handleSaveInputChange}
-              handleSubmit={handleSubmitAuth}
+              onInputChange={handleSaveInputChange}
+              onSubmit={handleSubmitAuth}
+              isLoading={isLoading}
+              stop={stop}
               isMultiModal={currentModel?.multiModal || false}
               files={files}
               handleFileChange={handleFileChange}
+              isErrored={error !== undefined || !!errorMessage}
+              errorMessage={errorMessage}
+              isRateLimited={isRateLimited}
+              retry={retry}
             >
               <ChatPicker
                 templates={templates}
@@ -396,19 +365,85 @@ function Home() {
                 useMorphApply={useMorphApply}
                 onUseMorphApplyChange={setUseMorphApply}
               />
-            </ChatInput>
-          </div>
-          <Preview
-            selectedTab={currentTab}
-            onSelectedTabChange={setCurrentTab}
-            isChatLoading={isLoading}
-            isPreviewLoading={isPreviewLoading}
-            fragment={fragment}
-            result={result as ExecutionResult}
-            onClose={() => setFragment(undefined)}
-          />
-        </div>
-      )}
+            </LandingHero>
+          </motion.div>
+        ) : (
+          /* -- Chat + Preview split layout -- */
+          <motion.div
+            key="builder"
+            className="grid w-full md:grid-cols-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.1 }}
+          >
+            <motion.div
+              className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
+              initial={builderLeftVariant.initial}
+              animate={builderLeftVariant.animate}
+              transition={builderLeftVariant.transition}
+            >
+              <NavBar
+                session={session}
+                onClear={handleClearChat}
+                canClear={messages.length > 0}
+                canUndo={messages.length > 1 && !isLoading}
+                onUndo={handleUndo}
+              />
+              <Chat
+                messages={messages}
+                isLoading={isLoading}
+                setCurrentPreview={setCurrentPreview}
+              />
+              <ChatInput
+                retry={retry}
+                isErrored={error !== undefined || !!errorMessage}
+                errorMessage={errorMessage}
+                isLoading={isLoading}
+                isRateLimited={isRateLimited}
+                stop={stop}
+                input={chatInput}
+                handleInputChange={handleSaveInputChange}
+                handleSubmit={handleSubmitAuth}
+                isMultiModal={currentModel?.multiModal || false}
+                files={files}
+                handleFileChange={handleFileChange}
+              >
+                <ChatPicker
+                  templates={templates}
+                  selectedTemplate={selectedTemplate}
+                  onSelectedTemplateChange={setSelectedTemplate}
+                  models={filteredModels}
+                  languageModel={languageModel}
+                  onLanguageModelChange={handleLanguageModelChange}
+                />
+                <ChatSettings
+                  languageModel={languageModel}
+                  onLanguageModelChange={handleLanguageModelChange}
+                  apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
+                  baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
+                  useMorphApply={useMorphApply}
+                  onUseMorphApplyChange={setUseMorphApply}
+                />
+              </ChatInput>
+            </motion.div>
+            <motion.div
+              initial={builderRightVariant.initial}
+              animate={builderRightVariant.animate}
+              transition={builderRightVariant.transition}
+            >
+              <Preview
+                selectedTab={currentTab}
+                onSelectedTabChange={setCurrentTab}
+                isChatLoading={isLoading}
+                isPreviewLoading={isPreviewLoading}
+                fragment={fragment}
+                result={result as ExecutionResult}
+                onClose={() => setFragment(undefined)}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showAuthGate && (
