@@ -29,7 +29,7 @@ function Home() {
   const [files, setFiles] = useState<File[]>([])
   const [selectedTemplate, setSelectedTemplate] = useState<string>('auto')
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>('languageModel', {
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4.6',
   })
 
   const posthog = usePostHog()
@@ -86,7 +86,7 @@ function Home() {
   })
 
   const defaultModel =
-    filteredModels.find((model) => model.id === 'claude-sonnet-4-20250514') || filteredModels[0]
+    filteredModels.find((model) => model.id === 'claude-sonnet-4.6') || filteredModels[0]
 
   const currentModel =
     filteredModels.find((model) => model.id === languageModel.model) || defaultModel
@@ -331,13 +331,7 @@ function Home() {
             transition={landingExitVariant.transition}
           >
             <div className="max-w-[900px] w-full mx-auto px-4">
-              <NavBar
-                session={session}
-                onClear={handleClearChat}
-                canClear={false}
-                canUndo={false}
-                onUndo={handleUndo}
-              />
+              <NavBar session={session} />
             </div>
             <LandingHero
               input={chatInput}
@@ -386,13 +380,7 @@ function Home() {
               animate={builderLeftVariant.animate}
               transition={builderLeftVariant.transition}
             >
-              <NavBar
-                session={session}
-                onClear={handleClearChat}
-                canClear={messages.length > 0}
-                canUndo={messages.length > 1 && !isLoading}
-                onUndo={handleUndo}
-              />
+              <NavBar session={session} />
               <Chat
                 messages={messages}
                 isLoading={isLoading}

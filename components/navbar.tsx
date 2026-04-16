@@ -10,9 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { AlertTriangle, ChevronRight, ExternalLink, LogOut, Trash, Undo } from 'lucide-react'
+import { AlertTriangle, ChevronRight, ExternalLink, LogOut } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useState } from 'react'
@@ -58,19 +57,7 @@ function getSignInUrl(): string {
   return `${baseUrl}/api/sso/authorize?client_id=${clientId}&returnTo=/`
 }
 
-export function NavBar({
-  session,
-  onClear,
-  canClear,
-  onUndo,
-  canUndo,
-}: {
-  session: SessionInfo | null
-  onClear: () => void
-  canClear: boolean
-  onUndo: () => void
-  canUndo: boolean
-}) {
+export function NavBar({ session }: { session: SessionInfo | null }) {
   return (
     <nav className="w-full flex bg-background py-4">
       <div className="flex flex-1 items-center">
@@ -103,17 +90,7 @@ export function NavBar({
         </div>
       )}
 
-      {session ? (
-        <AuthenticatedControls
-          session={session}
-          onClear={onClear}
-          canClear={canClear}
-          onUndo={onUndo}
-          canUndo={canUndo}
-        />
-      ) : (
-        <UnauthenticatedControls />
-      )}
+      {session ? <AuthenticatedControls session={session} /> : <UnauthenticatedControls />}
     </nav>
   )
 }
@@ -128,47 +105,17 @@ function UnauthenticatedControls() {
   )
 }
 
-function AuthenticatedControls({
-  session,
-  onClear,
-  canClear,
-  onUndo,
-  canUndo,
-}: {
-  session: SessionInfo
-  onClear: () => void
-  canClear: boolean
-  onUndo: () => void
-  canUndo: boolean
-}) {
+function AuthenticatedControls({ session }: { session: SessionInfo }) {
   return (
-    <div className="flex items-center gap-1 md:gap-4">
+    <div className="flex items-center gap-2">
       <TooltipProvider>
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
-            <Button variant="secondary" size="icon" onClick={onUndo} disabled={!canUndo}>
-              <Undo className="h-4 w-4 md:h-5 md:w-5" />
+            <Button variant="secondary" size="sm" disabled>
+              Publish
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Undo</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <TooltipProvider>
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={onClear} disabled={!canClear}>
-              <Trash className="h-4 w-4 md:h-5 md:w-5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Clear chat</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <TooltipProvider>
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
-            <ThemeToggle />
-          </TooltipTrigger>
-          <TooltipContent>Toggle theme</TooltipContent>
+          <TooltipContent>Publishing coming soon</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <ProfileDropdown session={session} />
