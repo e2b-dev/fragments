@@ -1,6 +1,6 @@
 /** Claims from Onseason's SSO JWT token (snake_case per JWT convention) */
 export interface SSOTokenPayload {
-  sub: string
+  sub: string // Authenticated user's ID
   workspace_id: string
   email: string
   name: string
