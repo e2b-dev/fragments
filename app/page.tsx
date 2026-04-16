@@ -18,7 +18,7 @@ import type { DeepPartial } from 'ai'
 import { experimental_useObject as useObject } from 'ai/react'
 import { useSearchParams } from 'next/navigation'
 import { usePostHog } from 'posthog-js/react'
-import { type SetStateAction, Suspense, useEffect, useState } from 'react'
+import { type SetStateAction, Suspense, useEffect, useRef, useState } from 'react'
 import { useLocalStorage } from 'usehooks-ts'
 
 function Home() {
@@ -40,6 +40,7 @@ function Home() {
   const [errorMessage, setErrorMessage] = useState('')
   const [session, setSession] = useState<SessionInfo | null>(null)
   const [showAuthGate, setShowAuthGate] = useState(false)
+  const [pendingAutoSubmit, setPendingAutoSubmit] = useState(false)
   const searchParams = useSearchParams()
 
   // Fetch session on mount for auth-aware UI
@@ -63,11 +64,7 @@ function Home() {
       if (savedPrompt) {
         sessionStorage.removeItem('flamingo_pending_prompt')
         setChatInput(savedPrompt)
-        // Auto-submit after a tick to let the input populate
-        setTimeout(() => {
-          const form = document.querySelector('form')
-          if (form) form.requestSubmit()
-        }, 100)
+        setPendingAutoSubmit(true)
       }
     }
   }, [searchParams, session, setChatInput])
@@ -131,6 +128,13 @@ function Home() {
             sbxId: result?.sbxId,
           }),
         })
+
+        if (!response.ok) {
+          console.error('Sandbox request failed:', response.status)
+          setErrorMessage('Failed to create sandbox preview')
+          setIsPreviewLoading(false)
+          return
+        }
 
         const sandboxResult = await response.json()
         console.log('result', sandboxResult)
@@ -231,6 +235,18 @@ function Home() {
       model: languageModel.model,
     })
   }
+
+  // Auto-submit when pending resume has populated the input.
+  // Ref avoids stale closure and keeps deps minimal.
+  const handleSubmitRef = useRef(handleSubmitAuth)
+  handleSubmitRef.current = handleSubmitAuth
+
+  useEffect(() => {
+    if (pendingAutoSubmit && chatInput) {
+      setPendingAutoSubmit(false)
+      handleSubmitRef.current({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>)
+    }
+  }, [pendingAutoSubmit, chatInput])
 
   function retry() {
     submit({

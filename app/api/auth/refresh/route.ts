@@ -1,9 +1,19 @@
+import { env } from '@/lib/env'
 import { AppError } from '@/lib/errors'
 import { logger } from '@/lib/logger'
-import { COOKIE_MAX_AGE, COOKIE_NAME, getSessionCookie, signJwt } from '@/lib/session'
+import { COOKIE_NAME, getSessionCookie, signJwt } from '@/lib/session'
 import type { PMSession } from '@/lib/session'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { z } from 'zod'
+
+/** Schema for Onseason /api/sso/refresh response */
+const refreshResponseSchema = z.object({
+  token: z.string(),
+  expires_in: z.number(),
+  subscription_status: z.enum(['active', 'inactive']),
+  mode: z.enum(['active', 'preview']),
+})
 
 /**
  * Token refresh endpoint.
@@ -20,23 +30,15 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
 
   const { session } = cookieData
-  const onseasonBaseUrl = process.env.ONSEASON_BASE_URL
-  if (!onseasonBaseUrl) {
-    logger.error('ONSEASON_BASE_URL is not configured')
-    return NextResponse.json(
-      { error: { code: 'CONFIG_INVALID', message: 'Server configuration error' } },
-      { status: 500 },
-    )
-  }
 
   try {
-    const refreshResponse = await fetch(`${onseasonBaseUrl}/api/sso/refresh`, {
+    const refreshResponse = await fetch(`${env.ONSEASON_BASE_URL}/api/sso/refresh`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ client_id: process.env.ONSEASON_SSO_CLIENT_ID ?? 'flamingo' }),
+      body: JSON.stringify({ client_id: env.ONSEASON_SSO_CLIENT_ID }),
     })
 
     if (!refreshResponse.ok) {
@@ -67,24 +69,24 @@ export async function POST(request: NextRequest): Promise<Response> {
       )
     }
 
-    const data = await refreshResponse.json()
+    const data = refreshResponseSchema.parse(await refreshResponse.json())
 
     // Update session with fresh data from Onseason
     const updatedSession: PMSession = {
       ...session,
-      subscriptionStatus: data.subscription_status ?? session.subscriptionStatus,
-      mode: data.mode ?? session.mode,
-      accessToken: data.token ?? session.accessToken,
+      subscriptionStatus: data.subscription_status,
+      mode: data.mode,
+      accessToken: data.token,
     }
 
-    const newToken = await signJwt(updatedSession, COOKIE_MAX_AGE)
+    const newToken = await signJwt(updatedSession, data.expires_in)
 
     const response = NextResponse.json({ data: { refreshed: true } })
     response.cookies.set(COOKIE_NAME, newToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: COOKIE_MAX_AGE,
+      maxAge: data.expires_in,
       path: '/',
     })
 

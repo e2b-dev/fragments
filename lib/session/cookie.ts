@@ -7,14 +7,18 @@ export const COOKIE_NAME = 'flamingo_session'
 export const COOKIE_MAX_AGE = 60 * 60 // 1 hour
 
 /** Set the session cookie on a response */
-export async function setSessionCookie(response: NextResponse, session: PMSession): Promise<void> {
-  const token = await signJwt(session, COOKIE_MAX_AGE)
+export async function setSessionCookie(
+  response: NextResponse,
+  session: PMSession,
+  maxAgeSeconds = COOKIE_MAX_AGE,
+): Promise<void> {
+  const token = await signJwt(session, maxAgeSeconds)
 
   response.cookies.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    maxAge: COOKIE_MAX_AGE,
+    maxAge: maxAgeSeconds,
     path: '/',
   })
 }

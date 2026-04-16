@@ -16,7 +16,10 @@ export async function GET(request: NextRequest) {
     )
 
     if (!response.ok) {
-      return NextResponse.json({ workspaces: [] })
+      return NextResponse.json(
+        { error: { code: 'UPSTREAM_ERROR', message: 'Failed to fetch workspaces' } },
+        { status: response.status >= 500 ? 502 : response.status },
+      )
     }
 
     const data = await response.json()

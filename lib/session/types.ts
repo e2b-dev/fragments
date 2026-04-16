@@ -37,6 +37,9 @@ export interface PMSession {
   accessToken: string
 }
 
+/** Session data safe for client-side exposure (excludes sensitive tokens) */
+export type PublicSession = Omit<PMSession, 'accessToken'>
+
 /** Result of session validation */
 export type AuthResult =
   | { authenticated: true; session: PMSession }

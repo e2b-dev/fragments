@@ -87,7 +87,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     const redirectUrl = new URL(returnTo, request.url)
     const response = NextResponse.redirect(redirectUrl)
-    await setSessionCookie(response, session)
+    await setSessionCookie(response, session, data.expires_in)
 
     logger.info('SSO login successful', { pmId: session.pmId })
     return response

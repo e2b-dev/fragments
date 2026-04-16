@@ -80,7 +80,7 @@ export function NavBar({
             alt="Staycy"
             width={100}
             height={14}
-            className="dark:hidden"
+            className="h-auto dark:hidden"
             priority
           />
           <Image
@@ -88,7 +88,7 @@ export function NavBar({
             alt="Staycy"
             width={100}
             height={14}
-            className="hidden dark:block"
+            className="h-auto hidden dark:block"
             priority
           />
         </Link>
@@ -194,7 +194,9 @@ function ProfileDropdown({ session }: { session: SessionInfo }) {
   }, [workspacesFetched, session.workspaceId])
 
   const handleSignOut = useCallback(() => {
-    window.location.href = '/api/auth/logout'
+    fetch('/api/auth/logout', { method: 'POST' }).then(() => {
+      window.location.href = '/'
+    })
   }, [])
 
   const handleOpenDashboard = useCallback(() => {

@@ -8,8 +8,9 @@ export interface APIError {
 }
 
 function getStatusCode(error: unknown): number | undefined {
-  if (typeof error === 'object' && error !== null && 'statusCode' in error) {
-    return (error as APIError).statusCode
+  if (typeof error === 'object' && error !== null) {
+    if ('httpStatus' in error) return (error as { httpStatus: number }).httpStatus
+    if ('statusCode' in error) return (error as APIError).statusCode
   }
   return undefined
 }

@@ -1,4 +1,5 @@
 import { getSession } from '@/lib/session'
+import type { PublicSession } from '@/lib/session'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -10,7 +11,10 @@ export async function GET(request: NextRequest) {
   }
 
   // Return session info for client-side use (exclude accessToken)
-  const { accessToken, ...publicSession } = result.session
+  const { accessToken: _, ...publicSession } = result.session
 
-  return NextResponse.json({ authenticated: true as const, session: publicSession })
+  return NextResponse.json({
+    authenticated: true as const,
+    session: publicSession satisfies PublicSession,
+  })
 }

@@ -1,16 +1,27 @@
+import { env } from '@/lib/env'
 import { logger } from '@/lib/logger'
 import { clearSessionCookie, getSessionCookie, setSessionCookie } from '@/lib/session'
 import type { PMSession } from '@/lib/session'
 import { kv } from '@vercel/kv'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { z } from 'zod'
 
 /** Public routes that do NOT require auth */
 const PUBLIC_ROUTES = [
   '/', // Landing page
   '/api/auth/callback', // SSO callback
   '/api/auth/logout', // Logout endpoint
+  '/api/auth/session', // Session check (used by landing page)
 ]
+
+/** Schema for Onseason /api/sso/refresh response */
+const refreshResponseSchema = z.object({
+  token: z.string(),
+  expires_in: z.number(),
+  subscription_status: z.enum(['active', 'inactive']),
+  mode: z.enum(['active', 'preview']),
+})
 
 /** Seconds remaining before we trigger a proactive refresh (30 min) */
 const REFRESH_THRESHOLD_SECONDS = 30 * 60
@@ -53,10 +64,8 @@ export async function proxy(request: NextRequest) {
       )
     }
     // Page routes redirect to Onseason SSO
-    const onseasonUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
-    const clientId = process.env.ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
-    const loginUrl = new URL(`${onseasonUrl}/api/sso/authorize`)
-    loginUrl.searchParams.set('client_id', clientId)
+    const loginUrl = new URL(`${env.NEXT_PUBLIC_ONSEASON_BASE_URL}/api/sso/authorize`)
+    loginUrl.searchParams.set('client_id', env.ONSEASON_SSO_CLIENT_ID)
     loginUrl.searchParams.set('returnTo', pathname)
     return NextResponse.redirect(loginUrl)
   }
@@ -66,8 +75,8 @@ export async function proxy(request: NextRequest) {
   const timeRemaining = cookieData.expiresAt - now
 
   if (timeRemaining < REFRESH_THRESHOLD_SECONDS) {
-    const refreshed = await refreshSession(cookieData.session)
-    if (!refreshed) {
+    const refreshResult = await refreshSession(cookieData.session)
+    if (!refreshResult) {
       // PM lost Onseason access — invalidate immediately
       logger.warn('Proactive refresh failed — clearing session', {
         pipeline: 'memory-retrieval',
@@ -83,10 +92,8 @@ export async function proxy(request: NextRequest) {
         return response
       }
 
-      const onseasonUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? ''
-      const clientId = process.env.ONSEASON_SSO_CLIENT_ID ?? 'flamingo'
-      const loginUrl = new URL(`${onseasonUrl}/api/sso/authorize`)
-      loginUrl.searchParams.set('client_id', clientId)
+      const loginUrl = new URL(`${env.NEXT_PUBLIC_ONSEASON_BASE_URL}/api/sso/authorize`)
+      loginUrl.searchParams.set('client_id', env.ONSEASON_SSO_CLIENT_ID)
       loginUrl.searchParams.set('returnTo', pathname)
       const response = NextResponse.redirect(loginUrl)
       clearSessionCookie(response)
@@ -95,7 +102,7 @@ export async function proxy(request: NextRequest) {
 
     // Re-sign cookie with fresh data and continue
     const response = NextResponse.next()
-    await setSessionCookie(response, refreshed)
+    await setSessionCookie(response, refreshResult.session, refreshResult.expiresIn)
     return response
   }
 
@@ -118,28 +125,30 @@ async function handleFragmentRedirect(req: NextRequest) {
 }
 
 /** Attempt to refresh the session via Onseason */
-async function refreshSession(session: PMSession): Promise<PMSession | null> {
-  const onseasonBaseUrl = process.env.ONSEASON_BASE_URL
-  if (!onseasonBaseUrl) return null
-
+async function refreshSession(
+  session: PMSession,
+): Promise<{ session: PMSession; expiresIn: number } | null> {
   try {
-    const response = await fetch(`${onseasonBaseUrl}/api/sso/refresh`, {
+    const response = await fetch(`${env.ONSEASON_BASE_URL}/api/sso/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${session.accessToken}`,
       },
-      body: JSON.stringify({ client_id: process.env.ONSEASON_SSO_CLIENT_ID ?? 'flamingo' }),
+      body: JSON.stringify({ client_id: env.ONSEASON_SSO_CLIENT_ID }),
     })
 
     if (!response.ok) return null
-    const data = await response.json()
+    const data = refreshResponseSchema.parse(await response.json())
 
     return {
-      ...session,
-      subscriptionStatus: data.subscription_status ?? session.subscriptionStatus,
-      mode: data.mode ?? session.mode,
-      accessToken: data.token ?? session.accessToken,
+      session: {
+        ...session,
+        subscriptionStatus: data.subscription_status,
+        mode: data.mode,
+        accessToken: data.token,
+      },
+      expiresIn: data.expires_in,
     }
   } catch {
     return null
