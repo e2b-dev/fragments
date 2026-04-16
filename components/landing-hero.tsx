@@ -6,6 +6,7 @@ import { isFileInArray } from '@/lib/utils'
 import { ArrowRight, Paperclip, Square, X } from 'lucide-react'
 import { type SetStateAction, useEffect, useMemo, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
+import Logo from './logo'
 import { RepoBanner } from './repo-banner'
 
 export function LandingHero({
@@ -165,14 +166,16 @@ export function LandingHero({
           {isErrored && (
             <div
               className={`flex items-center p-1.5 text-sm font-medium mb-4 rounded-xl ${
-                isRateLimited ? 'bg-yellow-500/10 text-yellow-600' : 'bg-red-400/10 text-red-400'
+                isRateLimited
+                  ? 'bg-[var(--warning-bg)] text-[var(--warning)]'
+                  : 'bg-[var(--error-bg)] text-[var(--error)]'
               }`}
             >
               <span className="flex-1 px-1.5">{errorMessage}</span>
               <button
                 type="button"
                 className={`px-2 py-1 rounded-sm ${
-                  isRateLimited ? 'bg-yellow-500/20' : 'bg-red-400/20'
+                  isRateLimited ? 'bg-[var(--warning-bg)]' : 'bg-[var(--error-bg)]'
                 }`}
                 onClick={retry}
               >
@@ -281,7 +284,7 @@ export function LandingHero({
 
       {/* Powered by logos */}
       <div className="flex flex-col items-center mt-10 gap-4">
-        <span className="text-xs text-muted-foreground uppercase tracking-widest font-medium">
+        <span className="text-body-sm text-muted-foreground uppercase tracking-widest font-medium">
           Powered by
         </span>
         <div className="flex items-center justify-center gap-10">
@@ -292,7 +295,7 @@ export function LandingHero({
             rel="noopener noreferrer"
             className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity"
           >
-            <OnSeasonLogomark className="h-6" />
+            <Logo className="h-6" />
             <span className="font-display font-bold text-base text-foreground">onseason</span>
           </a>
 
@@ -344,20 +347,6 @@ function AnthropicIcon({ className }: { className?: string }) {
       <path
         d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"
         fill="currentColor"
-      />
-    </svg>
-  )
-}
-
-function OnSeasonLogomark({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 139 74" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="139" height="74" rx="37" fill="#003306" />
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M102 9C103.82 9.00003 105.599 9.1733 107.323 9.50109L107.364 24.7031L118.047 13.9831C120.979 16.0022 123.513 18.5573 125.504 21.5099L114.869 32.1824L129.853 32.1464C130.164 33.8271 130.329 35.5595 130.329 37.3301C130.329 39.1776 130.149 40.9831 129.812 42.7319L114.929 42.7691L125.432 53.2537C123.445 56.1723 120.926 58.6996 118.015 60.6981L107.445 50.2355L107.491 65.1256C105.715 65.4746 103.879 65.6591 102 65.6591C100.254 65.6591 98.5455 65.4998 96.8871 65.1975L96.8395 50.3643L86.3166 60.9243C83.3516 58.9496 80.7803 56.4313 78.7446 53.5112L89.5227 42.6971L74.1873 42.7343C73.8493 40.9848 73.6699 39.1783 73.6699 37.3301C73.6699 35.5601 73.8337 33.8278 74.1443 32.1476L89.1179 32.1116L78.4593 21.5644C80.4591 18.5843 83.0105 16.0055 85.9663 13.9726L96.7583 24.6533L96.7177 9.49413C98.429 9.17142 100.195 9 102 9ZM97.9415 27.052L91.7393 33.2437L91.7602 41.9409L97.8034 47.9412L106.343 47.9168L112.572 41.8086L112.551 33.2484L106.289 27.0311L97.9415 27.052Z"
-        fill="#A6E58B"
       />
     </svg>
   )

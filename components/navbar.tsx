@@ -80,7 +80,8 @@ export function NavBar({
             alt="Staycy"
             width={100}
             height={14}
-            className="h-auto dark:hidden"
+            style={{ width: 100, height: 'auto' }}
+            className="dark:hidden"
             priority
           />
           <Image
@@ -88,14 +89,15 @@ export function NavBar({
             alt="Staycy"
             width={100}
             height={14}
-            className="h-auto hidden dark:block"
+            style={{ width: 100, height: 'auto' }}
+            className="hidden dark:block"
             priority
           />
         </Link>
       </div>
 
       {session?.impersonatedBy && (
-        <div className="flex items-center gap-1.5 mr-4 px-3 py-1 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-xs font-medium">
+        <div className="flex items-center gap-1.5 mr-4 px-3 py-1 rounded-md bg-[var(--warning-bg)] text-[var(--warning)] text-body-sm font-medium">
           <AlertTriangle className="h-3 w-3" />
           <span>Impersonating as {session.name}</span>
         </div>
@@ -119,7 +121,7 @@ export function NavBar({
 function UnauthenticatedControls() {
   return (
     <div className="flex items-center gap-2">
-      <Button variant="default" size="sm" asChild>
+      <Button variant="default" size="sm" className="rounded-full" asChild>
         <a href={getSignInUrl()}>Sign In</a>
       </Button>
     </div>
@@ -144,7 +146,7 @@ function AuthenticatedControls({
       <TooltipProvider>
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={onUndo} disabled={!canUndo}>
+            <Button variant="secondary" size="icon" onClick={onUndo} disabled={!canUndo}>
               <Undo className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
           </TooltipTrigger>
@@ -233,7 +235,7 @@ function ProfileDropdown({ session }: { session: SessionInfo }) {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="flex flex-col gap-0.5">
           <span className="text-sm font-medium">{session.name}</span>
-          <span className="text-xs text-muted-foreground font-normal">{session.email}</span>
+          <span className="text-body-sm text-muted-foreground font-normal">{session.email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
@@ -246,7 +248,7 @@ function ProfileDropdown({ session }: { session: SessionInfo }) {
               className="size-6 rounded-sm object-cover"
             />
           ) : (
-            <div className="flex size-6 items-center justify-center rounded-sm bg-primary/10 text-[10px] font-semibold text-primary">
+            <div className="flex size-6 items-center justify-center rounded-sm bg-primary/10 text-body-sm font-semibold text-primary">
               {(currentWorkspace?.name ?? 'W').charAt(0).toUpperCase()}
             </div>
           )}

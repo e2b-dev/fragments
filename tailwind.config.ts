@@ -22,6 +22,14 @@ const config = {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         display: ['var(--font-bricolage)', 'system-ui', 'sans-serif'],
       },
+      fontSize: {
+        hero: ['3rem', { lineHeight: '1.1' }],
+        section: ['1.5rem', { lineHeight: '1.3' }],
+        'chat-heading': ['1.125rem', { lineHeight: '1.3' }],
+        body: ['0.9375rem', { lineHeight: '1.6' }],
+        'body-sm': ['0.8125rem', { lineHeight: '1.5' }],
+        label: ['0.8125rem', { lineHeight: '1.4' }],
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

@@ -19,8 +19,8 @@
     --muted-foreground: 150 10% 45%;
     --accent: 140 20% 92%;
     --accent-foreground: 150 30% 15%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 9 67% 47%;
+    --destructive-foreground: 0 0% 100%;
     --border: 140 10% 87%;
     --input: 140 10% 87%;
     --ring: 145 65% 32%;
@@ -30,9 +30,45 @@
     --chart-4: 43 74% 66%;
     --chart-5: 80 50% 55%;
     --radius: 0.75rem;
+
+    /* OnSeason brand greens */
     --onseason-green: 145 65% 32%;
     --onseason-light-green: 110 50% 75%;
     --onseason-dark-green: 150 70% 18%;
+    --onseason-mid-green: 133 59% 26%;
+
+    /* Extended palette */
+    --surface: #ffffff;
+    --surface-subtle: #f0ede7;
+    --border-subtle: #eceae4;
+    --text-primary: #1a1a18;
+    --text-secondary: #6b6860;
+    --text-muted: #9c978e;
+
+    /* Semantic colors */
+    --error: #c4442a;
+    --error-bg: #fdf2f0;
+    --warning: #b8860b;
+    --warning-bg: #fdf8ee;
+    --success: #2d8c3c;
+    --success-bg: #f0f8f1;
+    --info: #4a7082;
+    --info-bg: #f0f5f7;
+
+    /* Chat tokens */
+    --chat-bg: #fafaf7;
+    --chat-user-bubble: #2d8c3c;
+    --chat-user-text: #ffffff;
+    --chat-assistant-bubble: #ffffff;
+    --chat-assistant-text: #1a1a18;
+    --chat-system-bubble: #f0f5f7;
+
+    /* Preview tokens */
+    --preview-bg: #f0ede7;
+    --preview-frame: #e2ded6;
+    --preview-shimmer-from: #f0ede7;
+    --preview-shimmer-to: #f8f6f2;
+    --preview-updated-pulse: #a6e58b;
   }
 
   .dark {
@@ -50,7 +86,7 @@
     --muted-foreground: 140 8% 60%;
     --accent: 150 10% 16%;
     --accent-foreground: 40 20% 90%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 9 62% 35%;
     --destructive-foreground: 0 0% 98%;
     --border: 150 8% 20%;
     --input: 150 10% 16%;
@@ -60,9 +96,45 @@
     --chart-3: 100 50% 50%;
     --chart-4: 80 65% 60%;
     --chart-5: 50 75% 55%;
+
+    /* OnSeason brand greens (dark) */
     --onseason-green: 140 55% 45%;
     --onseason-light-green: 110 40% 55%;
     --onseason-dark-green: 150 50% 25%;
+    --onseason-mid-green: 133 50% 35%;
+
+    /* Extended palette (dark) */
+    --surface: #1a2a1e;
+    --surface-subtle: #15231a;
+    --border-subtle: #253530;
+    --text-primary: #e8e6e1;
+    --text-secondary: #a0a09a;
+    --text-muted: #707068;
+
+    /* Semantic colors (dark) */
+    --error: #e0725e;
+    --error-bg: #2a1510;
+    --warning: #d4a63a;
+    --warning-bg: #2a2010;
+    --success: #5abf6a;
+    --success-bg: #102a15;
+    --info: #6aa0b8;
+    --info-bg: #10202a;
+
+    /* Chat tokens (dark) */
+    --chat-bg: #111e15;
+    --chat-user-bubble: #2a7a38;
+    --chat-user-text: #ffffff;
+    --chat-assistant-bubble: #1a2a1e;
+    --chat-assistant-text: #e8e6e1;
+    --chat-system-bubble: #10202a;
+
+    /* Preview tokens (dark) */
+    --preview-bg: #15231a;
+    --preview-frame: #253530;
+    --preview-shimmer-from: #15231a;
+    --preview-shimmer-to: #1a2a1e;
+    --preview-updated-pulse: #5abf6a;
   }
 }
 

@@ -23,7 +23,7 @@ export function FragmentWeb({ result }: { result: ExecutionResultWeb }) {
         src={result.url}
       />
       <div className="p-2 border-t">
-        <div className="flex items-center bg-muted dark:bg-white/10 rounded-2xl">
+        <div className="flex items-center bg-[var(--surface-subtle)] rounded-2xl">
           <TooltipProvider>
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
@@ -34,7 +34,7 @@ export function FragmentWeb({ result }: { result: ExecutionResultWeb }) {
               <TooltipContent>Refresh</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <span className="text-muted-foreground text-xs flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
+          <span className="text-muted-foreground text-body-sm flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
             {result.url}
           </span>
           <TooltipProvider>

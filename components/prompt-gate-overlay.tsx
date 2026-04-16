@@ -20,11 +20,11 @@ export function PromptGateOverlay({ onSignIn, onDismiss }: PromptGateOverlayProp
           <X className="h-5 w-5" />
         </button>
         <div className="flex flex-col items-center text-center">
-          <h2 className="text-lg font-semibold">Sign in to continue building</h2>
+          <h2 className="text-section font-display font-semibold">Sign in to continue building</h2>
           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Create an account or sign in to start generating your website.
           </p>
-          <Button className="mt-6 w-full" onClick={onSignIn}>
+          <Button className="mt-6 w-full rounded-full" onClick={onSignIn}>
             Sign In
           </Button>
         </div>

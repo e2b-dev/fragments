@@ -120,7 +120,7 @@ export function ChatSettings({
               min={50}
               max={10000}
               step={1}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
+              className="h-6 rounded-sm w-[84px] text-body-sm text-center tabular-nums"
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
@@ -137,7 +137,7 @@ export function ChatSettings({
               min={0}
               max={5}
               step={0.01}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
+              className="h-6 rounded-sm w-[84px] text-body-sm text-center tabular-nums"
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
@@ -154,7 +154,7 @@ export function ChatSettings({
               min={0}
               max={1}
               step={0.01}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
+              className="h-6 rounded-sm w-[84px] text-body-sm text-center tabular-nums"
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
@@ -171,7 +171,7 @@ export function ChatSettings({
               min={0}
               max={500}
               step={1}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
+              className="h-6 rounded-sm w-[84px] text-body-sm text-center tabular-nums"
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
@@ -188,7 +188,7 @@ export function ChatSettings({
               min={0}
               max={2}
               step={0.01}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
+              className="h-6 rounded-sm w-[84px] text-body-sm text-center tabular-nums"
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({
@@ -205,7 +205,7 @@ export function ChatSettings({
               min={0}
               max={2}
               step={0.01}
-              className="h-6 rounded-sm w-[84px] text-xs text-center tabular-nums"
+              className="h-6 rounded-sm w-[84px] text-body-sm text-center tabular-nums"
               placeholder="Auto"
               onChange={(e) =>
                 onLanguageModelChange({

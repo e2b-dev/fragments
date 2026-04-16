@@ -113,39 +113,43 @@ function Home() {
       setErrorMessage(error.message)
     },
     onFinish: async ({ object: fragment, error }) => {
-      if (!error) {
-        // send it to /api/sandbox
-        console.log('fragment', fragment)
-        setIsPreviewLoading(true)
-        posthog.capture('fragment_generated', {
-          template: fragment?.template,
-        })
-
-        const response = await fetch('/api/sandbox', {
-          method: 'POST',
-          body: JSON.stringify({
-            fragment,
-            sbxId: result?.sbxId,
-          }),
-        })
-
-        if (!response.ok) {
-          console.error('Sandbox request failed:', response.status)
-          setErrorMessage('Failed to create sandbox preview')
-          setIsPreviewLoading(false)
-          return
-        }
-
-        const sandboxResult = await response.json()
-        console.log('result', sandboxResult)
-        posthog.capture('sandbox_created', { url: sandboxResult.url })
-
-        setResult(sandboxResult)
-        setCurrentPreview({ fragment, result: sandboxResult })
-        setMessage({ result: sandboxResult })
-        setCurrentTab('fragment')
-        setIsPreviewLoading(false)
+      if (error) {
+        console.error('Fragment generation failed:', error)
+        setErrorMessage(error.message || 'Failed to generate fragment')
+        return
       }
+
+      // send it to /api/sandbox
+      console.log('fragment', fragment)
+      setIsPreviewLoading(true)
+      posthog.capture('fragment_generated', {
+        template: fragment?.template,
+      })
+
+      const response = await fetch('/api/sandbox', {
+        method: 'POST',
+        body: JSON.stringify({
+          fragment,
+          sbxId: result?.sbxId,
+        }),
+      })
+
+      if (!response.ok) {
+        console.error('Sandbox request failed:', response.status)
+        setErrorMessage('Failed to create sandbox preview')
+        setIsPreviewLoading(false)
+        return
+      }
+
+      const sandboxResult = await response.json()
+      console.log('result', sandboxResult)
+      posthog.capture('sandbox_created', { url: sandboxResult.url })
+
+      setResult(sandboxResult)
+      setCurrentPreview({ fragment, result: sandboxResult })
+      setMessage({ result: sandboxResult })
+      setCurrentTab('fragment')
+      setIsPreviewLoading(false)
     },
   })
 
@@ -324,7 +328,7 @@ function Home() {
             isMultiModal={currentModel?.multiModal || false}
             files={files}
             handleFileChange={handleFileChange}
-            isErrored={error !== undefined}
+            isErrored={error !== undefined || !!errorMessage}
             errorMessage={errorMessage}
             isRateLimited={isRateLimited}
             retry={retry}
@@ -363,7 +367,7 @@ function Home() {
             <Chat messages={messages} isLoading={isLoading} setCurrentPreview={setCurrentPreview} />
             <ChatInput
               retry={retry}
-              isErrored={error !== undefined}
+              isErrored={error !== undefined || !!errorMessage}
               errorMessage={errorMessage}
               isLoading={isLoading}
               isRateLimited={isRateLimited}

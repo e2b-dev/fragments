@@ -36,7 +36,7 @@ export function ChatPicker({
           defaultValue={selectedTemplate}
           onValueChange={onSelectedTemplateChange}
         >
-          <SelectTrigger className="whitespace-nowrap border-none shadow-none focus:ring-0 px-0 py-0 h-6 text-xs">
+          <SelectTrigger className="whitespace-nowrap border-none shadow-none focus:ring-0 px-0 py-0 h-6 text-body-sm">
             <SelectValue placeholder="Select a persona" />
           </SelectTrigger>
           <SelectContent side="top">
@@ -52,7 +52,7 @@ export function ChatPicker({
                 <SelectItem key={templateId} value={templateId}>
                   <div className="flex items-center space-x-2">
                     <Image
-                      className="flex"
+                      className="flex w-3.5 h-3.5"
                       src={`/thirdparty/templates/${getTemplateId(templateId)}.svg`}
                       alt={templateId}
                       width={14}
@@ -72,7 +72,7 @@ export function ChatPicker({
           defaultValue={languageModel.model}
           onValueChange={(e) => onLanguageModelChange({ model: e })}
         >
-          <SelectTrigger className="whitespace-nowrap border-none shadow-none focus:ring-0 px-0 py-0 h-6 text-xs">
+          <SelectTrigger className="whitespace-nowrap border-none shadow-none focus:ring-0 px-0 py-0 h-6 text-body-sm">
             <SelectValue placeholder="Language model" />
           </SelectTrigger>
           <SelectContent>
@@ -84,7 +84,7 @@ export function ChatPicker({
                     <SelectItem key={model.id} value={model.id}>
                       <div className="flex items-center space-x-2">
                         <Image
-                          className="flex"
+                          className="flex w-3.5 h-3.5"
                           src={`/thirdparty/logos/${model.providerId}.svg`}
                           alt={model.provider}
                           width={14}

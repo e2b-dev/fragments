@@ -17,14 +17,14 @@ function LogsOutput({
       {stdout &&
         stdout.length > 0 &&
         stdout.map((out: string, index: number) => (
-          <pre key={index} className="text-xs">
+          <pre key={index} className="text-body-sm">
             {out}
           </pre>
         ))}
       {stderr &&
         stderr.length > 0 &&
         stderr.map((err: string, index: number) => (
-          <pre key={index} className="text-xs text-red-500">
+          <pre key={index} className="text-body-sm text-[var(--error)]">
             {err}
           </pre>
         ))}

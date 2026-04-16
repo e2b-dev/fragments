@@ -36,7 +36,7 @@ export function Preview({
     result?.template && getTemplateId(result?.template!) !== 'code-interpreter-v1'
 
   return (
-    <div className="absolute md:relative z-10 top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y bg-popover h-full w-full overflow-auto">
+    <div className="absolute md:relative z-10 top-0 left-0 shadow-2xl md:rounded-tl-3xl md:rounded-bl-3xl md:border-l md:border-y border-[var(--preview-frame)] bg-[var(--preview-bg)] h-full w-full overflow-auto">
       <Tabs
         value={selectedTab}
         onValueChange={(value) => onSelectedTabChange(value as 'code' | 'fragment')}
@@ -61,7 +61,7 @@ export function Preview({
           <div className="flex justify-center">
             <TabsList className="px-1 py-0 border h-8">
               <TabsTrigger
-                className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
+                className="font-normal text-body-sm py-1 px-2 gap-1 flex items-center"
                 value="code"
               >
                 {isChatLoading && <LoaderCircle strokeWidth={3} className="h-3 w-3 animate-spin" />}
@@ -69,7 +69,7 @@ export function Preview({
               </TabsTrigger>
               <TabsTrigger
                 disabled={!result}
-                className="font-normal text-xs py-1 px-2 gap-1 flex items-center"
+                className="font-normal text-body-sm py-1 px-2 gap-1 flex items-center"
                 value="fragment"
               >
                 Preview

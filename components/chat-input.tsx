@@ -149,14 +149,16 @@ export function ChatInput({
       {isErrored && (
         <div
           className={`flex items-center p-1.5 text-sm font-medium mx-4 mb-10 rounded-xl ${
-            isRateLimited ? 'bg-yellow-500/10 text-yellow-600' : 'bg-red-400/10 text-red-400'
+            isRateLimited
+              ? 'bg-[var(--warning-bg)] text-[var(--warning)]'
+              : 'bg-[var(--error-bg)] text-[var(--error)]'
           }`}
         >
           <span className="flex-1 px-1.5">{errorMessage}</span>
           <button
             type="button"
             className={`px-2 py-1 rounded-sm ${
-              isRateLimited ? 'bg-yellow-500/20' : 'bg-red-400/20'
+              isRateLimited ? 'bg-[var(--warning-bg)]' : 'bg-[var(--error-bg)]'
             }`}
             onClick={retry}
           >
@@ -167,7 +169,7 @@ export function ChatInput({
       <div className="relative">
         <RepoBanner className="absolute bottom-full inset-x-2 translate-y-1 z-0 pb-2" />
         <div
-          className={`shadow-md rounded-2xl relative z-10 bg-background border ${
+          className={`shadow-md rounded-2xl relative z-10 bg-[var(--surface)] border border-border ${
             dragActive
               ? 'before:absolute before:inset-0 before:rounded-2xl before:border-2 before:border-dashed before:border-primary'
               : ''
@@ -261,7 +263,7 @@ export function ChatInput({
           </div>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground mt-2 text-center">
+      <p className="text-body-sm text-muted-foreground mt-2 text-center">
         Powered by{' '}
         <a
           href="https://onseason.ai"

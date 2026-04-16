@@ -28,7 +28,7 @@ export function Chat({
     <div id="chat-container" className="flex flex-col pb-12 gap-2 overflow-y-auto max-h-full">
       {messages.map((message: Message, index: number) => (
         <div
-          className={`flex flex-col px-4 shadow-sm whitespace-pre-wrap ${message.role !== 'user' ? 'bg-accent dark:bg-white/5 border text-accent-foreground dark:text-muted-foreground py-4 rounded-2xl gap-4 w-full' : 'bg-primary/10 dark:bg-primary/20 py-2 rounded-xl gap-2 w-fit'} font-sans`}
+          className={`flex flex-col px-4 shadow-sm whitespace-pre-wrap text-body ${message.role !== 'user' ? 'text-foreground py-4 gap-4 w-full md:pl-10' : 'bg-primary/10 dark:bg-primary/20 py-2 rounded-xl gap-2 w-fit'} font-sans`}
           key={index}
         >
           {message.content.map((content, id) => {
@@ -54,9 +54,9 @@ export function Chat({
                   result: message.result,
                 })
               }
-              className="py-2 pl-2 w-full md:w-max flex items-center border rounded-xl select-none hover:bg-white dark:hover:bg-white/5 hover:cursor-pointer"
+              className="py-2 pl-2 w-full md:w-max flex items-center border rounded-xl select-none hover:bg-[var(--surface-subtle)] hover:cursor-pointer"
             >
-              <div className="rounded-[0.5rem] w-10 h-10 bg-black/5 dark:bg-white/5 self-stretch flex items-center justify-center">
+              <div className="rounded-[0.5rem] w-10 h-10 bg-[var(--surface-subtle)] self-stretch flex items-center justify-center">
                 <Terminal strokeWidth={2} className="text-primary" />
               </div>
               <div className="pl-2 pr-4 flex flex-col">
