@@ -130,7 +130,6 @@ function Home() {
       // send it to /api/sandbox
       console.log('fragment', fragment)
       setIsPreviewLoading(true)
-      useSandboxStore.getState().bootSandbox({ type: 'template' })
       posthog.capture('fragment_generated', {
         template: fragment?.template,
       })
@@ -148,7 +147,6 @@ function Home() {
         setErrorMessage('Failed to create sandbox preview')
         setErrorDismissed(false)
         setIsPreviewLoading(false)
-        useSandboxStore.getState().resetSandbox()
         return
       }
 
@@ -165,9 +163,6 @@ function Home() {
       // Bridge: update sandbox store so PreviewPane shows the iframe
       if (sandboxResult.url && sandboxResult.sbxId) {
         useSandboxStore.getState().setSandboxReady(sandboxResult.sbxId, sandboxResult.url)
-      } else {
-        // Code interpreter or no URL — reset boot state so shimmer stops
-        useSandboxStore.getState().resetSandbox()
       }
     },
   })
@@ -448,13 +443,15 @@ function Home() {
                   />
                 </ChatInput>
               </motion.div>
-              <motion.div
-                initial={builderRightVariant.initial}
-                animate={builderRightVariant.animate}
-                transition={builderRightVariant.transition}
-              >
-                <PreviewPane />
-              </motion.div>
+              {fragment && (
+                <motion.div
+                  initial={builderRightVariant.initial}
+                  animate={builderRightVariant.animate}
+                  transition={builderRightVariant.transition}
+                >
+                  <PreviewPane />
+                </motion.div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

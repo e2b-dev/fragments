@@ -138,7 +138,6 @@ export function LandingHero({
         className="text-center max-w-3xl mb-6"
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
       >
         <h2 className="font-display font-bold text-4xl md:text-6xl tracking-tight text-foreground leading-[1.1] mb-6">
@@ -153,9 +152,10 @@ export function LandingHero({
 
       {/* Prompt section */}
       <motion.div
-        layoutId="prompt-input"
         className="w-full max-w-2xl mt-8"
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.15, ease: 'easeOut' }}
       >
         <div className="flex items-center gap-2 mb-3">
           <div className="w-2 h-2 rounded-full bg-primary" />
@@ -296,7 +296,6 @@ export function LandingHero({
         className="flex flex-col items-center mt-10 gap-4"
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.3, delay: 0.3, ease: 'easeOut' }}
       >
         <span className="text-body-sm text-muted-foreground uppercase tracking-widest font-medium">
