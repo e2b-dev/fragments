@@ -250,12 +250,33 @@ function Home() {
   const handleSubmitRef = useRef(handleSubmitAuth)
   handleSubmitRef.current = handleSubmitAuth
 
+  const isLanding = messages.length === 0 && !isLoading
+
   useEffect(() => {
     if (pendingAutoSubmit && chatInput) {
       setPendingAutoSubmit(false)
       handleSubmitRef.current({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>)
     }
   }, [pendingAutoSubmit, chatInput])
+
+  useEffect(() => {
+    if (isLanding) return
+
+    const dashboardUrl = process.env.NEXT_PUBLIC_ONSEASON_BASE_URL ?? '/'
+
+    // Replace history entry so back button goes to Onseason dashboard
+    window.history.replaceState(null, '', window.location.pathname)
+
+    function handlePopState() {
+      window.location.href = dashboardUrl
+    }
+
+    // Push a dummy entry so we can intercept the back button
+    window.history.pushState(null, '', window.location.pathname)
+    window.addEventListener('popstate', handlePopState)
+
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [isLanding])
 
   function retry() {
     submit({
@@ -291,8 +312,6 @@ function Home() {
     setFragment(preview.fragment)
     setResult(preview.result)
   }
-
-  const isLanding = messages.length === 0 && !isLoading
 
   const prefersReducedMotion = useReducedMotion()
   const previewSlideVariant = getVariant('previewSlideIn', prefersReducedMotion)
