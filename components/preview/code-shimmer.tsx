@@ -14,10 +14,10 @@ export function CodeShimmer({ code, className }: CodeShimmerProps) {
       {code && (
         <div
           className="absolute inset-0 overflow-hidden px-5 py-4 font-mono text-xs leading-relaxed pointer-events-none select-none"
-          style={{ opacity: 0.4 }}
+          style={{ opacity: 0.6 }}
           aria-hidden="true"
         >
-          <pre className="whitespace-pre-wrap text-[var(--preview-shimmer-to)]">{code}</pre>
+          <pre className="whitespace-pre-wrap text-foreground">{code}</pre>
         </div>
       )}
       <Shimmer variant={code ? 'overlay' : 'full'} className="absolute inset-0" />

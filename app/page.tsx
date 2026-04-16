@@ -11,6 +11,7 @@ import { NavBar, type SessionInfo } from '@/components/navbar'
 import { PreviewPane } from '@/components/preview/preview-pane'
 import { PromptGateOverlay } from '@/components/prompt-gate-overlay'
 import { getVariant } from '@/lib/chat'
+import { AppError, ErrorCode } from '@/lib/errors'
 import { type Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import type { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
@@ -118,12 +119,18 @@ function Home() {
 
       setErrorMessage(error.message)
       setErrorDismissed(false)
+      useSandboxStore
+        .getState()
+        .setSandboxError(AppError.fromUnknown(error, ErrorCode.GENERATION_FAILED))
     },
     onFinish: async ({ object: fragment, error }) => {
       if (error) {
         console.error('Fragment generation failed:', error)
         setErrorMessage(error.message || 'Failed to generate fragment')
         setErrorDismissed(false)
+        useSandboxStore
+          .getState()
+          .setSandboxError(AppError.fromUnknown(error, ErrorCode.GENERATION_FAILED))
         return
       }
 
@@ -147,6 +154,14 @@ function Home() {
         setErrorMessage('Failed to create sandbox preview')
         setErrorDismissed(false)
         setIsPreviewLoading(false)
+        useSandboxStore.getState().setSandboxError(
+          new AppError({
+            code: ErrorCode.SANDBOX_BOOT_FAILED,
+            httpStatus: response.status,
+            userMessage: 'Preview failed to load',
+            message: `Sandbox request failed: ${response.status}`,
+          }),
+        )
         return
       }
 
@@ -163,6 +178,8 @@ function Home() {
       // Bridge: update sandbox store so PreviewPane shows the iframe
       if (sandboxResult.url && sandboxResult.sbxId) {
         useSandboxStore.getState().setSandboxReady(sandboxResult.sbxId, sandboxResult.url)
+      } else {
+        useSandboxStore.getState().resetSandbox()
       }
     },
   })
@@ -247,6 +264,7 @@ function Home() {
     setChatInput('')
     setFiles([])
     setCurrentTab('code')
+    useSandboxStore.getState().bootSandbox({ type: 'template' })
 
     posthog.capture('chat_submit', {
       template: selectedTemplate,
@@ -343,7 +361,7 @@ function Home() {
   return (
     <DesktopGate>
       <main className="flex min-h-screen max-h-screen">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {isLanding ? (
             /* -- Landing page layout -- */
             <motion.div
@@ -351,12 +369,12 @@ function Home() {
               className="flex flex-col w-full max-h-full overflow-auto"
               initial={landingExitVariant.initial}
               animate={landingExitVariant.animate}
-              exit={landingExitVariant.exit}
+              exit={{ opacity: 0 }}
               transition={landingExitVariant.transition}
             >
-              <div className="max-w-[900px] w-full mx-auto px-4">
+              <motion.div layoutId="navbar" className="max-w-[900px] w-full mx-auto px-4">
                 <NavBar session={session} />
-              </div>
+              </motion.div>
               <LandingHero
                 input={chatInput}
                 onInputChange={handleSaveInputChange}
@@ -396,7 +414,7 @@ function Home() {
               className="grid w-full md:grid-cols-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.1 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.3 }}
             >
               <motion.div
                 className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
@@ -404,7 +422,9 @@ function Home() {
                 animate={builderLeftVariant.animate}
                 transition={builderLeftVariant.transition}
               >
-                <NavBar session={session} />
+                <motion.div layoutId="navbar">
+                  <NavBar session={session} />
+                </motion.div>
                 <Chat
                   messages={messages}
                   isLoading={isLoading}
@@ -449,7 +469,14 @@ function Home() {
                   animate={builderRightVariant.animate}
                   transition={builderRightVariant.transition}
                 >
-                  <PreviewPane />
+                  <PreviewPane
+                    streamingCode={object?.code ?? null}
+                    result={result}
+                    onClose={() => {
+                      setFragment(undefined)
+                      setResult(undefined)
+                    }}
+                  />
                 </motion.div>
               )}
             </motion.div>

@@ -2,16 +2,21 @@
 
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import type { ExecutionResult } from '@/lib/types'
 import { useSandboxStore } from '@/stores/use-sandbox-store'
 import { useUiStore } from '@/stores/use-ui-store'
-import { ChevronsRight, RefreshCw } from 'lucide-react'
+import { ChevronsRight, RefreshCw, RotateCw } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
+import { FragmentPreview } from '../fragment-preview'
+import { CopyButton } from '../ui/copy-button'
 import { CodeShimmer } from './code-shimmer'
 import { DeviceToggle } from './device-toggle'
 
 interface PreviewPaneProps {
   streamingCode?: string | null
+  result?: ExecutionResult
+  onClose?: () => void
 }
 
 const iframeWidthClass: Record<string, string> = {
@@ -20,19 +25,14 @@ const iframeWidthClass: Record<string, string> = {
   mobile: 'h-full max-w-[430px] w-full mx-auto border border-[var(--preview-frame)] rounded-2xl',
 }
 
-export function PreviewPane({ streamingCode }: PreviewPaneProps) {
+export function PreviewPane({ streamingCode, result, onClose }: PreviewPaneProps) {
   const previewUrl = useSandboxStore((s) => s.previewUrl)
   const bootStatus = useSandboxStore((s) => s.boot.status)
   const bootSandbox = useSandboxStore((s) => s.bootSandbox)
   const previewDevice = useUiStore((s) => s.previewDevice)
-  const [collapsed, setCollapsed] = useState(false)
-
+  const [iframeKey, setIframeKey] = useState(0)
   const isBooting = bootStatus === 'loading'
   const isExpired = bootStatus === 'error' && !previewUrl
-
-  if (collapsed) {
-    return null
-  }
 
   return (
     <div className="flex h-full flex-col shadow-2xl rounded-tl-3xl rounded-bl-3xl border-l border-y border-[var(--preview-frame)] bg-[var(--preview-bg)] overflow-hidden">
@@ -44,7 +44,7 @@ export function PreviewPane({ streamingCode }: PreviewPaneProps) {
                 variant="ghost"
                 size="icon"
                 className="text-muted-foreground h-7 w-7"
-                onClick={() => setCollapsed(true)}
+                onClick={() => onClose?.()}
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
@@ -61,13 +61,49 @@ export function PreviewPane({ streamingCode }: PreviewPaneProps) {
         {isBooting ? (
           <CodeShimmer code={streamingCode} />
         ) : previewUrl ? (
-          <div className="flex h-full items-center justify-center">
-            <iframe
-              src={previewUrl}
-              title="Site preview"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-              className={iframeWidthClass[previewDevice] ?? iframeWidthClass.desktop}
-            />
+          <div className="flex h-full flex-col">
+            <div className="flex flex-1 min-h-0 items-center justify-center">
+              <iframe
+                key={iframeKey}
+                src={previewUrl}
+                title="Site preview"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                className={iframeWidthClass[previewDevice] ?? iframeWidthClass.desktop}
+              />
+            </div>
+            <div className="p-2 border-t border-[var(--preview-frame)]">
+              <div className="flex items-center bg-[var(--surface-subtle)] rounded-2xl">
+                <TooltipProvider>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="link"
+                        className="text-muted-foreground"
+                        onClick={() => setIframeKey((k) => k + 1)}
+                      >
+                        <RotateCw className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Refresh</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <span className="text-muted-foreground text-body-sm flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
+                  {previewUrl}
+                </span>
+                <TooltipProvider>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <CopyButton
+                        variant="link"
+                        content={previewUrl}
+                        className="text-muted-foreground"
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>Copy URL</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
           </div>
         ) : isExpired ? (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
@@ -87,6 +123,10 @@ export function PreviewPane({ streamingCode }: PreviewPaneProps) {
               <RefreshCw className="h-4 w-4" />
               Reload preview
             </Button>
+          </div>
+        ) : result ? (
+          <div className="overflow-y-auto w-full h-full">
+            <FragmentPreview result={result} />
           </div>
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
