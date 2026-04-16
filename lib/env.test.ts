@@ -4,6 +4,8 @@ import { envSchema } from './env'
 const validEnv = {
   E2B_API_KEY: 'test-e2b-key',
   ANTHROPIC_API_KEY: 'test-anthropic-key',
+  ZEPL_API_KEY: 'test-zepl-key',
+  ZEPL_API_BASE: 'https://api.zepl.io',
   ONSEASON_BASE_URL: 'https://app.onseason.ai',
   ONSEASON_SSO_SECRET: 'a]3Fk9$mP!xL7qR2vN8wT#hY5jB0cD4e',
   NEXT_PUBLIC_ONSEASON_BASE_URL: 'https://app.onseason.ai',
@@ -38,6 +40,8 @@ describe('envSchema', () => {
       const paths = result.error.issues.map((i) => i.path[0])
       expect(paths).toContain('E2B_API_KEY')
       expect(paths).toContain('ANTHROPIC_API_KEY')
+      expect(paths).toContain('ZEPL_API_KEY')
+      expect(paths).toContain('ZEPL_API_BASE')
       expect(paths).toContain('ONSEASON_BASE_URL')
       expect(paths).toContain('ONSEASON_SSO_SECRET')
       expect(paths).toContain('NEXT_PUBLIC_ONSEASON_BASE_URL')

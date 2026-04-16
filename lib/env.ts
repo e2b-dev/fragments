@@ -24,6 +24,10 @@ export const envSchema = z.object({
   XAI_API_KEY: emptyToUndefined(z.string().optional()),
   MORPH_API_KEY: emptyToUndefined(z.string().optional()),
 
+  // ZEPL API (shared credentials — same for all PMs)
+  ZEPL_API_KEY: emptyToUndefined(z.string().min(1)),
+  ZEPL_API_BASE: emptyToUndefined(z.string().url()),
+
   // Onseason SSO
   ONSEASON_BASE_URL: emptyToUndefined(z.string().url()),
   ONSEASON_SSO_SECRET: emptyToUndefined(z.string().min(32)), // Shared with Onseason product registry
