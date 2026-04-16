@@ -3,7 +3,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
 import { Bricolage_Grotesque, Inter } from 'next/font/google'
-import { PostHogProvider, ThemeProvider } from './providers'
+import { MotionProvider, PostHogProvider, ThemeProvider } from './providers'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const bricolage = Bricolage_Grotesque({
@@ -33,7 +33,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <MotionProvider>{children}</MotionProvider>
           </ThemeProvider>
           <Toaster />
           <Analytics />
