@@ -159,13 +159,13 @@ describe('transitions', () => {
       expect(builderEnterRight.transition).toBeDefined()
     })
 
-    it('builderEnterRight slides from right (x: 40)', () => {
-      expect(builderEnterRight.initial).toMatchObject({ opacity: 0, x: 40 })
+    it('builderEnterRight slides from right edge (x: 100%)', () => {
+      expect(builderEnterRight.initial).toMatchObject({ opacity: 0, x: '100%' })
       expect(builderEnterRight.animate).toMatchObject({ opacity: 1, x: 0 })
     })
 
-    it('builderEnterRight transition is 500ms easeOut', () => {
-      expect(builderEnterRight.transition).toMatchObject({ duration: 0.5, ease: 'easeOut' })
+    it('builderEnterRight transition is 400ms easeOut', () => {
+      expect(builderEnterRight.transition).toMatchObject({ duration: 0.4, ease: 'easeOut' })
     })
   })
 

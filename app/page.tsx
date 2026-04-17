@@ -369,43 +369,49 @@ function Home() {
               className="flex flex-col w-full max-h-full overflow-auto"
               initial={landingExitVariant.initial}
               animate={landingExitVariant.animate}
-              exit={{ opacity: 0 }}
+              exit={{}}
               transition={landingExitVariant.transition}
             >
               <div className="max-w-[900px] w-full mx-auto px-4">
                 <NavBar session={session} />
               </div>
-              <LandingHero
-                input={chatInput}
-                onInputChange={handleSaveInputChange}
-                onSubmit={handleSubmitAuth}
-                isLoading={isLoading}
-                stop={stop}
-                isMultiModal={currentModel?.multiModal || false}
-                files={files}
-                handleFileChange={handleFileChange}
-                isErrored={error !== undefined || !!errorMessage}
-                errorMessage={errorMessage}
-                isRateLimited={isRateLimited}
-                retry={retry}
+              <motion.div
+                className="flex-1 flex flex-col"
+                exit={{ opacity: 0, y: 60 }}
+                transition={{ duration: 0.35, ease: 'easeIn' }}
               >
-                <ChatPicker
-                  templates={templates}
-                  selectedTemplate={selectedTemplate}
-                  onSelectedTemplateChange={setSelectedTemplate}
-                  models={filteredModels}
-                  languageModel={languageModel}
-                  onLanguageModelChange={handleLanguageModelChange}
-                />
-                <ChatSettings
-                  languageModel={languageModel}
-                  onLanguageModelChange={handleLanguageModelChange}
-                  apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
-                  baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
-                  useMorphApply={useMorphApply}
-                  onUseMorphApplyChange={setUseMorphApply}
-                />
-              </LandingHero>
+                <LandingHero
+                  input={chatInput}
+                  onInputChange={handleSaveInputChange}
+                  onSubmit={handleSubmitAuth}
+                  isLoading={isLoading}
+                  stop={stop}
+                  isMultiModal={currentModel?.multiModal || false}
+                  files={files}
+                  handleFileChange={handleFileChange}
+                  isErrored={error !== undefined || !!errorMessage}
+                  errorMessage={errorMessage}
+                  isRateLimited={isRateLimited}
+                  retry={retry}
+                >
+                  <ChatPicker
+                    templates={templates}
+                    selectedTemplate={selectedTemplate}
+                    onSelectedTemplateChange={setSelectedTemplate}
+                    models={filteredModels}
+                    languageModel={languageModel}
+                    onLanguageModelChange={handleLanguageModelChange}
+                  />
+                  <ChatSettings
+                    languageModel={languageModel}
+                    onLanguageModelChange={handleLanguageModelChange}
+                    apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
+                    baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
+                    useMorphApply={useMorphApply}
+                    onUseMorphApplyChange={setUseMorphApply}
+                  />
+                </LandingHero>
+              </motion.div>
             </motion.div>
           ) : (
             /* -- Chat + Preview split layout -- */
