@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Landing hero entrance — CSS-driven so content is visible before JS hydrates */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+}
+
 @layer base {
   :root {
     /* OnSeason Brand: cream background, deep green primary */
