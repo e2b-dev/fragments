@@ -168,14 +168,16 @@ export const builderEnterLeftReduced: MotionVariantSet = {
 // --- Builder Enter Right: preview pane slides from right, 500ms easeOut ---
 
 export const builderEnterRight: MotionVariantSet = {
-  initial: { opacity: 0, x: 40 },
+  initial: { opacity: 0, x: '100%' },
   animate: { opacity: 1, x: 0 },
-  transition: { duration: 0.5, ease: 'easeOut' },
+  exit: { opacity: 0, x: '100%', transition: { duration: 0.25, ease: 'easeIn' } },
+  transition: { duration: 0.4, ease: 'easeOut' },
 }
 
 export const builderEnterRightReduced: MotionVariantSet = {
   initial: opacityOnly(0),
   animate: opacityOnly(1),
+  exit: opacityOnly(0),
   transition: INSTANT,
 }
 

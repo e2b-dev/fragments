@@ -372,9 +372,9 @@ function Home() {
               exit={{ opacity: 0 }}
               transition={landingExitVariant.transition}
             >
-              <motion.div layoutId="navbar" className="max-w-[900px] w-full mx-auto px-4">
+              <div className="max-w-[900px] w-full mx-auto px-4">
                 <NavBar session={session} />
-              </motion.div>
+              </div>
               <LandingHero
                 input={chatInput}
                 onInputChange={handleSaveInputChange}
@@ -417,14 +417,16 @@ function Home() {
               transition={{ duration: prefersReducedMotion ? 0 : 0.3 }}
             >
               <motion.div
+                layout
                 className={`flex flex-col w-full max-h-full max-w-[800px] mx-auto px-4 overflow-auto ${fragment ? 'col-span-1' : 'col-span-2'}`}
                 initial={builderLeftVariant.initial}
                 animate={builderLeftVariant.animate}
-                transition={builderLeftVariant.transition}
+                transition={{
+                  ...builderLeftVariant.transition,
+                  layout: { duration: 0.35, ease: 'easeOut' },
+                }}
               >
-                <motion.div layoutId="navbar">
-                  <NavBar session={session} />
-                </motion.div>
+                <NavBar session={session} />
                 <Chat
                   messages={messages}
                   isLoading={isLoading}
@@ -463,22 +465,27 @@ function Home() {
                   />
                 </ChatInput>
               </motion.div>
-              {fragment && (
-                <motion.div
-                  initial={builderRightVariant.initial}
-                  animate={builderRightVariant.animate}
-                  transition={builderRightVariant.transition}
-                >
-                  <PreviewPane
-                    streamingCode={object?.code ?? null}
-                    result={result}
-                    onClose={() => {
-                      setFragment(undefined)
-                      setResult(undefined)
-                    }}
-                  />
-                </motion.div>
-              )}
+              <AnimatePresence mode="popLayout">
+                {fragment && (
+                  <motion.div
+                    key="preview"
+                    layout
+                    initial={builderRightVariant.initial}
+                    animate={builderRightVariant.animate}
+                    exit={builderRightVariant.exit}
+                    transition={builderRightVariant.transition}
+                  >
+                    <PreviewPane
+                      streamingCode={object?.code ?? null}
+                      result={result}
+                      onClose={() => {
+                        setFragment(undefined)
+                        setResult(undefined)
+                      }}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>
