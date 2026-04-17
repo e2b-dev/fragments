@@ -15,7 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { AlertTriangle, ChevronRight, ExternalLink, LogOut } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export interface SessionInfo {
   pmId: string
@@ -135,11 +135,7 @@ function AuthenticatedControls({ session }: { session: SessionInfo }) {
 function ProfileDropdown({ session }: { session: SessionInfo }) {
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null)
   const [hasMultipleWorkspaces, setHasMultipleWorkspaces] = useState(false)
-  const [workspacesFetched, setWorkspacesFetched] = useState(false)
-
-  const fetchWorkspaceInfo = useCallback(() => {
-    if (workspacesFetched) return
-    setWorkspacesFetched(true)
+  useEffect(() => {
     fetch('/api/auth/workspaces')
       .then((res) => res.json())
       .then((data: { workspaces?: Workspace[] }) => {
@@ -149,7 +145,7 @@ function ProfileDropdown({ session }: { session: SessionInfo }) {
         setHasMultipleWorkspaces(list.length > 1)
       })
       .catch(() => {})
-  }, [workspacesFetched, session.workspaceId])
+  }, [session.workspaceId])
 
   const handleSignOut = useCallback(() => {
     fetch('/api/auth/logout', { method: 'POST' }).then(() => {
@@ -171,11 +167,7 @@ function ProfileDropdown({ session }: { session: SessionInfo }) {
   const avatarUrl = getAvatarUrl(session)
 
   return (
-    <DropdownMenu
-      onOpenChange={(open) => {
-        if (open) fetchWorkspaceInfo()
-      }}
-    >
+    <DropdownMenu>
       <TooltipProvider>
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
