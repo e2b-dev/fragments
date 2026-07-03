@@ -48,7 +48,7 @@ export function NavBar({
     <nav className="w-full flex bg-background py-4">
       <div className="flex flex-1 items-center">
         <Link href="/" className="flex items-center gap-2" target="_blank">
-          <Logo width={24} height={24} />
+          <Logo height={24} width={54} />
           <h1 className="whitespace-pre">Fragments by </h1>
         </Link>
         <Link
@@ -131,7 +131,7 @@ export function NavBar({
                   window.open('https://e2b.dev', '_blank')
                 }}
               >
-                <Logo className="mr-2 h-4 w-4 text-muted-foreground" />
+                <Logo className="mr-2 h-4 w-auto text-muted-foreground" />
                 About E2B
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onSocialClick('github')}>

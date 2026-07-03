@@ -33,7 +33,7 @@ export function AuthDialog({
         <div className="flex justify-center items-center flex-col">
           <h1 className="flex items-center gap-4 text-xl font-bold mb-6 w-full">
             <div className="flex items-center justify-center rounded-md shadow-md bg-black p-2">
-              <Logo className="text-white w-6 h-6" />
+              <Logo className="text-white h-6 w-auto" />
             </div>
             Sign in to Fragments
           </h1>
