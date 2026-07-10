@@ -2,6 +2,7 @@ import './globals.css'
 import { PostHogProvider, ThemeProvider } from './providers'
 import { Toaster } from '@/components/ui/toaster'
 import { Analytics } from '@vercel/analytics/next'
+import { GoogleTagManager } from '@next/third-parties/google'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
@@ -19,6 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      {process.env.NEXT_PUBLIC_GTM_ID && (
+        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+      )}
       <PostHogProvider>
         <body className={inter.className}>
           <ThemeProvider
