@@ -2,6 +2,9 @@
   "name": "e2b-fragments",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
@@ -58,7 +61,7 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/node": "^22.2.0",
+    "@types/node": "^24.0.0",
     "@types/prismjs": "^1.26.4",
     "@types/react": "^18",
     "@types/react-dom": "^18",
