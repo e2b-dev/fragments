@@ -192,7 +192,7 @@ export function ChatSettings({
           </div>
           <div className="flex space-x-4 items-center">
             <span className="text-sm flex-1 text-muted-foreground">
-              Frequence penalty
+              Frequency penalty
             </span>
             <Input
               type="number"
