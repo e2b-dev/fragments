@@ -5,6 +5,8 @@ import { createVertex } from '@ai-sdk/google-vertex'
 import { createMistral } from '@ai-sdk/mistral'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createOllama } from 'ollama-ai-provider'
+import { DEFAULT_MODEL_ID } from './default-model'
+import modelsList from './models.json'
 
 export type LLMModel = {
   id: string
@@ -23,6 +25,17 @@ export type LLMModelConfig = {
   frequencyPenalty?: number
   presencePenalty?: number
   maxTokens?: number
+}
+
+// Look up the requested model in models.json so the API routes never call a
+// model that isn't listed (e.g. a retired ID from a stale browser tab).
+export function resolveModel(id: string | undefined): LLMModel {
+  const models: LLMModel[] = modelsList.models
+  const model = models.find((m) => m.id === id)
+  if (model) return model
+
+  console.warn(`Unknown model "${id}", falling back to ${DEFAULT_MODEL_ID}`)
+  return models.find((m) => m.id === DEFAULT_MODEL_ID)!
 }
 
 export function getModelClient(model: LLMModel, config: LLMModelConfig) {

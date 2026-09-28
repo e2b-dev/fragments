@@ -1,6 +1,11 @@
 import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
-import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
+import {
+  getModelClient,
+  LLMModel,
+  LLMModelConfig,
+  resolveModel,
+} from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
 import ratelimit from '@/lib/ratelimit'
 import { FragmentSchema, morphEditSchema, MorphEditSchema } from '@/lib/schema'
@@ -44,7 +49,7 @@ export async function POST(req: Request) {
   }
 
   const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
-  const modelClient = getModelClient(model, config)
+  const modelClient = getModelClient(resolveModel(model?.id), config)
 
   try {
     const contextualSystemPrompt = `You are a code editor. Generate a JSON response with exactly these fields:
