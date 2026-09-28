@@ -1,6 +1,11 @@
 import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
-import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
+import {
+  getModelClient,
+  LLMModel,
+  LLMModelConfig,
+  resolveModel,
+} from '@/lib/models'
 import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
 import { fragmentSchema as schema } from '@/lib/schema'
@@ -52,7 +57,7 @@ export async function POST(req: Request) {
   // console.log('config', config)
 
   const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
-  const modelClient = getModelClient(model, config)
+  const modelClient = getModelClient(resolveModel(model?.id), config)
 
   try {
     const stream = await streamObject({

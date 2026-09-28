@@ -10,6 +10,7 @@ import { NavBar } from '@/components/navbar'
 import { Preview } from '@/components/preview'
 import { useAuth } from '@/lib/auth'
 import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
+import { DEFAULT_MODEL_ID } from '@/lib/default-model'
 import { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
 import { FragmentSchema, fragmentSchema as schema } from '@/lib/schema'
@@ -31,7 +32,7 @@ export default function Home() {
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>(
     'languageModel',
     {
-      model: 'claude-sonnet-4-20250514',
+      model: DEFAULT_MODEL_ID,
     },
   )
 
@@ -60,7 +61,7 @@ export default function Home() {
   })
 
   const defaultModel = filteredModels.find(
-    (model) => model.id === 'claude-sonnet-4-20250514',
+    (model) => model.id === DEFAULT_MODEL_ID,
   ) || filteredModels[0]
 
   const currentModel = filteredModels.find(
