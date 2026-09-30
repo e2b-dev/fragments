@@ -120,34 +120,6 @@
       "multiModal": true
     },
     {
-      "id": "claude-opus-4-1-20250805",
-      "provider": "Anthropic",
-      "providerId": "anthropic",
-      "name": "Claude Opus 4.1",
-      "multiModal": true
-    },
-    {
-      "id": "claude-opus-4-20250514",
-      "provider": "Anthropic",
-      "providerId": "anthropic",
-      "name": "Claude Opus 4",
-      "multiModal": true
-    },
-    {
-      "id": "claude-sonnet-4-20250514",
-      "provider": "Anthropic",
-      "providerId": "anthropic",
-      "name": "Claude Sonnet 4",
-      "multiModal": true
-    },
-    {
-      "id": "claude-3-5-haiku-latest",
-      "provider": "Anthropic",
-      "providerId": "anthropic",
-      "name": "Claude Haiku 3.5",
-      "multiModal": true
-    },
-    {
       "id": "gemini-2.5-flash-preview-05-20",
       "provider": "Google Vertex AI",
       "providerId": "vertex",

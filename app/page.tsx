@@ -31,7 +31,7 @@ export default function Home() {
   const [languageModel, setLanguageModel] = useLocalStorage<LLMModelConfig>(
     'languageModel',
     {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5-20250929',
     },
   )
 
@@ -60,7 +60,7 @@ export default function Home() {
   })
 
   const defaultModel = filteredModels.find(
-    (model) => model.id === 'claude-sonnet-4-20250514',
+    (model) => model.id === 'claude-sonnet-4-5-20250929',
   ) || filteredModels[0]
 
   const currentModel = filteredModels.find(
