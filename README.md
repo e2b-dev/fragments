@@ -88,6 +88,9 @@ GOOGLE_VERTEX_CREDENTIALS=
 MISTRAL_API_KEY=
 XAI_API_KEY=
 
+# Ollama server address, enables Ollama models (e.g. http://localhost:11434/api)
+OLLAMA_BASE_URL=
+
 ### Optional env vars
 
 # (on by default) Get your MORPH key here - https://morphllm.com/dashboard/api-keys
@@ -114,9 +117,8 @@ NEXT_PUBLIC_POSTHOG_HOST=
 
 ### Disabling functionality (when uncommented)
 
-# Disable API key and base URL input in the chat
+# Disable API key input in the chat
 # NEXT_PUBLIC_NO_API_KEY_INPUT=
-# NEXT_PUBLIC_NO_BASE_URL_INPUT=
 
 # Hide local models from the list of available models
 # NEXT_PUBLIC_HIDE_LOCAL_MODELS=
@@ -235,7 +237,7 @@ npm run build
     Example for fireworks:
 
     ```ts
-    fireworks: () => createOpenAI({ apiKey: apiKey || process.env.FIREWORKS_API_KEY, baseURL: baseURL || 'https://api.fireworks.ai/inference/v1' })(modelNameString),
+    fireworks: () => createOpenAI({ apiKey: apiKey || process.env.FIREWORKS_API_KEY, baseURL: 'https://api.fireworks.ai/inference/v1' })(modelNameString),
     ```
 
 3. Optionally, adjust the default structured output mode in the `getDefaultMode` function:

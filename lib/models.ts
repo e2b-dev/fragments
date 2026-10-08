@@ -1,3 +1,4 @@
+import modelsList from './models.json'
 import { createAnthropic } from '@ai-sdk/anthropic'
 import { createFireworks } from '@ai-sdk/fireworks'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
@@ -16,7 +17,6 @@ export type LLMModel = {
 export type LLMModelConfig = {
   model?: string
   apiKey?: string
-  baseURL?: string
   temperature?: number
   topP?: number
   topK?: number
@@ -25,31 +25,60 @@ export type LLMModelConfig = {
   maxTokens?: number
 }
 
+// Finds the model in models.json. Ollama models are only available when
+// OLLAMA_BASE_URL is set.
+export function resolveModel(id: unknown): LLMModel | undefined {
+  const model = modelsList.models.find((model) => model.id === id)
+  if (model?.providerId === 'ollama' && !process.env.OLLAMA_BASE_URL) {
+    return undefined
+  }
+  return model
+}
+
+export function getModelParams(config: LLMModelConfig) {
+  const {
+    temperature,
+    topP,
+    topK,
+    frequencyPenalty,
+    presencePenalty,
+    maxTokens,
+  } = config
+  return {
+    temperature,
+    topP,
+    topK,
+    frequencyPenalty,
+    presencePenalty,
+    maxTokens,
+  }
+}
+
 export function getModelClient(model: LLMModel, config: LLMModelConfig) {
   const { id: modelNameString, providerId } = model
-  const { apiKey, baseURL } = config
+  const { apiKey } = config
 
   const providerConfigs = {
-    anthropic: () => createAnthropic({ apiKey, baseURL })(modelNameString),
-    openai: () => createOpenAI({ apiKey, baseURL })(modelNameString),
-    google: () =>
-      createGoogleGenerativeAI({ apiKey, baseURL })(modelNameString),
-    mistral: () => createMistral({ apiKey, baseURL })(modelNameString),
+    anthropic: () => createAnthropic({ apiKey })(modelNameString),
+    openai: () => createOpenAI({ apiKey })(modelNameString),
+    google: () => createGoogleGenerativeAI({ apiKey })(modelNameString),
+    mistral: () => createMistral({ apiKey })(modelNameString),
     groq: () =>
       createOpenAI({
         apiKey: apiKey || process.env.GROQ_API_KEY,
-        baseURL: baseURL || 'https://api.groq.com/openai/v1',
+        baseURL: 'https://api.groq.com/openai/v1',
       })(modelNameString),
     togetherai: () =>
       createOpenAI({
         apiKey: apiKey || process.env.TOGETHER_API_KEY,
-        baseURL: baseURL || 'https://api.together.xyz/v1',
+        baseURL: 'https://api.together.xyz/v1',
       })(modelNameString),
-    ollama: () => createOllama({ baseURL })(modelNameString),
+    ollama: () =>
+      createOllama({ baseURL: process.env.OLLAMA_BASE_URL })(modelNameString),
     fireworks: () =>
       createFireworks({
         apiKey: apiKey || process.env.FIREWORKS_API_KEY,
-        baseURL: baseURL || 'https://api.fireworks.ai/inference/v1',
+        baseURL: 'https://api.fireworks.ai/inference/v1',
       })(modelNameString),
     vertex: () =>
       createVertex({
@@ -62,12 +91,12 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
     xai: () =>
       createOpenAI({
         apiKey: apiKey || process.env.XAI_API_KEY,
-        baseURL: baseURL || 'https://api.x.ai/v1',
+        baseURL: 'https://api.x.ai/v1',
       })(modelNameString),
     deepseek: () =>
       createOpenAI({
         apiKey: apiKey || process.env.DEEPSEEK_API_KEY,
-        baseURL: baseURL || 'https://api.deepseek.com/v1',
+        baseURL: 'https://api.deepseek.com/v1',
       })(modelNameString),
   }
 

@@ -1,6 +1,12 @@
 import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
-import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
+import {
+  getModelClient,
+  getModelParams,
+  LLMModel,
+  LLMModelConfig,
+  resolveModel,
+} from '@/lib/models'
 import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
 import { fragmentSchema as schema } from '@/lib/schema'
@@ -33,6 +39,11 @@ export async function POST(req: Request) {
     config: LLMModelConfig
   } = await req.json()
 
+  const llm = resolveModel(model?.id)
+  if (!llm) {
+    return new Response('Unsupported model', { status: 400 })
+  }
+
   const limit = !config.apiKey
     ? await ratelimit(
         req.headers.get('x-forwarded-for'),
@@ -51,8 +62,7 @@ export async function POST(req: Request) {
   console.log('model', model)
   // console.log('config', config)
 
-  const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
-  const modelClient = getModelClient(model, config)
+  const modelClient = getModelClient(llm, config)
 
   try {
     const stream = await streamObject({
@@ -61,7 +71,7 @@ export async function POST(req: Request) {
       system: toPrompt(template),
       messages,
       maxRetries: 0, // do not retry on errors
-      ...modelParams,
+      ...getModelParams(config),
     })
 
     return stream.toTextStreamResponse()

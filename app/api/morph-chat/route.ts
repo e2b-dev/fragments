@@ -1,6 +1,12 @@
 import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
-import { getModelClient, LLMModel, LLMModelConfig } from '@/lib/models'
+import {
+  getModelClient,
+  getModelParams,
+  LLMModel,
+  LLMModelConfig,
+  resolveModel,
+} from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
 import ratelimit from '@/lib/ratelimit'
 import { FragmentSchema, morphEditSchema, MorphEditSchema } from '@/lib/schema'
@@ -30,6 +36,11 @@ export async function POST(req: Request) {
     currentFragment: FragmentSchema
   } = await req.json()
 
+  const llm = resolveModel(model?.id)
+  if (!llm) {
+    return new Response('Unsupported model', { status: 400 })
+  }
+
   // Rate limiting (same as chat route)
   const limit = !config.apiKey
     ? await ratelimit(
@@ -43,8 +54,7 @@ export async function POST(req: Request) {
     return createRateLimitResponse(limit)
   }
 
-  const { model: modelNameString, apiKey: modelApiKey, ...modelParams } = config
-  const modelClient = getModelClient(model, config)
+  const modelClient = getModelClient(llm, config)
 
   try {
     const contextualSystemPrompt = `You are a code editor. Generate a JSON response with exactly these fields:
@@ -70,7 +80,7 @@ ${currentFragment.code}
       messages,
       schema: morphEditSchema,
       maxRetries: 0,
-      ...modelParams,
+      ...getModelParams(config),
     })
 
     const editInstructions = result.object
