@@ -1,6 +1,7 @@
 import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
 import {
+  getClientApiKey,
   getModelClient,
   getModelParams,
   LLMModel,
@@ -41,14 +42,13 @@ export async function POST(req: Request) {
     return new Response('Unsupported model', { status: 400 })
   }
 
-  // Rate limiting (same as chat route)
-  const limit = !config.apiKey
-    ? await ratelimit(
-        req.headers.get('x-forwarded-for'),
-        rateLimitMaxRequests,
-        ratelimitWindow,
-      )
-    : false
+  // Always rate limited: Morph Apply uses the server's Morph key even when
+  // the model call uses the caller's key.
+  const limit = await ratelimit(
+    req.headers.get('x-forwarded-for'),
+    rateLimitMaxRequests,
+    ratelimitWindow,
+  )
 
   if (limit) {
     return createRateLimitResponse(limit)
@@ -116,6 +116,8 @@ ${currentFragment.code}
       },
     })
   } catch (error: any) {
-    return handleAPIError(error, { hasOwnApiKey: !!config.apiKey })
+    return handleAPIError(error, {
+      hasOwnApiKey: !!getClientApiKey(llm, config),
+    })
   }
 }

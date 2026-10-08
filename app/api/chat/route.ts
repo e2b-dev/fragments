@@ -1,6 +1,7 @@
 import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
 import {
+  getClientApiKey,
   getModelClient,
   getModelParams,
   LLMModel,
@@ -44,7 +45,9 @@ export async function POST(req: Request) {
     return new Response('Unsupported model', { status: 400 })
   }
 
-  const limit = !config.apiKey
+  // Requests sent with the server's keys are rate limited.
+  const hasOwnApiKey = !!getClientApiKey(llm, config)
+  const limit = !hasOwnApiKey
     ? await ratelimit(
         req.headers.get('x-forwarded-for'),
         rateLimitMaxRequests,
@@ -76,6 +79,6 @@ export async function POST(req: Request) {
 
     return stream.toTextStreamResponse()
   } catch (error: any) {
-    return handleAPIError(error, { hasOwnApiKey: !!config.apiKey })
+    return handleAPIError(error, { hasOwnApiKey })
   }
 }
