@@ -35,6 +35,33 @@ export function resolveModel(id: unknown): LLMModel | undefined {
   return model
 }
 
+// Providers that call the API with the caller's key when one is provided.
+// Vertex and Ollama always use the server's configuration.
+const clientKeyProviders = new Set([
+  'anthropic',
+  'openai',
+  'google',
+  'mistral',
+  'groq',
+  'togetherai',
+  'fireworks',
+  'xai',
+  'deepseek',
+])
+
+// Returns the caller's API key when the request will be sent with it.
+// Without one, the request uses the server's keys.
+export function getClientApiKey(
+  model: LLMModel,
+  config: LLMModelConfig,
+): string | undefined {
+  const { apiKey } = config
+  if (typeof apiKey !== 'string' || apiKey.length === 0) {
+    return undefined
+  }
+  return clientKeyProviders.has(model.providerId) ? apiKey : undefined
+}
+
 export function getModelParams(config: LLMModelConfig) {
   const {
     temperature,
@@ -56,7 +83,7 @@ export function getModelParams(config: LLMModelConfig) {
 
 export function getModelClient(model: LLMModel, config: LLMModelConfig) {
   const { id: modelNameString, providerId } = model
-  const { apiKey } = config
+  const apiKey = getClientApiKey(model, config)
 
   const providerConfigs = {
     anthropic: () => createAnthropic({ apiKey })(modelNameString),

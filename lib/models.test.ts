@@ -1,4 +1,5 @@
 import {
+  getClientApiKey,
   getModelClient,
   getModelParams,
   LLMModelConfig,
@@ -37,6 +38,7 @@ const providerEnvKeys = [
 
 const originalFetch = globalThis.fetch
 let requestedHosts: string[] = []
+let requestedAuthorization: (string | null)[] = []
 
 beforeEach(() => {
   for (const key of providerEnvKeys) {
@@ -44,9 +46,11 @@ beforeEach(() => {
   }
   delete process.env.OLLAMA_BASE_URL
   requestedHosts = []
-  globalThis.fetch = async (input) => {
+  requestedAuthorization = []
+  globalThis.fetch = async (input, init) => {
     const url = input instanceof Request ? input.url : input.toString()
     requestedHosts.push(new URL(url).host)
+    requestedAuthorization.push(new Headers(init?.headers).get('authorization'))
     throw new Error('network is disabled in tests')
   }
 })
@@ -85,6 +89,51 @@ describe('getModelClient', () => {
     await sendPrompt(client as LanguageModel)
 
     assert.deepEqual(requestedHosts, ['ollama.test:11434'])
+  })
+
+  it('sends the caller key when one is provided', async () => {
+    const config = { apiKey: 'user-key' }
+    const client = getModelClient(firstModelOf('groq'), config)
+
+    await sendPrompt(client as LanguageModel)
+
+    assert.deepEqual(requestedAuthorization, ['Bearer user-key'])
+  })
+
+  it('sends the server key when the caller key is not a string', async () => {
+    const config = { apiKey: { key: 'user-key' } } as unknown as LLMModelConfig
+    const client = getModelClient(firstModelOf('groq'), config)
+
+    await sendPrompt(client as LanguageModel)
+
+    assert.deepEqual(requestedAuthorization, ['Bearer test-key'])
+  })
+})
+
+describe('getClientApiKey', () => {
+  it('returns the caller key for providers that use it', () => {
+    for (const providerId of Object.keys(providerHosts)) {
+      const model = firstModelOf(providerId)
+
+      assert.equal(getClientApiKey(model, { apiKey: 'user-key' }), 'user-key')
+    }
+  })
+
+  it('returns nothing for providers that use the server configuration', () => {
+    for (const providerId of ['vertex', 'ollama']) {
+      const model = firstModelOf(providerId)
+
+      assert.equal(getClientApiKey(model, { apiKey: 'user-key' }), undefined)
+    }
+  })
+
+  it('returns nothing for a missing, empty or non-string key', () => {
+    const model = firstModelOf('openai')
+    for (const apiKey of [undefined, '', 123, { key: 'user-key' }]) {
+      const config = { apiKey } as unknown as LLMModelConfig
+
+      assert.equal(getClientApiKey(model, config), undefined)
+    }
   })
 })
 

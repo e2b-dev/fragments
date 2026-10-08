@@ -1,17 +1,16 @@
 import { handleAPIError, createRateLimitResponse } from '@/lib/api-errors'
 import { Duration } from '@/lib/duration'
 import {
+  getClientApiKey,
   getModelClient,
   getModelParams,
-  LLMModel,
-  LLMModelConfig,
   resolveModel,
 } from '@/lib/models'
 import { toPrompt } from '@/lib/prompt'
 import ratelimit from '@/lib/ratelimit'
+import { chatRequestSchema, parseRequest } from '@/lib/request-schema'
 import { fragmentSchema as schema } from '@/lib/schema'
-import { Templates } from '@/lib/templates'
-import { streamObject, LanguageModel, CoreMessage } from 'ai'
+import { streamObject, LanguageModel } from 'ai'
 
 export const maxDuration = 300
 
@@ -23,28 +22,20 @@ const ratelimitWindow = process.env.RATE_LIMIT_WINDOW
   : '1d'
 
 export async function POST(req: Request) {
-  const {
-    messages,
-    userID,
-    teamID,
-    template,
-    model,
-    config,
-  }: {
-    messages: CoreMessage[]
-    userID: string | undefined
-    teamID: string | undefined
-    template: Templates
-    model: LLMModel
-    config: LLMModelConfig
-  } = await req.json()
+  const request = await parseRequest(req, chatRequestSchema)
+  if ('error' in request) {
+    return request.error
+  }
+  const { messages, userID, teamID, template, model, config } = request.data
 
-  const llm = resolveModel(model?.id)
-  if (!llm) {
+  const llm = resolveModel(model.id)
+  if (!llm || llm.providerId !== model.providerId) {
     return new Response('Unsupported model', { status: 400 })
   }
 
-  const limit = !config.apiKey
+  // Requests sent with the server's keys are rate limited.
+  const hasOwnApiKey = !!getClientApiKey(llm, config)
+  const limit = !hasOwnApiKey
     ? await ratelimit(
         req.headers.get('x-forwarded-for'),
         rateLimitMaxRequests,
@@ -76,6 +67,6 @@ export async function POST(req: Request) {
 
     return stream.toTextStreamResponse()
   } catch (error: any) {
-    return handleAPIError(error, { hasOwnApiKey: !!config.apiKey })
+    return handleAPIError(error, { hasOwnApiKey })
   }
 }

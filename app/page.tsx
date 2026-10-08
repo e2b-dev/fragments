@@ -12,6 +12,7 @@ import { useAuth } from '@/lib/auth'
 import { Message, toAISDKMessages, toMessageImage } from '@/lib/messages'
 import { LLMModelConfig } from '@/lib/models'
 import modelsList from '@/lib/models.json'
+import { toRequestConfig } from '@/lib/request-schema'
 import { FragmentSchema, fragmentSchema as schema } from '@/lib/schema'
 import { supabase } from '@/lib/supabase'
 import templates from '@/lib/templates'
@@ -199,7 +200,7 @@ export default function Home() {
       messages: toAISDKMessages(updatedMessages),
       template: currentTemplate,
       model: currentModel,
-      config: languageModel,
+      config: toRequestConfig(languageModel),
       ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
     })
 
@@ -220,7 +221,7 @@ export default function Home() {
       messages: toAISDKMessages(messages),
       template: currentTemplate,
       model: currentModel,
-      config: languageModel,
+      config: toRequestConfig(languageModel),
       ...(shouldUseMorph && fragment ? { currentFragment: fragment } : {}),
     })
   }
