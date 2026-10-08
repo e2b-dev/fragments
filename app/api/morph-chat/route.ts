@@ -4,14 +4,13 @@ import {
   getClientApiKey,
   getModelClient,
   getModelParams,
-  LLMModel,
-  LLMModelConfig,
   resolveModel,
 } from '@/lib/models'
 import { applyPatch } from '@/lib/morph'
 import ratelimit from '@/lib/ratelimit'
-import { FragmentSchema, morphEditSchema, MorphEditSchema } from '@/lib/schema'
-import { generateObject, LanguageModel, CoreMessage } from 'ai'
+import { morphChatRequestSchema, parseRequest } from '@/lib/request-schema'
+import { morphEditSchema } from '@/lib/schema'
+import { generateObject, LanguageModel } from 'ai'
 
 export const maxDuration = 300
 
@@ -25,20 +24,14 @@ const ratelimitWindow = process.env.RATE_LIMIT_WINDOW
 // System prompt is constructed dynamically below using the current file context
 
 export async function POST(req: Request) {
-  const {
-    messages,
-    model,
-    config,
-    currentFragment,
-  }: {
-    messages: CoreMessage[]
-    model: LLMModel
-    config: LLMModelConfig
-    currentFragment: FragmentSchema
-  } = await req.json()
+  const request = await parseRequest(req, morphChatRequestSchema)
+  if ('error' in request) {
+    return request.error
+  }
+  const { messages, model, config, currentFragment } = request.data
 
-  const llm = resolveModel(model?.id)
-  if (!llm) {
+  const llm = resolveModel(model.id)
+  if (!llm || llm.providerId !== model.providerId) {
     return new Response('Unsupported model', { status: 400 })
   }
 
@@ -94,7 +87,7 @@ ${currentFragment.code}
     })
 
     // Return updated fragment in standard format
-    const updatedFragment: FragmentSchema = {
+    const updatedFragment = {
       ...currentFragment,
       code: morphResult.code,
       commentary: editInstructions.commentary,

@@ -9,6 +9,7 @@ const kvHost = 'kv.test'
 
 const originalFetch = globalThis.fetch
 let requestedHosts: string[] = []
+let requestedBodies: string[] = []
 let rateLimitChecked = false
 
 beforeEach(() => {
@@ -19,6 +20,7 @@ beforeEach(() => {
   process.env.KV_REST_API_URL = `https://${kvHost}`
   process.env.KV_REST_API_TOKEN = 'test-token'
   requestedHosts = []
+  requestedBodies = []
   rateLimitChecked = false
   globalThis.fetch = async (input, init) => {
     const url = new URL(input instanceof Request ? input.url : input.toString())
@@ -30,6 +32,7 @@ beforeEach(() => {
       return Response.json(commands.map(() => ({ result: [10, 10] })))
     }
     requestedHosts.push(url.host)
+    requestedBodies.push(String(init?.body))
     throw new Error('network is disabled in tests')
   }
 })
@@ -43,87 +46,213 @@ function firstModelOf(providerId: string) {
 }
 
 const routes = [
-  { name: '/api/chat', POST: chat, body: { template: templates } },
-  {
-    name: '/api/morph-chat',
-    POST: morphChat,
-    body: { currentFragment: { file_path: 'app.py', code: 'print(1)' } },
-  },
+  { name: '/api/chat', POST: chat },
+  { name: '/api/morph-chat', POST: morphChat },
 ]
 
 type Route = (typeof routes)[number]
 
-function post(route: Route, model: unknown, config: object) {
-  const body = {
-    ...route.body,
-    messages: [{ role: 'user', content: 'Build a counter app' }],
+// The shape the page sends, including an image and an earlier answer.
+function validBody(route: Route, providerId = 'openai'): any {
+  const model = firstModelOf(providerId)
+  return {
+    userID: 'user-id',
+    teamID: 'team-id',
+    messages: [
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: 'Build a counter app' },
+          { type: 'image', image: 'data:image/png;base64,iVBORw0KGgo=' },
+        ],
+      },
+      {
+        role: 'assistant',
+        content: [
+          { type: 'text', text: 'A counter app' },
+          { type: 'text', text: 'print(1)' },
+        ],
+      },
+      { role: 'user', content: [{ type: 'text', text: 'Make it blue' }] },
+    ],
+    template: templates,
     model,
-    config,
+    config: { model: model.id, temperature: 0.5, maxTokens: 1000 },
+    ...(route.name === '/api/morph-chat'
+      ? {
+          currentFragment: {
+            title: 'Counter',
+            file_path: 'app.py',
+            code: 'print(1)',
+          },
+        }
+      : {}),
   }
+}
+
+function post(route: Route, body: unknown) {
   return route.POST(
     new Request(`http://localhost${route.name}`, {
       method: 'POST',
-      body: JSON.stringify(body),
+      body: typeof body === 'string' ? body : JSON.stringify(body),
     }),
   )
 }
 
+const invalidRequests: [string, (body: any) => unknown][] = [
+  ['malformed JSON', () => '{'],
+  ['an unknown top-level field', (body) => ({ ...body, extra: true })],
+  ['no messages', (body) => ({ ...body, messages: [] })],
+  [
+    'a system message',
+    (body) => ({
+      ...body,
+      messages: [{ role: 'system', content: [{ type: 'text', text: 'x' }] }],
+    }),
+  ],
+  [
+    'an image URL',
+    (body) => ({
+      ...body,
+      messages: [
+        {
+          role: 'user',
+          content: [{ type: 'image', image: 'https://example.com/a.png' }],
+        },
+      ],
+    }),
+  ],
+  [
+    'an image in an assistant message',
+    (body) => ({
+      ...body,
+      messages: [
+        {
+          role: 'assistant',
+          content: [{ type: 'image', image: 'data:image/png;base64,AAAA' }],
+        },
+      ],
+    }),
+  ],
+  [
+    'an unknown message field',
+    (body) => ({
+      ...body,
+      messages: [{ ...body.messages[2], experimental_attachments: [] }],
+    }),
+  ],
+  ['no templates', (body) => ({ ...body, template: {} })],
+  ['an unknown template', (body) => ({ ...body, template: { other: {} } })],
+  [
+    'an unknown model',
+    (body) => ({ ...body, model: { ...body.model, id: 'x' } }),
+  ],
+  [
+    'a mismatched provider',
+    (body) => ({ ...body, model: { ...body.model, providerId: 'fireworks' } }),
+  ],
+  [
+    'an unknown model field',
+    (body) => ({
+      ...body,
+      model: { ...body.model, baseURL: 'https://x.test' },
+    }),
+  ],
+  ...['baseURL', 'headers', 'maxRetries'].map(
+    (key): [string, (body: any) => unknown] => [
+      `config.${key}`,
+      (body) => ({ ...body, config: { ...body.config, [key]: 'x' } }),
+    ],
+  ),
+  ...['', '  ', 123, null, {}].map(
+    (apiKey): [string, (body: any) => unknown] => [
+      `the API key ${JSON.stringify(apiKey)}`,
+      (body) => ({ ...body, config: { ...body.config, apiKey } }),
+    ],
+  ),
+  ...[{ maxTokens: 0 }, { maxTokens: 1.5 }, { maxTokens: 100000 }].map(
+    (params): [string, (body: any) => unknown] => [
+      `the parameters ${JSON.stringify(params)}`,
+      (body) => ({ ...body, config: { ...body.config, ...params } }),
+    ],
+  ),
+  [
+    'a non-numeric temperature',
+    (body) => ({ ...body, config: { ...body.config, temperature: '1' } }),
+  ],
+]
+
 for (const route of routes) {
   describe(route.name, () => {
-    it('returns 400 for a model that is not in models.json', async () => {
-      const response = await post(
-        route,
-        { id: 'not-a-model', providerId: 'openai' },
-        {},
-      )
+    it('accepts the request the page sends', async () => {
+      await post(route, validBody(route))
 
-      assert.equal(response.status, 400)
-      assert.deepEqual(requestedHosts, [])
-    })
-
-    it('uses the provider from models.json and ignores a client base URL', async () => {
-      await post(
-        route,
-        { ...firstModelOf('openai'), providerId: 'fireworks' },
-        { baseURL: 'https://custom-endpoint.example/v1' },
-      )
-
+      assert.equal(rateLimitChecked, true)
       assert.deepEqual(requestedHosts, ['api.openai.com'])
     })
 
-    it('rate limits requests sent with the server keys', async () => {
-      await post(route, firstModelOf('openai'), {})
+    for (const [name, change] of invalidRequests) {
+      it(`returns 400 for ${name}`, async () => {
+        const response = await post(route, change(validBody(route)))
 
-      assert.equal(rateLimitChecked, true)
-    })
-
-    it('rate limits requests whose API key is not a string', async () => {
-      await post(route, firstModelOf('openai'), { apiKey: 123 })
-
-      assert.equal(rateLimitChecked, true)
-    })
+        assert.equal(response.status, 400)
+        assert.equal(rateLimitChecked, false)
+        assert.deepEqual(requestedHosts, [])
+      })
+    }
 
     it('rate limits vertex requests even with a caller key', async () => {
-      await post(route, firstModelOf('vertex'), { apiKey: 'user-key' })
+      const body = validBody(route, 'vertex')
+      await post(route, { ...body, config: { ...body.config, apiKey: 'key' } })
 
       assert.equal(rateLimitChecked, true)
     })
   })
 }
 
-describe('/api/chat with a caller key', () => {
-  it('skips the rate limit', async () => {
-    await post(routes[0], firstModelOf('openai'), { apiKey: 'user-key' })
+describe('/api/chat', () => {
+  it('builds the prompt from the server templates', async () => {
+    const id = 'code-interpreter-v1'
+    const body = validBody(routes[0])
+    await post(routes[0], {
+      ...body,
+      template: { [id]: { instructions: 'Client instructions' } },
+    })
+
+    assert.ok(requestedBodies[0].includes(templates[id].instructions))
+    assert.ok(!requestedBodies[0].includes('Client instructions'))
+  })
+
+  it('skips the rate limit with a caller key', async () => {
+    const body = validBody(routes[0])
+    await post(routes[0], {
+      ...body,
+      config: { ...body.config, apiKey: 'user-key' },
+    })
 
     assert.equal(rateLimitChecked, false)
     assert.deepEqual(requestedHosts, ['api.openai.com'])
   })
 })
 
-describe('/api/morph-chat with a caller key', () => {
-  it('still rate limits, because Morph Apply uses the server key', async () => {
-    await post(routes[1], firstModelOf('openai'), { apiKey: 'user-key' })
+describe('/api/morph-chat', () => {
+  it('still rate limits with a caller key, because Morph Apply uses the server key', async () => {
+    const body = validBody(routes[1])
+    await post(routes[1], {
+      ...body,
+      config: { ...body.config, apiKey: 'user-key' },
+    })
 
     assert.equal(rateLimitChecked, true)
+  })
+
+  it('returns 400 without the current file', async () => {
+    const body = validBody(routes[1])
+    for (const currentFragment of [undefined, { file_path: 'app.py' }]) {
+      const response = await post(routes[1], { ...body, currentFragment })
+
+      assert.equal(response.status, 400)
+    }
+    assert.deepEqual(requestedHosts, [])
   })
 })
