@@ -9,7 +9,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "tsx --test lib/*.test.ts app/api/*.test.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.1.6",

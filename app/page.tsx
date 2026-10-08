@@ -339,7 +339,6 @@ export default function Home() {
               languageModel={languageModel}
               onLanguageModelChange={handleLanguageModelChange}
               apiKeyConfigurable={!process.env.NEXT_PUBLIC_NO_API_KEY_INPUT}
-              baseURLConfigurable={!process.env.NEXT_PUBLIC_NO_BASE_URL_INPUT}
               useMorphApply={useMorphApply}
               onUseMorphApplyChange={setUseMorphApply}
             />
