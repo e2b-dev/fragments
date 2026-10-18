@@ -29,20 +29,6 @@
       "multiModal": true
     },
     {
-      "id": "o3-mini",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "o3-mini",
-      "multiModal": false
-    },
-    {
-      "id": "o4-mini",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "o4-mini",
-      "multiModal": true
-    },
-    {
       "id": "gpt-4.1",
       "provider": "OpenAI",
       "providerId": "openai",
@@ -54,13 +40,6 @@
       "provider": "OpenAI",
       "providerId": "openai",
       "name": "GPT-4.1 mini",
-      "multiModal": true
-    },
-    {
-      "id": "gpt-4.1-nano",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "GPT-4.1 nano",
       "multiModal": true
     },
     {
@@ -92,13 +71,6 @@
       "multiModal": false
     },
     {
-      "id": "gpt-4-turbo",
-      "provider": "OpenAI",
-      "providerId": "openai",
-      "name": "GPT-4 Turbo",
-      "multiModal": true
-    },
-    {
       "id": "claude-opus-4-5-20251101",
       "provider": "Anthropic",
       "providerId": "anthropic",
@@ -113,10 +85,10 @@
       "multiModal": true
     },
     {
-      "id": "claude-sonnet-4-5-20250929",
+      "id": "claude-sonnet-4-6",
       "provider": "Anthropic",
       "providerId": "anthropic",
-      "name": "Claude Sonnet 4.5",
+      "name": "Claude Sonnet 4.6",
       "multiModal": true
     },
     {
