@@ -358,6 +358,34 @@
       "multiModal": false
     },
     {
+      "id": "deepseek-ai/DeepSeek-V4-Flash",
+      "provider": "Runcrate",
+      "providerId": "runcrate",
+      "name": "DeepSeek V4 Flash",
+      "multiModal": false
+    },
+    {
+      "id": "zai-org/GLM-5.3",
+      "provider": "Runcrate",
+      "providerId": "runcrate",
+      "name": "GLM-5.3",
+      "multiModal": false
+    },
+    {
+      "id": "moonshotai/Kimi-K2.6",
+      "provider": "Runcrate",
+      "providerId": "runcrate",
+      "name": "Kimi K2.6",
+      "multiModal": true
+    },
+    {
+      "id": "Qwen/Qwen3-Coder-480B-A35B-Instruct-Turbo",
+      "provider": "Runcrate",
+      "providerId": "runcrate",
+      "name": "Qwen3 Coder 480B",
+      "multiModal": false
+    },
+    {
       "id": "grok-4",
       "provider": "xAI",
       "providerId": "xai",

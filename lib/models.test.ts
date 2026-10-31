@@ -22,6 +22,7 @@ const providerHosts: Record<string, string> = {
   fireworks: 'api.fireworks.ai',
   xai: 'api.x.ai',
   deepseek: 'api.deepseek.com',
+  runcrate: 'api.runcrate.ai',
 }
 
 const providerEnvKeys = [
@@ -34,6 +35,7 @@ const providerEnvKeys = [
   'FIREWORKS_API_KEY',
   'XAI_API_KEY',
   'DEEPSEEK_API_KEY',
+  'RUNCRATE_API_KEY',
 ]
 
 const originalFetch = globalThis.fetch

@@ -29,6 +29,7 @@ Powered by the [E2B SDK](https://github.com/e2b-dev/code-interpreter).
   - 🔸 Groq
   - 🔸 Fireworks
   - 🔸 Together AI
+  - 🔸 Runcrate
   - 🔸 Ollama
 - Integrates with [Morph](https://morphllm.com/) Apply model for token efficient, accurate and faster code editing.
 
@@ -87,6 +88,7 @@ GOOGLE_AI_API_KEY=
 GOOGLE_VERTEX_CREDENTIALS=
 MISTRAL_API_KEY=
 XAI_API_KEY=
+RUNCRATE_API_KEY=
 
 # Ollama server address, enables Ollama models (e.g. http://localhost:11434/api)
 OLLAMA_BASE_URL=
