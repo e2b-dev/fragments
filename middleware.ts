@@ -1,11 +1,11 @@
-import { kv } from '@vercel/kv'
+import { getKv } from '@/lib/kv'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
   if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
     const id = req.nextUrl.pathname.split('/').pop()
-    const url = await kv.get(`fragment:${id}`)
+    const url = await getKv().get(`fragment:${id}`)
 
     if (url) {
       return NextResponse.redirect(url as string)
