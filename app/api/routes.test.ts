@@ -13,6 +13,7 @@ let requestedBodies: string[] = []
 let rateLimitChecked = false
 
 beforeEach(() => {
+  process.env.ANTHROPIC_API_KEY = 'test-key'
   process.env.OPENAI_API_KEY = 'test-key'
   process.env.FIREWORKS_API_KEY = 'test-key'
   process.env.GOOGLE_VERTEX_PROJECT = 'test-project'
@@ -189,6 +190,40 @@ for (const route of routes) {
 
       assert.equal(rateLimitChecked, true)
       assert.deepEqual(requestedHosts, ['api.openai.com'])
+    })
+
+    it('sends the default Sonnet model using the existing Anthropic object mode', async () => {
+      const body = validBody(route)
+      const model = modelsList.models.find((m) => m.id === modelsList.defaultModel)
+      assert.equal(model?.id, 'claude-sonnet-4-6')
+      assert.equal(model.providerId, 'anthropic')
+      await post(route, {
+        ...body,
+        model,
+        config: { ...body.config, model: model.id },
+      })
+
+      assert.deepEqual(requestedHosts, ['api.anthropic.com'])
+      const payload = JSON.parse(requestedBodies[0])
+      assert.equal(payload.model, 'claude-sonnet-4-6')
+      assert.equal(payload.tool_choice.type, 'tool')
+      assert.equal(payload.temperature, 0.5)
+      assert.equal(payload.max_tokens, 1000)
+      assert.equal(payload.thinking, undefined)
+      assert.equal(payload.stream ?? false, route.name === '/api/chat')
+    })
+
+    it('does not send the outgoing Sonnet snapshot instead of sending it upstream', async () => {
+      const body = validBody(route, 'anthropic')
+      const model = { ...body.model, id: 'claude-sonnet-4-5-20250929' }
+      const response = await post(route, {
+        ...body,
+        model,
+        config: { ...body.config, model: model.id },
+      })
+
+      assert.equal(response.status, 400)
+      assert.deepEqual(requestedHosts, [])
     })
 
     for (const [name, change] of invalidRequests) {
