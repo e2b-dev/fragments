@@ -47,6 +47,7 @@ const clientKeyProviders = new Set([
   'fireworks',
   'xai',
   'deepseek',
+  'llmtr',
 ])
 
 // Returns the caller's API key when the request will be sent with it.
@@ -124,6 +125,11 @@ export function getModelClient(model: LLMModel, config: LLMModelConfig) {
       createOpenAI({
         apiKey: apiKey || process.env.DEEPSEEK_API_KEY,
         baseURL: 'https://api.deepseek.com/v1',
+      })(modelNameString),
+    llmtr: () =>
+      createOpenAI({
+        apiKey: apiKey || process.env.LLMTR_API_KEY,
+        baseURL: 'https://llmtr.com/v1',
       })(modelNameString),
   }
 
