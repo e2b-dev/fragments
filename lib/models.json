@@ -1,4 +1,5 @@
 {
+  "defaultModel": "claude-sonnet-4-6",
   "models": [
     {
       "id": "gpt-5",
@@ -113,10 +114,10 @@
       "multiModal": true
     },
     {
-      "id": "claude-sonnet-4-5-20250929",
+      "id": "claude-sonnet-4-6",
       "provider": "Anthropic",
       "providerId": "anthropic",
-      "name": "Claude Sonnet 4.5",
+      "name": "Claude Sonnet 4.6",
       "multiModal": true
     },
     {
