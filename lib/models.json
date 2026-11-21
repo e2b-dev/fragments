@@ -426,6 +426,13 @@
       "providerId": "ollama",
       "name": "Mistral Large",
       "multiModal": false
+    },
+    {
+      "id": "minimax/minimax-m3.1-flash",
+      "provider": "LLMTR",
+      "providerId": "llmtr",
+      "name": "MiniMax M3.1 Flash",
+      "multiModal": false
     }
   ]
 }
