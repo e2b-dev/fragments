@@ -2,6 +2,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { ExecutionResultInterpreter } from '@/lib/types'
 import { Terminal } from 'lucide-react'
 import Image from 'next/image'
+import React from 'react'
 
 function LogsOutput({
   stdout,
@@ -57,30 +58,45 @@ export function FragmentInterpreter({
     )
   }
 
-  // Cell results can contain text, pdfs, images, and code (html, latex, json)
-  // TODO: Show all results
-  // TODO: Check other formats than `png`
-  if (cellResults.length > 0) {
-    const imgInBase64 = cellResults[0].png
+  const visibleResults = cellResults.filter(({ png, text }) => png || text)
+
+  if (visibleResults.length > 0) {
     return (
       <div className="flex flex-col h-full">
-        <div className="w-full flex-1 p-4 flex items-start justify-center border-b">
-          <Image
-            src={`data:image/png;base64,${imgInBase64}`}
-            alt="result"
-            width={600}
-            height={400}
-          />
+        <div className="w-full flex-1 min-h-0 overflow-auto p-4 space-y-4 border-b">
+          {visibleResults.map(({ png, text }, index) =>
+            png ? (
+              <Image
+                key={index}
+                src={`data:image/png;base64,${png}`}
+                alt="result"
+                width={600}
+                height={400}
+                className="mx-auto"
+              />
+            ) : (
+              <pre
+                key={index}
+                className="text-xs whitespace-pre-wrap break-words"
+              >
+                {text}
+              </pre>
+            ),
+          )}
         </div>
         <LogsOutput stdout={stdout} stderr={stderr} />
       </div>
     )
   }
 
-  // No cell results, but there is stdout or stderr
+  // No supported result formats, but there is stdout or stderr
   if (stdout.length > 0 || stderr.length > 0) {
     return <LogsOutput stdout={stdout} stderr={stderr} />
   }
 
-  return <span>No output or logs</span>
+  return (
+    <span>
+      {cellResults.length > 0 ? 'No previewable output' : 'No output or logs'}
+    </span>
+  )
 }
